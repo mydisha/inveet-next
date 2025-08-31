@@ -15,6 +15,6 @@ createInertiaApp({
         root.render(<App {...props} />);
     },
     progress: {
-        color: '#D4A574', // Rose gold color
+        color: '#165d99', // Professional primary blue color
     },
 });

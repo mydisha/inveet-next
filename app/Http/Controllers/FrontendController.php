@@ -20,7 +20,15 @@ class FrontendController extends Controller
      */
     public function login()
     {
-        return Inertia::render('Auth/Login');
+        return Inertia::render('auth/login');
+    }
+
+    /**
+     * Show the register page
+     */
+    public function register()
+    {
+        return Inertia::render('auth/Register');
     }
 
     /**
@@ -28,7 +36,7 @@ class FrontendController extends Controller
      */
     public function forgotPassword()
     {
-        return Inertia::render('Auth/ForgotPassword');
+        return Inertia::render('auth/forgot-password');
     }
 
     /**
@@ -36,16 +44,30 @@ class FrontendController extends Controller
      */
     public function dashboard(Request $request)
     {
-        // Get user data if authenticated
+        // Get user data if authenticated, otherwise provide demo data
         $user = $request->user();
         
-        return Inertia::render('Dashboard', [
-            'user' => $user ? [
+        if ($user) {
+            // Real user data
+            $userData = [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'hasWedding' => $user->weddings()->exists(),
-            ] : null,
+            ];
+        } else {
+            // Demo data for public access
+            $userData = [
+                'id' => null,
+                'name' => 'Demo User',
+                'email' => 'demo@inveet.com',
+                'hasWedding' => false,
+                'isDemo' => true,
+            ];
+        }
+        
+        return Inertia::render('Dashboard', [
+            'user' => $userData,
         ]);
     }
 
@@ -138,6 +160,36 @@ class FrontendController extends Controller
     public function packages()
     {
         $packages = app(\App\Services\PackageService::class)->findActivePackages();
+
+        // Add demo data if no packages found
+        if ($packages->isEmpty()) {
+            $packages = collect([
+                [
+                    'id' => 1,
+                    'name' => 'Starter Package',
+                    'description' => 'Perfect for intimate weddings',
+                    'price' => 29.99,
+                    'features' => ['Basic templates', 'RSVP tracking', 'Email support'],
+                    'isDemo' => true,
+                ],
+                [
+                    'id' => 2,
+                    'name' => 'Premium Package',
+                    'description' => 'Everything you need for your special day',
+                    'price' => 59.99,
+                    'features' => ['Premium templates', 'Advanced RSVP', 'Priority support', 'Custom domain'],
+                    'isDemo' => true,
+                ],
+                [
+                    'id' => 3,
+                    'name' => 'Luxury Package',
+                    'description' => 'The ultimate wedding invitation experience',
+                    'price' => 99.99,
+                    'features' => ['All templates', 'Full customization', '24/7 support', 'Custom domain', 'Analytics'],
+                    'isDemo' => true,
+                ],
+            ]);
+        }
 
         return Inertia::render('Package/Index', [
             'packages' => $packages,

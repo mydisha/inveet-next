@@ -11,21 +11,21 @@ export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
 
   return (
-    <div className="min-h-screen bg-wedding-gradient flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-rose-gold rounded-full mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-blue rounded-2xl mb-4">
             <Heart className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-800">Inveet</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Inveet</h1>
           <p className="text-gray-600 mt-2">Your Digital Wedding Journey</p>
         </div>
 
         {/* Auth Card */}
         <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
           <CardHeader className="text-center pb-6">
-            <CardTitle className="text-2xl font-bold text-gray-800">
+            <CardTitle className="text-2xl font-bold text-gray-900">
               {isSignUp ? 'Create Your Account' : 'Welcome Back'}
             </CardTitle>
             <CardDescription className="text-gray-600">
@@ -40,7 +40,7 @@ export default function Login() {
             {/* Google Sign In */}
             <Button 
               variant="outline" 
-              className="w-full border-2 border-gray-200 hover:border-rose-gold hover:bg-rose-gold/5 transition-colors"
+              className="w-full border-2 border-gray-200 hover:border-primary-blue hover:bg-primary-blue/5 transition-colors"
               size="lg"
             >
               <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
@@ -86,7 +86,7 @@ export default function Login() {
                     id="email"
                     type="email"
                     placeholder="Enter your email"
-                    className="pl-10 border-2 border-gray-200 focus:border-rose-gold focus:ring-rose-gold/20 transition-colors"
+                    className="pl-10 border-2 border-gray-200 focus:border-primary-blue focus:ring-primary-blue/20 transition-colors"
                     required
                   />
                 </div>
@@ -102,7 +102,7 @@ export default function Login() {
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Enter your password"
-                    className="pl-10 pr-10 border-2 border-gray-200 focus:border-rose-gold focus:ring-rose-gold/20 transition-colors"
+                    className="pl-10 pr-10 border-2 border-gray-200 focus:border-primary-blue focus:ring-primary-blue/20 transition-colors"
                     required
                   />
                   <button
@@ -126,7 +126,7 @@ export default function Login() {
                       id="confirmPassword"
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Confirm your password"
-                      className="pl-10 pr-10 border-2 border-gray-200 focus:border-rose-gold focus:ring-rose-gold/20 transition-colors"
+                      className="pl-10 pr-10 border-2 border-gray-200 focus:border-primary-blue focus:ring-primary-blue/20 transition-colors"
                       required
                     />
                   </div>
@@ -139,7 +139,7 @@ export default function Login() {
                     <input
                       type="checkbox"
                       id="remember"
-                      className="w-4 h-4 text-rose-gold border-gray-300 rounded focus:ring-rose-gold/20"
+                      className="w-4 h-4 text-primary-blue border-gray-300 rounded focus:ring-primary-blue/20"
                     />
                     <Label htmlFor="remember" className="text-sm text-gray-600">
                       Remember me
@@ -147,7 +147,7 @@ export default function Login() {
                   </div>
                   <Link
                     href="/forgot-password"
-                    className="text-sm text-rose-gold hover:text-rose-gold/80 transition-colors"
+                    className="text-sm text-primary-blue hover:text-primary-blue/80 transition-colors"
                   >
                     Forgot password?
                   </Link>
@@ -156,7 +156,7 @@ export default function Login() {
 
               <Button 
                 type="submit" 
-                className="w-full bg-rose-gold hover:bg-rose-gold/90 text-white transition-colors"
+                className="w-full bg-primary-blue hover:bg-primary-blue/90 text-white transition-colors"
                 size="lg"
               >
                 {isSignUp ? 'Create Account' : 'Sign In'}
@@ -170,7 +170,7 @@ export default function Login() {
                 {isSignUp ? 'Already have an account?' : "Don't have an account?"}
                 <button
                   onClick={() => setIsSignUp(!isSignUp)}
-                  className="ml-1 text-rose-gold hover:text-rose-gold/80 font-medium transition-colors"
+                  className="ml-1 text-primary-blue hover:text-primary-blue/80 font-medium transition-colors"
                 >
                   {isSignUp ? 'Sign in' : 'Sign up'}
                 </button>
@@ -183,7 +183,7 @@ export default function Login() {
         <div className="text-center mt-6">
           <Link
             href="/"
-            className="text-gray-600 hover:text-rose-gold transition-colors text-sm"
+            className="text-gray-600 hover:text-primary-blue transition-colors text-sm"
           >
             ← Back to home
           </Link>
