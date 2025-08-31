@@ -1,0 +1,194 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+
+class FrontendController extends Controller
+{
+    /**
+     * Show the landing page
+     */
+    public function landing()
+    {
+        return Inertia::render('Landing');
+    }
+
+    /**
+     * Show the login page
+     */
+    public function login()
+    {
+        return Inertia::render('Auth/Login');
+    }
+
+    /**
+     * Show the forgot password page
+     */
+    public function forgotPassword()
+    {
+        return Inertia::render('Auth/ForgotPassword');
+    }
+
+    /**
+     * Show the dashboard
+     */
+    public function dashboard(Request $request)
+    {
+        // Get user data if authenticated
+        $user = $request->user();
+        
+        return Inertia::render('Dashboard', [
+            'user' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'hasWedding' => $user->weddings()->exists(),
+            ] : null,
+        ]);
+    }
+
+    /**
+     * Show the onboarding overview
+     */
+    public function onboarding()
+    {
+        return Inertia::render('Onboarding');
+    }
+
+    /**
+     * Show the couple info step
+     */
+    public function coupleInfo()
+    {
+        return Inertia::render('Onboarding/CoupleInfo');
+    }
+
+    /**
+     * Show the wedding details step
+     */
+    public function weddingDetails()
+    {
+        return Inertia::render('Onboarding/WeddingDetails');
+    }
+
+    /**
+     * Show the custom URL step
+     */
+    public function customUrl()
+    {
+        return Inertia::render('Onboarding/CustomUrl');
+    }
+
+    /**
+     * Show the design selection step
+     */
+    public function designSelection()
+    {
+        return Inertia::render('Onboarding/DesignSelection');
+    }
+
+    /**
+     * Show the activation step
+     */
+    public function activation()
+    {
+        return Inertia::render('Onboarding/Activation');
+    }
+
+    /**
+     * Show a specific wedding by slug
+     */
+    public function showWedding($slug)
+    {
+        // Get wedding data from API
+        $wedding = app(\App\Services\WeddingService::class)->findBySlug($slug);
+        
+        if (!$wedding) {
+            abort(404);
+        }
+
+        return Inertia::render('Wedding/Show', [
+            'wedding' => $wedding,
+        ]);
+    }
+
+    /**
+     * Show user's weddings
+     */
+    public function myWeddings(Request $request)
+    {
+        $user = $request->user();
+        
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $weddings = $user->weddings()->with('package')->get();
+
+        return Inertia::render('Wedding/MyWeddings', [
+            'weddings' => $weddings,
+        ]);
+    }
+
+    /**
+     * Show packages
+     */
+    public function packages()
+    {
+        $packages = app(\App\Services\PackageService::class)->findActivePackages();
+
+        return Inertia::render('Package/Index', [
+            'packages' => $packages,
+        ]);
+    }
+
+    /**
+     * Show package details
+     */
+    public function packageDetails($id)
+    {
+        $package = app(\App\Services\PackageService::class)->findById($id);
+
+        if (!$package) {
+            abort(404);
+        }
+
+        return Inertia::render('Package/Show', [
+            'package' => $package,
+        ]);
+    }
+
+    /**
+     * Show user profile
+     */
+    public function profile(Request $request)
+    {
+        $user = $request->user();
+        
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        return Inertia::render('Profile/Index', [
+            'user' => $user,
+        ]);
+    }
+
+    /**
+     * Show settings
+     */
+    public function settings(Request $request)
+    {
+        $user = $request->user();
+        
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        return Inertia::render('Settings/Index', [
+            'user' => $user,
+        ]);
+    }
+}

@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('additional_themes', function (Blueprint $table) {
             $table->id();
-            $table->foreign('theme_id')->references('id')->on('themes')->onDelete('cascade');
+            $table->foreignId('theme_id')->constrained()->onDelete('cascade');
             $table->json('value');
             $table->timestamps();
         });

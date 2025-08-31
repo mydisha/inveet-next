@@ -1,17 +1,79 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\FrontendController;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('welcome');
-})->name('home');
-
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+// Test route to see if Inertia is working
+Route::get('/test', function () {
+    try {
+        Log::info('Attempting to render Inertia page: Test');
+        
+        // Check if Inertia class exists
+        if (!class_exists(\Inertia\Inertia::class)) {
+            Log::error('Inertia class not found');
+            return response()->json(['error' => 'Inertia class not found']);
+        }
+        
+        // Check if Inertia facade is accessible
+        if (!app()->bound('inertia')) {
+            Log::error('Inertia facade not bound');
+            return response()->json(['error' => 'Inertia facade not bound']);
+        }
+        
+        // Try to render a very simple page
+        $result = Inertia::render('Test', [
+            'message' => 'Hello from Inertia!',
+            'timestamp' => now()
+        ]);
+        
+        Log::info('Inertia render successful', ['result' => $result]);
+        return $result;
+    } catch (\Exception $e) {
+        Log::error('Inertia render failed', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        return response()->json([
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+    }
 });
 
-require __DIR__.'/settings.php';
+// Simple test route without Inertia
+Route::get('/simple-test', function () {
+    Log::info('Simple test route executed');
+    return response()->json(['message' => 'Simple route is working!']);
+});
+
+// Public routes
+Route::get('/', [FrontendController::class, 'landing'])->name('home');
+Route::get('/login', [FrontendController::class, 'login'])->name('login');
+Route::get('/forgot-password', [FrontendController::class, 'forgotPassword'])->name('password.request');
+
+// Protected routes (require authentication)
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [FrontendController::class, 'dashboard'])->name('dashboard');
+    Route::get('/onboarding', [FrontendController::class, 'onboarding'])->name('onboarding');
+    Route::get('/onboarding/couple-info', [FrontendController::class, 'coupleInfo'])->name('onboarding.couple-info');
+    Route::get('/onboarding/wedding-details', [FrontendController::class, 'weddingDetails'])->name('onboarding.wedding-details');
+    Route::get('/onboarding/custom-url', [FrontendController::class, 'customUrl'])->name('onboarding.custom-url');
+    Route::get('/onboarding/design-selection', [FrontendController::class, 'designSelection'])->name('onboarding.design-selection');
+    Route::get('/onboarding/activation', [FrontendController::class, 'activation'])->name('onboarding.activation');
+    
+    Route::get('/my-weddings', [FrontendController::class, 'myWeddings'])->name('weddings.my');
+    Route::get('/profile', [FrontendController::class, 'profile'])->name('profile');
+    Route::get('/settings', [FrontendController::class, 'settings'])->name('settings');
+});
+
+// Public wedding routes
+Route::get('/preview/{slug}', [FrontendController::class, 'showWedding'])->name('wedding.preview');
+Route::get('/packages', [FrontendController::class, 'packages'])->name('packages.index');
+Route::get('/packages/{id}', [FrontendController::class, 'packageDetails'])->name('packages.show');
+
+// Catch-all route for SPA (must be last)
+Route::get('/{any?}', [FrontendController::class, 'landing'])->where('any', '.*');
+
 require __DIR__.'/auth.php';

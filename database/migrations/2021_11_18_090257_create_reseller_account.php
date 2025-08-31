@@ -24,7 +24,6 @@ return new class extends Migration {
             $table->string('socialite_avatar')->nullable();
             $table->string('phone_number', 20);
             $table->boolean('is_active')
-                ->index('is_active')
                 ->default(true);
             $table->rememberToken();
             $table->timestamps();
