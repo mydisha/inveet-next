@@ -1,4 +1,4 @@
-import { ArrowRight, Play, Star } from 'lucide-react';
+import { ArrowRight, Play, Star, Sparkles, Heart } from 'lucide-react';
 import { Button } from './ui/button';
 import heroCouple from '../assets/hero-couple.jpg';
 
@@ -10,78 +10,139 @@ const Hero = () => {
         <img
           src={heroCouple}
           alt="Elegant couple in wedding attire"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover animate-parallax-slow"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/70 to-primary-glow/80"></div>
       </div>
       
-      {/* Geometric Shapes */}
-      <div className="absolute top-20 right-20 w-32 h-32 shape-circle animate-float"></div>
-      <div className="absolute bottom-32 left-16 w-24 h-24 shape-blob" style={{ animationDelay: '2s' }}></div>
-      <div className="absolute top-1/2 right-1/4 w-16 h-16 shape-circle" style={{ animationDelay: '4s' }}></div>
+      {/* Enhanced Geometric Shapes with sophisticated animations */}
+      <div className="shape-float-1 top-20 right-20 w-32 h-32" style={{ animationDelay: '0s' }}></div>
+      <div className="shape-float-2 bottom-32 left-16 w-24 h-24" style={{ animationDelay: '2s' }}></div>
+      <div className="shape-float-3 top-1/2 right-1/4 w-16 h-16" style={{ animationDelay: '4s' }}></div>
+      <div className="shape-float-4 top-1/3 left-1/4 w-20 h-20" style={{ animationDelay: '1s' }}></div>
+      <div className="shape-float-1 bottom-1/4 right-1/3 w-12 h-12" style={{ animationDelay: '3s' }}></div>
+      <div className="shape-float-2 top-3/4 left-1/3 w-28 h-28" style={{ animationDelay: '5s' }}></div>
+      
+      {/* Glow Orbs for atmospheric effect */}
+      <div className="glow-orb top-1/4 right-1/3 w-64 h-64" style={{ animationDelay: '1s' }}></div>
+      <div className="glow-orb bottom-1/4 left-1/3 w-48 h-48" style={{ animationDelay: '3s' }}></div>
+      
+      {/* Particle Effects */}
+      <div className="particle top-1/4 left-1/4" style={{ animationDelay: '0s' }}></div>
+      <div className="particle top-1/3 right-1/3" style={{ animationDelay: '1s' }}></div>
+      <div className="particle top-1/2 left-1/2" style={{ animationDelay: '2s' }}></div>
+      <div className="particle bottom-1/3 right-1/4" style={{ animationDelay: '0.5s' }}></div>
+      <div className="particle bottom-1/4 left-1/2" style={{ animationDelay: '1.5s' }}></div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Content */}
-          <div className="space-y-8 animate-fade-in">
-            {/* Badge */}
-            <div className="inline-flex items-center space-x-2 bg-background/20 backdrop-blur-sm rounded-full px-4 py-2 border border-primary-foreground/20">
-              <Star className="w-4 h-4 text-accent fill-current" />
+          {/* Content with staggered animations */}
+          <div className="space-y-8">
+            {/* Badge with enhanced animation */}
+            <div className="hero-badge inline-flex items-center space-x-2 bg-background/20 backdrop-blur-sm rounded-full px-4 py-2 border border-primary-foreground/20 hover:bg-background/30 transition-all duration-300">
+              <Star className="w-4 h-4 text-accent fill-current animate-spin" style={{ animationDuration: '3s' }} />
               <span className="text-primary-foreground/90 text-sm font-medium">
                 #1 Digital Wedding Platform
               </span>
             </div>
 
-            {/* Main Heading */}
+            {/* Main Heading with staggered line animations */}
             <div className="space-y-4">
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-primary-foreground leading-tight">
-                Platform
-                <br />
-                <span className="text-accent">Pernikahan</span>
-                <br />
-                Digital
+                <div className="hero-text-line overflow-hidden">
+                  <span className="inline-block animate-text-reveal" style={{ animationDelay: '0.2s' }}>
+                    Platform
+                  </span>
+                </div>
+                <div className="hero-text-line overflow-hidden">
+                  <span className="inline-block animate-text-reveal text-accent" style={{ animationDelay: '0.4s' }}>
+                    Pernikahan
+                  </span>
+                </div>
+                <div className="hero-text-line overflow-hidden">
+                  <span className="inline-block animate-text-reveal" style={{ animationDelay: '0.6s' }}>
+                    Digital
+                  </span>
+                </div>
               </h1>
-              <p className="text-xl md:text-2xl text-primary-foreground/80 max-w-lg leading-relaxed">
+              <p className="hero-description text-xl md:text-2xl text-primary-foreground/80 max-w-lg leading-relaxed">
                 Solusi pernikahan lebih hemat, praktis, dan kekinian dengan e-invitation yang disebar otomatis.
               </p>
             </div>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button className="btn-hero group text-lg px-8 py-4">
+            {/* CTA Buttons with enhanced interactions */}
+            <div className="hero-cta flex flex-col sm:flex-row gap-4">
+              <Button className="btn-hero group text-lg px-8 py-4 hero-interactive">
+                <Sparkles className="mr-2 h-5 w-5 animate-pulse" />
                 Buat Sekarang
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-2 transition-transform duration-300" />
+              </Button>
+              <Button variant="outline" className="btn-hero-outline hero-interactive text-lg px-8 py-4">
+                <Play className="mr-2 h-4 w-4" />
+                Watch Demo
               </Button>
             </div>
 
-            {/* Stats */}
-            <div className="flex items-center space-x-8 pt-8">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary-foreground">10K+</div>
+            {/* Stats with staggered reveal */}
+            <div className="hero-stats flex items-center space-x-8 pt-8">
+              <div className="text-center hero-interactive">
+                <div className="text-2xl font-bold text-primary-foreground flex items-center justify-center">
+                  <Heart className="w-5 h-5 mr-2 text-accent animate-pulse" />
+                  10K+
+                </div>
                 <div className="text-primary-foreground/70 text-sm">Happy Couples</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary-foreground">50K+</div>
+              <div className="text-center hero-interactive">
+                <div className="text-2xl font-bold text-primary-foreground flex items-center justify-center">
+                  <Star className="w-4 h-4 mr-2 text-accent animate-spin" style={{ animationDuration: '4s' }} />
+                  50K+
+                </div>
                 <div className="text-primary-foreground/70 text-sm">Invitations Sent</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary-foreground">4.9</div>
+              <div className="text-center hero-interactive">
+                <div className="text-2xl font-bold text-primary-foreground flex items-center justify-center">
+                  <Sparkles className="w-4 h-4 mr-2 text-accent animate-pulse" />
+                  4.9
+                </div>
                 <div className="text-primary-foreground/70 text-sm">Rating</div>
               </div>
             </div>
           </div>
 
-          {/* Phone Mockup */}
-          <div className="relative animate-scale-in" style={{ animationDelay: '0.3s' }}>
+          {/* Enhanced Phone Mockup with sophisticated animations */}
+          <div className="hero-phone relative">
             <div className="relative">
-              {/* Glow Effect */}
-              <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-primary-glow/25 rounded-3xl blur-xl animate-pulse-glow"></div>
+              {/* Enhanced Glow Effect */}
+              <div className="absolute -inset-6 bg-gradient-to-r from-primary/30 to-primary-glow/40 rounded-3xl blur-2xl animate-pulse-glow"></div>
+              <div className="absolute -inset-4 bg-gradient-to-r from-accent/20 to-warm/30 rounded-3xl blur-xl animate-pulse-glow" style={{ animationDelay: '2s' }}></div>
               
-              {/* Phone Container */}
+              {/* Phone Container with enhanced styling */}
+              <div className="relative bg-gradient-to-br from-background/90 to-background/70 backdrop-blur-sm rounded-3xl p-8 border border-primary/20 shadow-2xl hero-interactive">
+                <div className="w-64 h-96 bg-gradient-to-br from-primary/10 to-primary-light/20 rounded-2xl flex items-center justify-center">
+                  <div className="text-center space-y-4">
+                    <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary-glow rounded-full flex items-center justify-center mx-auto animate-bounce">
+                      <Heart className="w-8 h-8 text-primary-foreground" />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-3 bg-primary/20 rounded-full w-32"></div>
+                      <div className="h-3 bg-primary/20 rounded-full w-24"></div>
+                      <div className="h-3 bg-primary/20 rounded-full w-28"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Floating elements around phone */}
+              <div className="absolute -top-4 -right-4 w-8 h-8 bg-accent/30 rounded-full animate-float-1"></div>
+              <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-warm/40 rounded-full animate-float-2"></div>
+              <div className="absolute top-1/2 -right-6 w-4 h-4 bg-primary/25 rounded-full animate-float-3"></div>
             </div>
           </div>
         </div>
       </div>
+      
+      {/* Bottom decorative elements */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background/20 to-transparent"></div>
     </section>
   );
 };

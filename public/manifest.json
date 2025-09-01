@@ -1,0 +1,30 @@
+{
+  "name": "Inveet - Digital Wedding Invitations",
+  "short_name": "Inveet",
+  "description": "Create beautiful digital wedding invitations and manage your special day",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#8B5CF6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16 32x32",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["lifestyle", "productivity", "social"],
+  "lang": "en",
+  "dir": "ltr"
+}

@@ -1,6 +1,6 @@
 import { Heart, Mail, Phone, MapPin } from 'lucide-react';
 
-const appName = (import.meta as any).env.VITE_APP_NAME || 'WeddingPro';
+const appName = (import.meta as any).env.VITE_APP_NAME || 'Inveet';
 
 const Footer = () => {
   return (

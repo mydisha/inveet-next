@@ -134,6 +134,24 @@ All colors MUST be HSL for consistency and theming
   html {
     scroll-behavior: smooth;
   }
+  
+  /* Optimize animations for performance */
+  .hero-text-line,
+  .hero-badge,
+  .hero-description,
+  .hero-cta,
+  .hero-stats,
+  .hero-phone,
+  .shape-float-1,
+  .shape-float-2,
+  .shape-float-3,
+  .shape-float-4,
+  .particle,
+  .glow-orb {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
 }
 
 @layer components {
@@ -178,6 +196,98 @@ All colors MUST be HSL for consistency and theming
   .shape-blob {
     @apply absolute rounded-full bg-gradient-to-br from-primary-light/25 to-primary/15;
     @apply animate-bounce;
+  }
+  
+  /* Enhanced Hero Animations */
+  .hero-text-line {
+    @apply opacity-0 animate-fade-in-up;
+  }
+  
+  .hero-text-line:nth-child(1) { animation-delay: 0.2s; }
+  .hero-text-line:nth-child(2) { animation-delay: 0.4s; }
+  .hero-text-line:nth-child(3) { animation-delay: 0.6s; }
+  
+  .hero-badge {
+    @apply opacity-0 animate-slide-in-left;
+    animation-delay: 0.1s;
+  }
+  
+  .hero-description {
+    @apply opacity-0 animate-fade-in-up;
+    animation-delay: 0.8s;
+  }
+  
+  .hero-cta {
+    @apply opacity-0 animate-scale-in;
+    animation-delay: 1s;
+  }
+  
+  .hero-stats {
+    @apply opacity-0 animate-fade-in-up;
+    animation-delay: 1.2s;
+  }
+  
+  .hero-phone {
+    @apply opacity-0 animate-slide-in-right;
+    animation-delay: 0.5s;
+  }
+  
+  /* Enhanced Floating Shapes */
+  .shape-float-1 {
+    @apply absolute rounded-full bg-gradient-to-br from-primary/15 to-primary-light/25;
+    @apply animate-float-1;
+  }
+  
+  .shape-float-2 {
+    @apply absolute rounded-full bg-gradient-to-br from-accent/20 to-warm/30;
+    @apply animate-float-2;
+  }
+  
+  .shape-float-3 {
+    @apply absolute rounded-full bg-gradient-to-br from-primary-light/20 to-primary/25;
+    @apply animate-float-3;
+  }
+  
+  .shape-float-4 {
+    @apply absolute rounded-full bg-gradient-to-br from-warm/15 to-accent/25;
+    @apply animate-float-4;
+  }
+  
+  /* Particle Effects */
+  .particle {
+    @apply absolute w-1 h-1 bg-primary/30 rounded-full;
+    @apply animate-particle;
+  }
+  
+  /* Enhanced Glow Effects */
+  .glow-orb {
+    @apply absolute rounded-full bg-gradient-to-r from-primary/40 to-primary-glow/30;
+    @apply animate-glow-orb;
+    filter: blur(40px);
+  }
+  
+  /* Interactive Hover Effects */
+  .hero-interactive {
+    @apply transition-all duration-500 ease-out;
+  }
+  
+  .hero-interactive:hover {
+    @apply transform scale-105;
+  }
+  
+  /* Text reveal animation support */
+  .animate-text-reveal {
+    animation: text-reveal 1s ease-out forwards;
+  }
+  
+  /* Ensure all animations are visible */
+  .hero-text-line,
+  .hero-badge,
+  .hero-description,
+  .hero-cta,
+  .hero-stats,
+  .hero-phone {
+    animation-fill-mode: forwards;
   }
 }
 

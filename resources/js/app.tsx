@@ -4,8 +4,9 @@ import '../css/app.css';
 import { createRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import StructuredData from './components/StructuredData';
 
-const appName = import.meta.env.VITE_APP_NAME || 'WeddingPro';
+const appName = import.meta.env.VITE_APP_NAME || 'Inveet';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -13,9 +14,14 @@ createInertiaApp({
     setup({ el, App, props }) {
         const root = createRoot(el);
 
-        root.render(<App {...props} />);
+        root.render(
+            <>
+                <StructuredData type="website" />
+                <App {...props} />
+            </>
+        );
     },
     progress: {
-        color: '#D4A574', // Rose gold color
+        color: '#8B5CF6', // Purple color to match Inveet branding
     },
 });

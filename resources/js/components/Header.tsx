@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Menu, X, Heart } from 'lucide-react';
 import { Button } from './ui/button';
 
-const appName = (import.meta as any).env.VITE_APP_NAME || 'WeddingPro';
+const appName = (import.meta as any).env.VITE_APP_NAME || 'Inveet';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
