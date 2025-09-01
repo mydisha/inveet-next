@@ -1,55 +1,55 @@
-import { Smartphone, Users, Calendar, Gift, Zap, HeartHandshake, Send, BarChart3 } from 'lucide-react';
+import { Smartphone, Users, Calendar, Gift, Zap, HeartHandshake, Send, BarChart3, Music, MapPin, MessageCircle, Image } from 'lucide-react';
 
 const Services = () => {
   const services = [
     {
       icon: Smartphone,
-      title: 'Digital Invitations',
-      description: 'Beautiful, interactive digital wedding invitations that can be shared instantly via WhatsApp, email, or social media.',
+      title: 'Undangan Digital',
+      description: 'Undangan digital yang cantik dan interaktif yang bisa dibagikan langsung via WhatsApp, email, atau media sosial.',
       gradient: 'from-primary to-primary-glow'
     },
     {
       icon: Send,
-      title: 'Auto Send',
-      description: 'Automated invitation delivery via WhatsApp, email, and social media with personalized messages.',
+      title: 'Auto Send WhatsApp',
+      description: 'Kirim undangan otomatis via WhatsApp dengan pesan yang dipersonalisasi untuk setiap tamu.',
       gradient: 'from-accent to-warm',
       featured: true
     },
     {
       icon: BarChart3,
-      title: 'RSVP Track',
-      description: 'Real-time RSVP tracking with comprehensive analytics and guest response management.',
+      title: 'RSVP Tracking',
+      description: 'Lacak RSVP tamu secara real-time dengan analytics lengkap dan manajemen respons tamu.',
       gradient: 'from-warm to-primary',
       featured: true
     },
     {
       icon: Users,
-      title: 'Guest Management',
-      description: 'Comprehensive guest list management with RSVP tracking, dietary preferences, and contact information.',
+      title: 'Manajemen Tamu',
+      description: 'Kelola daftar tamu dengan lengkap termasuk RSVP, preferensi makanan, dan informasi kontak.',
       gradient: 'from-primary-glow to-accent'
     },
     {
-      icon: Calendar,
-      title: 'Event Planning',
-      description: 'Complete wedding timeline management with vendor coordination and milestone tracking.',
+      icon: Music,
+      title: 'Background Music',
+      description: 'Tambahkan musik latar yang romantis untuk membuat undangan lebih berkesan.',
       gradient: 'from-accent to-primary-glow'
     },
     {
-      icon: Gift,
-      title: 'Gift Registry',
-      description: 'Modern gift registry system with wish lists, thank you note automation, and gift tracking.',
+      icon: Image,
+      title: 'Foto Galeri',
+      description: 'Tampilkan galeri foto pre-wedding dan momen spesial dalam undangan digital.',
       gradient: 'from-primary to-warm'
     },
     {
-      icon: Zap,
-      title: 'Smart Automation',
-      description: 'Automated reminders, follow-ups, and notifications to keep your wedding planning stress-free.',
+      icon: MessageCircle,
+      title: 'Ucapan & Doa',
+      description: 'Kumpulkan ucapan dan doa dari tamu dalam satu tempat yang terorganisir.',
       gradient: 'from-warm to-accent'
     },
     {
-      icon: HeartHandshake,
-      title: 'Guest Experience',
-      description: 'Enhanced guest experience with interactive features, photo sharing, and real-time updates.',
+      icon: MapPin,
+      title: 'Peta Lokasi',
+      description: 'Tampilkan lokasi acara dengan peta interaktif dan petunjuk arah yang mudah.',
       gradient: 'from-primary-glow to-primary'
     }
   ];
@@ -60,7 +60,7 @@ const Services = () => {
         {/* Header */}
         <div className="text-center space-y-4 mb-16">
           <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2">
-            <span className="text-primary text-sm font-medium">Our Services</span>
+            <span className="text-primary text-sm font-medium">Fitur Unggulan</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold">
             Semua lebih praktis
@@ -114,9 +114,9 @@ const Services = () => {
         {/* Bottom CTA */}
         <div className="text-center mt-16">
           <div className="inline-flex items-center space-x-4 bg-gradient-to-r from-primary/10 to-accent/10 rounded-full px-8 py-4 border border-primary/20">
-            <span className="text-lg font-medium">Ready to get started?</span>
+            <span className="text-lg font-medium">Siap untuk memulai?</span>
             <button className="bg-primary text-primary-foreground px-6 py-2 rounded-full hover:bg-primary-glow transition-colors duration-300">
-              Explore All Features
+              Jelajahi Semua Fitur
             </button>
           </div>
         </div>

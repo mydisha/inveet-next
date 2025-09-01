@@ -4,54 +4,60 @@ import { Button } from './ui/button';
 const Pricing = () => {
   const plans = [
     {
-      name: 'Starter',
-      price: 'Free',
-      description: 'Perfect for trying out our platform',
+      name: 'Gratis',
+      price: 'Rp 0',
+      description: 'Coba fitur dasar Wedew',
       features: [
-        '1 Digital Invitation',
-        'Basic Templates',
-        'WhatsApp Sharing',
-        'Basic Analytics',
-        'Email Support'
+        '1 Undangan Digital',
+        'Template Dasar',
+        'Share via WhatsApp',
+        'Analytics Dasar',
+        'Support Email'
       ],
       popular: false,
-      cta: 'Get Started Free'
-    },
-    {
-      name: 'Pro',
-      price: 'Rp 99.000',
-      period: '/bulan',
-      description: 'Best for couples planning their wedding',
-      features: [
-        'Unlimited Invitations',
-        'Premium Templates',
-        'Auto Send Feature',
-        'RSVP Tracking',
-        'Guest Management',
-        'Advanced Analytics',
-        'Priority Support',
-        'Custom Domain'
-      ],
-      popular: true,
-      cta: 'Start Pro Trial'
+      cta: 'Mulai Gratis'
     },
     {
       name: 'Premium',
-      price: 'Rp 199.000',
+      price: 'Rp 99.000',
       period: '/bulan',
-      description: 'For luxury weddings and events',
+      description: 'Paket lengkap untuk pernikahanmu',
       features: [
-        'Everything in Pro',
-        'Custom Design Service',
-        'White Label Solution',
+        'Unlimited Undangan',
+        'Template Premium',
+        'Auto Send WhatsApp',
+        'RSVP Tracking',
+        'Manajemen Tamu',
+        'Analytics Lengkap',
+        'Support Prioritas',
+        'Custom Domain',
+        'Background Music',
+        'Foto Galeri',
+        'Ucapan & Doa',
+        'Peta Lokasi'
+      ],
+      popular: true,
+      cta: 'Mulai Premium'
+    },
+    {
+      name: 'Enterprise',
+      price: 'Custom',
+      period: '',
+      description: 'Solusi khusus untuk event besar',
+      features: [
+        'Semua fitur Premium',
+        'Custom Design',
+        'White Label',
         'API Access',
         'Dedicated Manager',
-        '24/7 Phone Support',
+        'Support 24/7',
         'Custom Integrations',
-        'Advanced Security'
+        'Advanced Security',
+        'Multiple Events',
+        'Branding Custom'
       ],
       popular: false,
-      cta: 'Contact Sales'
+      cta: 'Hubungi Kami'
     }
   ];
 
@@ -141,9 +147,9 @@ const Pricing = () => {
         {/* Bottom CTA */}
         <div className="text-center">
           <div className="inline-flex items-center space-x-4 bg-gradient-to-r from-primary/10 to-accent/10 rounded-full px-8 py-4 border border-primary/20">
-            <span className="text-lg font-medium">Need a custom plan?</span>
+            <span className="text-lg font-medium">Butuh paket khusus?</span>
             <Button variant="outline" className="rounded-full">
-              Contact Us
+              Hubungi Kami
             </Button>
           </div>
         </div>
