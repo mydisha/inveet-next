@@ -3,6 +3,10 @@ import type { Config } from "tailwindcss";
 export default {
 	darkMode: ["class"],
 	content: [
+		"./pages/**/*.{ts,tsx}",
+		"./components/**/*.{ts,tsx}",
+		"./app/**/*.{ts,tsx}",
+		"./src/**/*.{ts,tsx}",
 		"./resources/**/*.{ts,tsx,js,jsx,blade.php}",
 		"./resources/js/**/*.{ts,tsx,js,jsx}",
 		"./resources/views/**/*.blade.php",

@@ -6,7 +6,11 @@ const Hero = () => {
     <section id="home" className="relative min-h-screen flex items-center overflow-hidden">
       {/* Background with overlay */}
       <div className="absolute inset-0">
-        <div className="w-full h-full bg-gradient-to-br from-primary via-primary-glow to-accent"></div>
+        <img
+          src="/build/assets/hero-couple.jpg"
+          alt="Elegant couple in wedding attire"
+          className="w-full h-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/70 to-primary-glow/80"></div>
       </div>
       
@@ -81,20 +85,13 @@ const Hero = () => {
               
               {/* Phone Container */}
               <div className="relative bg-gradient-to-br from-background/20 to-background/10 backdrop-blur-sm rounded-3xl p-8 border border-primary-foreground/20">
-                <div className="w-full max-w-sm mx-auto rounded-2xl shadow-elegant bg-card p-6">
-                  <div className="text-center space-y-4">
-                    <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary-glow rounded-full mx-auto flex items-center justify-center">
-                      <Star className="w-8 h-8 text-primary-foreground" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-card-foreground">Digital Wedding Invitation</h3>
-                      <p className="text-sm text-muted-foreground">Beautiful, modern, and shareable</p>
-                    </div>
-                  </div>
-                </div>
+                <img
+                  src="/build/assets/phone-mockup.jpg"
+                  alt="Digital wedding invitation on smartphone"
+                  className="w-full max-w-sm mx-auto rounded-2xl shadow-elegant"
+                />
               </div>
             </div>
-            
           </div>
         </div>
       </div>

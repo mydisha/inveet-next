@@ -1,65 +1,13 @@
-@import 'tailwindcss';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@plugin 'tailwindcss-animate';
+/* Professional Landing Page Design System - Inspired by elegant modern web design
+All colors MUST be HSL for consistency and theming
+*/
 
-@source '../views';
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-
-@custom-variant dark (&:is(.dark *));
-
-@theme {
-    --font-sans:
-        'Inter', 'system-ui', 'sans-serif';
-
-    --radius-lg: var(--radius);
-    --radius-md: calc(var(--radius) - 2px);
-    --radius-sm: calc(var(--radius) - 4px);
-
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
-
-    --color-card: var(--card);
-    --color-card-foreground: var(--card-foreground);
-
-    --color-popover: var(--popover);
-    --color-popover-foreground: var(--popover-foreground);
-
-    --color-primary: var(--primary);
-    --color-primary-foreground: var(--primary-foreground);
-
-    --color-secondary: var(--secondary);
-    --color-secondary-foreground: var(--secondary-foreground);
-
-    --color-muted: var(--muted);
-    --color-muted-foreground: var(--muted-foreground);
-
-    --color-accent: var(--accent);
-    --color-accent-foreground: var(--accent-foreground);
-
-    --color-destructive: var(--destructive);
-    --color-destructive-foreground: var(--destructive-foreground);
-
-    --color-border: var(--border);
-    --color-input: var(--input);
-    --color-ring: var(--ring);
-
-    --color-chart-1: var(--chart-1);
-    --color-chart-2: var(--chart-2);
-    --color-chart-3: var(--chart-3);
-    --color-chart-4: var(--chart-4);
-    --color-chart-5: var(--chart-5);
-
-    --color-sidebar: var(--sidebar);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-ring: var(--sidebar-ring);
-}
-
-:root {
+@layer base {
+  :root {
     --background: 0 0% 99%;
     --foreground: 220 30% 15%;
 
@@ -114,22 +62,23 @@
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
+
     --sidebar-foreground: 240 5.3% 26.1%;
+
     --sidebar-primary: 240 5.9% 10%;
+
     --sidebar-primary-foreground: 0 0% 98%;
+
     --sidebar-accent: 240 4.8% 95.9%;
+
     --sidebar-accent-foreground: 240 5.9% 10%;
+
     --sidebar-border: 220 13% 91%;
+
     --sidebar-ring: 217.2 91.2% 59.8%;
+  }
 
-    --chart-1: 0 0% 0%;
-    --chart-2: 0 0% 0%;
-    --chart-3: 0 0% 0%;
-    --chart-4: 0 0% 0%;
-    --chart-5: 0 0% 0%;
-}
-
-.dark {
+  .dark {
     --background: 220 30% 8%;
     --foreground: 0 0% 95%;
 
@@ -162,7 +111,6 @@
     --border: 220 15% 20%;
     --input: 220 15% 22%;
     --ring: 210 68% 55%;
-    
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -171,161 +119,65 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-
-    --chart-1: 0 0% 0%;
-    --chart-2: 0 0% 0%;
-    --chart-3: 0 0% 0%;
-    --chart-4: 0 0% 0%;
-    --chart-5: 0 0% 0%;
+  }
 }
 
 @layer base {
-    * {
-        @apply border-border;
-    }
+  * {
+    @apply border-border;
+  }
 
-    body {
-        @apply bg-background text-foreground font-light;
-    }
-    
-    html {
-        scroll-behavior: smooth;
-    }
+  body {
+    @apply bg-background text-foreground font-light;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
-/* Custom animations */
-@keyframes fade-in {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
+@layer components {
+  /* Hero Button Variants */
+  .btn-hero {
+    @apply bg-gradient-to-r from-primary to-primary-glow text-primary-foreground;
+    @apply px-8 py-4 rounded-xl font-medium text-lg;
+    @apply shadow-lg hover:shadow-xl;
+    @apply transition-all duration-300 hover:scale-105;
+    @apply border-0;
+  }
+  
+  .btn-hero-outline {
+    @apply border-2 border-primary text-primary bg-transparent;
+    @apply px-8 py-4 rounded-xl font-medium text-lg;
+    @apply hover:bg-primary hover:text-primary-foreground;
+    @apply transition-all duration-300 hover:scale-105;
+  }
+  
+  /* Card Components */
+  .card-elegant {
+    @apply bg-card/80 backdrop-blur-sm border border-border/50;
+    @apply rounded-2xl p-8 shadow-lg;
+    @apply hover:shadow-2xl transition-all duration-300 hover:-translate-y-1;
+  }
+  
+  /* Text Gradients */
+  .text-gradient-primary {
+    @apply bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent;
+  }
+  
+  .text-gradient-accent {
+    @apply bg-gradient-to-r from-accent to-warm bg-clip-text text-transparent;
+  }
+  
+  /* Geometric Elements */
+  .shape-circle {
+    @apply absolute rounded-full bg-gradient-to-br from-primary/20 to-accent/20;
+    @apply animate-pulse;
+  }
+  
+  .shape-blob {
+    @apply absolute rounded-full bg-gradient-to-br from-accent/30 to-primary/20;
+    @apply animate-bounce;
+  }
 }
 
-@keyframes scale-in {
-    0% { transform: scale(0.95); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-}
-
-@keyframes slide-up {
-    0% { transform: translateY(100px); opacity: 0; }
-    100% { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-}
-
-@keyframes pulse-glow {
-    0%, 100% { opacity: 0.5; transform: scale(1); }
-    50% { opacity: 0.8; transform: scale(1.05); }
-}
-
-.animate-fade-in {
-    animation: fade-in 0.6s ease-out forwards;
-}
-
-.animate-scale-in {
-    animation: scale-in 0.4s ease-out forwards;
-}
-
-.animate-slide-up {
-    animation: slide-up 0.8s ease-out forwards;
-}
-
-.animate-float {
-    animation: float 6s ease-in-out infinite;
-}
-
-.animate-pulse-glow {
-    animation: pulse-glow 4s ease-in-out infinite;
-}
-
-/* Shadow utilities */
-.shadow-elegant {
-    box-shadow: var(--shadow-elegant);
-}
-
-.shadow-card {
-    box-shadow: var(--shadow-card);
-}
-
-.shadow-button {
-    box-shadow: var(--shadow-button);
-}
-
-/* Custom component classes */
-.btn-hero {
-    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    color: hsl(var(--primary-foreground));
-    padding: 1rem 2rem;
-    border-radius: 0.75rem;
-    font-weight: 500;
-    font-size: 1.125rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: none;
-}
-
-.btn-hero:hover {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    transform: scale(1.05);
-}
-
-.btn-hero-outline {
-    border: 2px solid hsl(var(--primary));
-    color: hsl(var(--primary));
-    background: transparent;
-    padding: 1rem 2rem;
-    border-radius: 0.75rem;
-    font-weight: 500;
-    font-size: 1.125rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.btn-hero-outline:hover {
-    background: hsl(var(--primary));
-    color: hsl(var(--primary-foreground));
-    transform: scale(1.05);
-}
-
-.card-elegant {
-    background: hsl(var(--card) / 0.8);
-    backdrop-filter: blur(8px);
-    border: 1px solid hsl(var(--border) / 0.5);
-    border-radius: 1rem;
-    padding: 2rem;
-    box-shadow: 0 8px 32px -8px hsl(var(--primary) / 0.1);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.card-elegant:hover {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    transform: translateY(-0.25rem);
-}
-
-.text-gradient-primary {
-    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.text-gradient-accent {
-    background: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--warm)));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.shape-circle {
-    position: absolute;
-    border-radius: 9999px;
-    background: linear-gradient(135deg, hsl(var(--primary) / 0.2), hsl(var(--accent) / 0.2));
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-.shape-blob {
-    position: absolute;
-    border-radius: 9999px;
-    background: linear-gradient(135deg, hsl(var(--accent) / 0.3), hsl(var(--primary) / 0.2));
-    animation: bounce 1s infinite;
-}
