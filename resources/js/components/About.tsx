@@ -56,7 +56,7 @@ const About = () => {
                 className="text-center space-y-4"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary-glow rounded-2xl flex items-center justify-center mx-auto">
+                <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary-glow rounded-2xl flex items-center justify-center mx-auto shadow-lg">
                   <IconComponent className="w-8 h-8 text-white" />
                 </div>
                 <div>
@@ -97,9 +97,9 @@ const About = () => {
             </div>
           </div>
           <div className="relative">
-            <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-3xl p-8 border border-primary/20">
+            <div className="bg-gradient-to-br from-primary/10 to-primary-light/20 rounded-3xl p-8 border border-primary/20">
               <div className="text-center space-y-4">
-                <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary-glow rounded-full flex items-center justify-center mx-auto">
+                <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary-glow rounded-full flex items-center justify-center mx-auto shadow-lg">
                   <Heart className="w-10 h-10 text-white" />
                 </div>
                 <h4 className="text-xl font-semibold text-card-foreground">

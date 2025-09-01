@@ -75,7 +75,7 @@ const Hero = () => {
           <div className="relative animate-scale-in" style={{ animationDelay: '0.3s' }}>
             <div className="relative">
               {/* Glow Effect */}
-              <div className="absolute -inset-4 bg-gradient-to-r from-accent/30 to-primary-glow/30 rounded-3xl blur-xl animate-pulse-glow"></div>
+              <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-primary-glow/25 rounded-3xl blur-xl animate-pulse-glow"></div>
               
               {/* Phone Container */}
             </div>

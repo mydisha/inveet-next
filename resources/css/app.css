@@ -171,12 +171,12 @@ All colors MUST be HSL for consistency and theming
   
   /* Geometric Elements */
   .shape-circle {
-    @apply absolute rounded-full bg-gradient-to-br from-primary/20 to-accent/20;
+    @apply absolute rounded-full bg-gradient-to-br from-primary/20 to-primary-light/30;
     @apply animate-pulse;
   }
   
   .shape-blob {
-    @apply absolute rounded-full bg-gradient-to-br from-accent/30 to-primary/20;
+    @apply absolute rounded-full bg-gradient-to-br from-primary-light/25 to-primary/15;
     @apply animate-bounce;
   }
 }
