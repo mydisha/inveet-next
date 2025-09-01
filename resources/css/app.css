@@ -9,7 +9,7 @@
 
 @theme {
     --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+        'Inter', 'system-ui', 'sans-serif';
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
@@ -57,167 +57,126 @@
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
-
-    /* Wedding Theme Colors */
-    --color-rose-gold: oklch(0.85 0.08 15);
-    --color-soft-pink: oklch(0.95 0.03 350);
-    --color-cream: oklch(0.98 0.01 60);
-    --color-sage: oklch(0.88 0.04 120);
-    --color-lavender: oklch(0.92 0.04 280);
-    --color-peach: oklch(0.90 0.06 25);
-    --color-mint: oklch(0.92 0.04 160);
-    --color-gold: oklch(0.80 0.12 80);
 }
 
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --destructive-foreground: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.87 0 0);
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.87 0 0);
+    --background: 0 0% 99%;
+    --foreground: 220 30% 15%;
 
-    /* Wedding Theme Color Variables */
-    --rose-gold: oklch(0.85 0.08 15);
-    --soft-pink: oklch(0.95 0.03 350);
-    --cream: oklch(0.98 0.01 60);
-    --sage: oklch(0.88 0.04 120);
-    --lavender: oklch(0.92 0.04 280);
-    --peach: oklch(0.90 0.06 25);
-    --mint: oklch(0.92 0.04 160);
-    --gold: oklch(0.80 0.12 80);
+    --card: 0 0% 100%;
+    --card-foreground: 220 30% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 15%;
+
+    /* Beautiful blue primary from user specification #165d99 */
+    --primary: 210 68% 35%;
+    --primary-foreground: 0 0% 98%;
+    --primary-glow: 210 68% 45%;
+    --primary-light: 210 68% 88%;
+    
+    /* Elegant complementary colors */
+    --accent: 45 95% 65%;
+    --accent-foreground: 220 30% 15%;
+    
+    --warm: 25 85% 60%;
+    --warm-foreground: 0 0% 98%;
+
+    --secondary: 210 20% 96%;
+    --secondary-foreground: 220 30% 15%;
+
+    --muted: 210 15% 95%;
+    --muted-foreground: 220 15% 45%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 210 15% 90%;
+    --input: 210 15% 92%;
+    --ring: 210 68% 35%;
+
+    --radius: 0.75rem;
+    
+    /* Professional gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary) / 0.95), hsl(var(--primary-glow) / 0.85));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--warm)));
+    --gradient-elegant: linear-gradient(180deg, hsl(var(--background)), hsl(var(--primary-light)));
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(var(--card) / 0.8));
+    
+    /* Elegant shadows */
+    --shadow-elegant: 0 20px 40px -15px hsl(var(--primary) / 0.15);
+    --shadow-card: 0 8px 32px -8px hsl(var(--primary) / 0.1);
+    --shadow-button: 0 4px 16px -4px hsl(var(--primary) / 0.3);
+    
+    /* Smooth animations */
+    --transition-elegant: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --chart-1: 0 0% 0%;
+    --chart-2: 0 0% 0%;
+    --chart-3: 0 0% 0%;
+    --chart-4: 0 0% 0%;
+    --chart-5: 0 0% 0%;
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.2 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.2 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.985 0 0);
-    --primary-foreground: oklch(0.145 0 0);
-    --secondary: oklch(0.2 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.2 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.2 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --destructive-foreground: oklch(0.985 0 0);
-    --border: oklch(0.2 0 0);
-    --input: oklch(0.2 0 0);
-    --ring: oklch(0.2 0 0);
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
-    --sidebar: oklch(0.2 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.985 0 0);
-    --sidebar-primary-foreground: oklch(0.145 0 0);
-    --sidebar-accent: oklch(0.2 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(0.2 0 0);
-    --sidebar-ring: oklch(0.2 0 0);
+    --background: 220 30% 8%;
+    --foreground: 0 0% 95%;
 
-    /* Dark mode wedding colors */
-    --rose-gold: oklch(0.75 0.08 15);
-    --soft-pink: oklch(0.85 0.03 350);
-    --cream: oklch(0.88 0.01 60);
-    --sage: oklch(0.78 0.04 120);
-    --lavender: oklch(0.82 0.04 280);
-    --peach: oklch(0.80 0.06 25);
-    --mint: oklch(0.82 0.04 160);
-    --gold: oklch(0.70 0.12 80);
-}
+    --card: 220 30% 10%;
+    --card-foreground: 0 0% 95%;
 
-/* Wedding Theme Utility Classes */
-.bg-rose-gold { background-color: var(--rose-gold); }
-.bg-soft-pink { background-color: var(--soft-pink); }
-.bg-cream { background-color: var(--cream); }
-.bg-sage { background-color: var(--sage); }
-.bg-lavender { background-color: var(--lavender); }
-.bg-peach { background-color: var(--peach); }
-.bg-mint { background-color: var(--mint); }
-.bg-gold { background-color: var(--gold); }
+    --popover: 220 30% 10%;
+    --popover-foreground: 0 0% 95%;
 
-.text-rose-gold { color: var(--rose-gold); }
-.text-soft-pink { color: var(--soft-pink); }
-.text-cream { color: var(--cream); }
-.text-sage { color: var(--sage); }
-.text-lavender { color: var(--lavender); }
-.text-peach { color: var(--peach); }
-.text-mint { color: var(--mint); }
-.text-gold { color: var(--gold); }
+    --primary: 210 68% 55%;
+    --primary-foreground: 220 30% 8%;
+    --primary-glow: 210 68% 65%;
+    --primary-light: 210 68% 15%;
 
-.border-rose-gold { border-color: var(--rose-gold); }
-.border-soft-pink { border-color: var(--soft-pink); }
-.border-cream { border-color: var(--cream); }
-.border-sage { border-color: var(--sage); }
-.border-lavender { border-color: var(--lavender); }
-.border-peach { border-color: var(--peach); }
-.border-mint { border-color: var(--mint); }
-.border-gold { border-color: var(--gold); }
+    --secondary: 220 20% 15%;
+    --secondary-foreground: 0 0% 95%;
 
-/* Wedding-specific animations */
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-}
+    --muted: 220 15% 18%;
+    --muted-foreground: 220 15% 65%;
 
-@keyframes sparkle {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.7; transform: scale(1.1); }
-}
+    --accent: 45 95% 70%;
+    --accent-foreground: 220 30% 8%;
+    
+    --warm: 25 85% 65%;
+    --warm-foreground: 220 30% 8%;
 
-.animate-float {
-    animation: float 3s ease-in-out infinite;
-}
+    --destructive: 0 62.8% 50.6%;
+    --destructive-foreground: 0 0% 98%;
 
-.animate-sparkle {
-    animation: sparkle 2s ease-in-out infinite;
-}
+    --border: 220 15% 20%;
+    --input: 220 15% 22%;
+    --ring: 210 68% 55%;
+    
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
 
-/* Gradient backgrounds */
-.bg-wedding-gradient {
-    background: linear-gradient(135deg, var(--soft-pink) 0%, var(--cream) 50%, var(--sage) 100%);
-}
-
-.bg-rose-gradient {
-    background: linear-gradient(135deg, var(--rose-gold) 0%, var(--peach) 100%);
-}
-
-.bg-elegant-gradient {
-    background: linear-gradient(135deg, var(--cream) 0%, var(--lavender) 50%, var(--mint) 100%);
+    --chart-1: 0 0% 0%;
+    --chart-2: 0 0% 0%;
+    --chart-3: 0 0% 0%;
+    --chart-4: 0 0% 0%;
+    --chart-5: 0 0% 0%;
 }
 
 @layer base {
@@ -226,6 +185,147 @@
     }
 
     body {
-        @apply bg-background text-foreground;
+        @apply bg-background text-foreground font-light;
     }
+    
+    html {
+        scroll-behavior: smooth;
+    }
+}
+
+/* Custom animations */
+@keyframes fade-in {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+    0% { transform: scale(0.95); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slide-up {
+    0% { transform: translateY(100px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse-glow {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.6s ease-out forwards;
+}
+
+.animate-scale-in {
+    animation: scale-in 0.4s ease-out forwards;
+}
+
+.animate-slide-up {
+    animation: slide-up 0.8s ease-out forwards;
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+    animation: pulse-glow 4s ease-in-out infinite;
+}
+
+/* Shadow utilities */
+.shadow-elegant {
+    box-shadow: var(--shadow-elegant);
+}
+
+.shadow-card {
+    box-shadow: var(--shadow-card);
+}
+
+.shadow-button {
+    box-shadow: var(--shadow-button);
+}
+
+/* Custom component classes */
+.btn-hero {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    color: hsl(var(--primary-foreground));
+    padding: 1rem 2rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    font-size: 1.125rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+}
+
+.btn-hero:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transform: scale(1.05);
+}
+
+.btn-hero-outline {
+    border: 2px solid hsl(var(--primary));
+    color: hsl(var(--primary));
+    background: transparent;
+    padding: 1rem 2rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    font-size: 1.125rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-hero-outline:hover {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    transform: scale(1.05);
+}
+
+.card-elegant {
+    background: hsl(var(--card) / 0.8);
+    backdrop-filter: blur(8px);
+    border: 1px solid hsl(var(--border) / 0.5);
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 8px 32px -8px hsl(var(--primary) / 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-elegant:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transform: translateY(-0.25rem);
+}
+
+.text-gradient-primary {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.text-gradient-accent {
+    background: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--warm)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.shape-circle {
+    position: absolute;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.2), hsl(var(--accent) / 0.2));
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.shape-blob {
+    position: absolute;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, hsl(var(--accent) / 0.3), hsl(var(--primary) / 0.2));
+    animation: bounce 1s infinite;
 }

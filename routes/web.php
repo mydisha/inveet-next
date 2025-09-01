@@ -3,33 +3,17 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\FrontendController;
-use Inertia\Inertia;
 
 // Test route to see if Inertia is working
 Route::get('/test', function () {
     try {
         Log::info('Attempting to render Inertia page: Test');
         
-        // Check if Inertia class exists
-        if (!class_exists(\Inertia\Inertia::class)) {
-            Log::error('Inertia class not found');
-            return response()->json(['error' => 'Inertia class not found']);
-        }
-        
-        // Check if Inertia facade is accessible
-        if (!app()->bound('inertia')) {
-            Log::error('Inertia facade not bound');
-            return response()->json(['error' => 'Inertia facade not bound']);
-        }
-        
-        // Try to render a very simple page
-        $result = Inertia::render('Test', [
+        // Try to render a very simple page using the helper
+        return inertia('Test', [
             'message' => 'Hello from Inertia!',
-            'timestamp' => now()
+            'timestamp' => now()->toISOString()
         ]);
-        
-        Log::info('Inertia render successful', ['result' => $result]);
-        return $result;
     } catch (\Exception $e) {
         Log::error('Inertia render failed', [
             'error' => $e->getMessage(),
