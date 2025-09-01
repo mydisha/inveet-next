@@ -18,17 +18,17 @@ All colors MUST be HSL for consistency and theming
     --popover-foreground: 220 30% 15%;
 
     /* Beautiful blue primary from user specification #165d99 */
-    --primary: 210 68% 35%;
+    --primary: 208 78% 34%;
     --primary-foreground: 0 0% 98%;
-    --primary-glow: 210 68% 45%;
-    --primary-light: 210 68% 88%;
+    --primary-glow: 208 78% 44%;
+    --primary-light: 208 78% 88%;
     
     /* Elegant complementary colors */
     --accent: 45 95% 65%;
     --accent-foreground: 220 30% 15%;
     
-    --warm: 25 85% 60%;
-    --warm-foreground: 0 0% 98%;
+    --warm: 45 95% 65%;
+    --warm-foreground: 220 30% 15%;
 
     --secondary: 210 20% 96%;
     --secondary-foreground: 220 30% 15%;
@@ -41,7 +41,7 @@ All colors MUST be HSL for consistency and theming
 
     --border: 210 15% 90%;
     --input: 210 15% 92%;
-    --ring: 210 68% 35%;
+    --ring: 208 78% 34%;
 
     --radius: 0.75rem;
     
@@ -88,10 +88,10 @@ All colors MUST be HSL for consistency and theming
     --popover: 220 30% 10%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 210 68% 55%;
+    --primary: 208 78% 55%;
     --primary-foreground: 220 30% 8%;
-    --primary-glow: 210 68% 65%;
-    --primary-light: 210 68% 15%;
+    --primary-glow: 208 78% 65%;
+    --primary-light: 208 78% 15%;
 
     --secondary: 220 20% 15%;
     --secondary-foreground: 0 0% 95%;
@@ -102,7 +102,7 @@ All colors MUST be HSL for consistency and theming
     --accent: 45 95% 70%;
     --accent-foreground: 220 30% 8%;
     
-    --warm: 25 85% 65%;
+    --warm: 45 95% 70%;
     --warm-foreground: 220 30% 8%;
 
     --destructive: 0 62.8% 50.6%;
@@ -110,7 +110,7 @@ All colors MUST be HSL for consistency and theming
 
     --border: 220 15% 20%;
     --input: 220 15% 22%;
-    --ring: 210 68% 55%;
+    --ring: 208 78% 55%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;

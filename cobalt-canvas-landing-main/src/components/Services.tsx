@@ -65,10 +65,10 @@ const Services = () => {
           <h2 className="text-4xl md:text-5xl font-bold">
             Semua lebih praktis
             <br />
-            <span className="text-gradient-primary">#bersamaWedew</span>
+            <span className="text-gradient-primary">#bersamaInveet</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Bagaimana Wedew bisa mempermudah pernikahanmu dari awal hingga akhir.
+            Bagaimana Inveet bisa mempermudah pernikahanmu dari awal hingga akhir.
           </p>
         </div>
 
