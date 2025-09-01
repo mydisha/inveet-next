@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Get app name from environment variable
 const appName = process.env.VITE_APP_NAME || 'WeddingPro';
@@ -22,7 +26,7 @@ const files = [
 
 // Process each file
 files.forEach(file => {
-  const filePath = path.resolve(file.path);
+  const filePath = path.resolve(__dirname, '..', file.path);
   
   if (fs.existsSync(filePath)) {
     let content = fs.readFileSync(filePath, 'utf8');

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from '@inertiajs/react';
-import { Heart, ArrowLeft, ArrowRight, Palette, Eye, EyeOff, Clock, Image, Star, CheckCircle } from 'lucide-react';
+import { Heart, ArrowLeft, ArrowRight, Palette, Clock, Image, Star, CheckCircle, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +16,7 @@ interface Design {
   features: string[];
   isPopular?: boolean;
   isNew?: boolean;
+  colors: string[];
 }
 
 interface DesignSettings {
@@ -50,7 +51,8 @@ export default function DesignSelection() {
       description: 'Timeless design with sophisticated typography and elegant spacing',
       preview: '/api/placeholder/400/300',
       features: ['Clean typography', 'Elegant spacing', 'Traditional layout', 'Professional look'],
-      isPopular: true
+      isPopular: true,
+      colors: ['#8B7355', '#F5F5DC', '#D2B48C']
     },
     {
       id: 'modern-minimal',
@@ -58,7 +60,8 @@ export default function DesignSelection() {
       category: 'Contemporary',
       description: 'Clean, minimalist design with plenty of white space',
       preview: '/api/placeholder/400/300',
-      features: ['Minimalist layout', 'Clean lines', 'Modern typography', 'Plenty of whitespace']
+      features: ['Minimalist layout', 'Clean lines', 'Modern typography', 'Plenty of whitespace'],
+      colors: ['#2C3E50', '#ECF0F1', '#95A5A6']
     },
     {
       id: 'romantic-floral',
@@ -66,7 +69,8 @@ export default function DesignSelection() {
       category: 'Romantic',
       description: 'Beautiful floral elements with romantic color palette',
       preview: '/api/placeholder/400/300',
-      features: ['Floral elements', 'Romantic colors', 'Soft textures', 'Elegant curves']
+      features: ['Floral elements', 'Romantic colors', 'Soft textures', 'Elegant curves'],
+      colors: ['#E91E63', '#F8BBD9', '#FCE4EC']
     },
     {
       id: 'vintage-charm',
@@ -74,7 +78,8 @@ export default function DesignSelection() {
       category: 'Vintage',
       description: 'Retro-inspired design with vintage typography and elements',
       preview: '/api/placeholder/400/300',
-      features: ['Vintage typography', 'Retro elements', 'Classic patterns', 'Nostalgic feel']
+      features: ['Vintage typography', 'Retro elements', 'Classic patterns', 'Nostalgic feel'],
+      colors: ['#8D6E63', '#D7CCC8', '#BCAAA4']
     },
     {
       id: 'tropical-paradise',
@@ -82,7 +87,8 @@ export default function DesignSelection() {
       category: 'Destination',
       description: 'Perfect for beach or destination weddings',
       preview: '/api/placeholder/400/300',
-      features: ['Tropical elements', 'Bright colors', 'Beach vibes', 'Destination feel']
+      features: ['Tropical elements', 'Bright colors', 'Beach vibes', 'Destination feel'],
+      colors: ['#4CAF50', '#81C784', '#C8E6C9']
     },
     {
       id: 'rustic-charm',
@@ -90,7 +96,8 @@ export default function DesignSelection() {
       category: 'Rustic',
       description: 'Warm, rustic design with natural elements',
       preview: '/api/placeholder/400/300',
-      features: ['Natural textures', 'Warm colors', 'Rustic elements', 'Cozy feel']
+      features: ['Natural textures', 'Warm colors', 'Rustic elements', 'Cozy feel'],
+      colors: ['#795548', '#A1887F', '#D7CCC8']
     }
   ];
 
@@ -166,7 +173,7 @@ export default function DesignSelection() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid md:grid-cols-2 gap-4">
                   {designs.map((design) => (
                     <div
                       key={design.id}
@@ -178,57 +185,57 @@ export default function DesignSelection() {
                       onClick={() => setSelectedDesign(design.id)}
                     >
                       {/* Badges */}
-                      <div className="absolute top-3 right-3 flex space-x-2">
+                      <div className="absolute top-2 right-2 flex space-x-1">
                         {design.isPopular && (
-                          <Badge className="bg-rose-gold text-white">
+                          <Badge className="bg-rose-gold text-white text-xs">
                             <Star className="w-3 h-3 mr-1" />
                             Popular
                           </Badge>
                         )}
                         {design.isNew && (
-                          <Badge className="bg-green-500 text-white">
+                          <Badge className="bg-green-500 text-white text-xs">
                             New
                           </Badge>
                         )}
                       </div>
 
                       {/* Preview Image */}
-                      <div className="w-full h-48 bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
+                      <div className="w-full h-32 bg-gray-200 rounded-lg mb-3 flex items-center justify-center">
                         <div className="text-center text-gray-500">
-                          <Image className="w-12 h-12 mx-auto mb-2" />
-                          <span className="text-sm">Design Preview</span>
+                          <Image className="w-8 h-8 mx-auto mb-1" />
+                          <span className="text-xs">Design Preview</span>
                         </div>
                       </div>
 
                       {/* Design Info */}
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <h3 className="font-semibold text-gray-800">{design.name}</h3>
-                          <Badge className={getCategoryColor(design.category)}>
+                          <h3 className="font-semibold text-gray-800 text-sm">{design.name}</h3>
+                          <Badge className={`${getCategoryColor(design.category)} text-xs`}>
                             {design.category}
                           </Badge>
                         </div>
-                        <p className="text-sm text-gray-600">{design.description}</p>
+                        <p className="text-xs text-gray-600 line-clamp-2">{design.description}</p>
                         
-                        {/* Features */}
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {design.features.slice(0, 2).map((feature, index) => (
-                            <span key={index} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                              {feature}
-                            </span>
-                          ))}
-                          {design.features.length > 2 && (
-                            <span className="text-xs text-gray-500">
-                              +{design.features.length - 2} more
-                            </span>
-                          )}
+                        {/* Color Palette */}
+                        <div className="flex items-center space-x-2 mt-2">
+                          <div className="flex space-x-1">
+                            {design.colors.map((color, index) => (
+                              <div
+                                key={index}
+                                className="w-4 h-4 rounded-full border border-gray-200"
+                                style={{ backgroundColor: color }}
+                              />
+                            ))}
+                          </div>
+                          <MoreHorizontal className="w-3 h-3 text-gray-400" />
                         </div>
                       </div>
 
                       {/* Selection Indicator */}
                       {selectedDesign === design.id && (
-                        <div className="absolute top-3 left-3 w-6 h-6 bg-rose-gold rounded-full flex items-center justify-center">
-                          <CheckCircle className="w-4 h-4 text-white" />
+                        <div className="absolute top-2 left-2 w-5 h-5 bg-rose-gold rounded-full flex items-center justify-center">
+                          <CheckCircle className="w-3 h-3 text-white" />
                         </div>
                       )}
                     </div>
@@ -278,7 +285,7 @@ export default function DesignSelection() {
                   Customize which elements to show or hide on your invitation
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3">
                 {[
                   { key: 'showCouplePhotos', label: 'Couple Photos', icon: Image, description: 'Display your beautiful photos' },
                   { key: 'showCountdown', label: 'Wedding Countdown', icon: Clock, description: 'Show days until your special day' },
@@ -291,7 +298,7 @@ export default function DesignSelection() {
                 ].map((setting) => (
                   <div key={setting.key} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
                     <div className="flex items-center space-x-3">
-                      <setting.icon className="w-5 h-5 text-rose-gold" />
+                      <setting.icon className="w-4 h-4 text-rose-gold" />
                       <div>
                         <Label className="text-sm font-medium text-gray-700 cursor-pointer">
                           {setting.label}
@@ -299,17 +306,14 @@ export default function DesignSelection() {
                         <p className="text-xs text-gray-500">{setting.description}</p>
                       </div>
                     </div>
-                    <Toggle
-                      pressed={settings[setting.key as keyof DesignSettings]}
-                      onPressedChange={() => handleSettingToggle(setting.key as keyof DesignSettings)}
-                      className="data-[state=on]:bg-rose-gold data-[state=on]:text-white"
+                    <Button
+                      variant={settings[setting.key as keyof DesignSettings] ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleSettingToggle(setting.key as keyof DesignSettings)}
+                      className={settings[setting.key as keyof DesignSettings] ? "bg-rose-gold hover:bg-rose-gold/90" : ""}
                     >
-                      {settings[setting.key as keyof DesignSettings] ? (
-                        <Eye className="w-4 h-4" />
-                      ) : (
-                        <EyeOff className="w-4 h-4" />
-                      )}
-                    </Toggle>
+                      {settings[setting.key as keyof DesignSettings] ? 'On' : 'Off'}
+                    </Button>
                   </div>
                 ))}
               </CardContent>

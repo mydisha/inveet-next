@@ -1,5 +1,6 @@
 import { ArrowRight, Play, Star } from 'lucide-react';
 import { Button } from './ui/button';
+import heroCouple from '../assets/hero-couple.jpg';
 
 const Hero = () => {
   return (
@@ -7,7 +8,7 @@ const Hero = () => {
       {/* Background with overlay */}
       <div className="absolute inset-0">
         <img
-          src="/build/assets/hero-couple.jpg"
+          src={heroCouple}
           alt="Elegant couple in wedding attire"
           className="w-full h-full object-cover"
         />

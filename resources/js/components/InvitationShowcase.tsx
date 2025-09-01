@@ -1,7 +1,10 @@
-import { Eye, Heart, Share2, Download } from 'lucide-react';
+import { Heart, Eye } from 'lucide-react';
 import { Button } from './ui/button';
+import { useState } from 'react';
 
 const InvitationShowcase = () => {
+  const [activeCategory, setActiveCategory] = useState('All');
+
   const invitationDesigns = [
     {
       id: 1,
@@ -9,7 +12,8 @@ const InvitationShowcase = () => {
       category: 'Classic',
       image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=400&h=600&fit=crop',
       description: 'Beautiful floral design with gold accents',
-      popular: true
+      popular: true,
+      colors: ['#B68973', '#EADBC8', '#F9F5F0']
     },
     {
       id: 2,
@@ -17,7 +21,8 @@ const InvitationShowcase = () => {
       category: 'Contemporary',
       image: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=600&fit=crop',
       description: 'Clean lines with elegant typography',
-      popular: false
+      popular: false,
+      colors: ['#2C3E50', '#ECF0F1', '#95A5A6']
     },
     {
       id: 3,
@@ -25,7 +30,8 @@ const InvitationShowcase = () => {
       category: 'Vintage',
       image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=600&fit=crop',
       description: 'Classic vintage style with romantic elements',
-      popular: true
+      popular: true,
+      colors: ['#8D6E63', '#D7CCC8', '#BCAAA4']
     },
     {
       id: 4,
@@ -33,7 +39,8 @@ const InvitationShowcase = () => {
       category: 'Themed',
       image: 'https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?w=400&h=600&fit=crop',
       description: 'Perfect for destination weddings',
-      popular: false
+      popular: false,
+      colors: ['#4CAF50', '#81C784', '#C8E6C9']
     },
     {
       id: 5,
@@ -41,7 +48,8 @@ const InvitationShowcase = () => {
       category: 'Premium',
       image: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&h=600&fit=crop',
       description: 'Luxurious design with premium elements',
-      popular: true
+      popular: true,
+      colors: ['#C9A227', '#F9E79F', '#FDEBD0']
     },
     {
       id: 6,
@@ -49,11 +57,16 @@ const InvitationShowcase = () => {
       category: 'Boho',
       image: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=400&h=600&fit=crop',
       description: 'Free-spirited design with natural elements',
-      popular: false
+      popular: false,
+      colors: ['#6D4C41', '#A1887F', '#D7CCC8']
     }
   ];
 
   const categories = ['All', 'Classic', 'Contemporary', 'Vintage', 'Themed', 'Premium', 'Boho'];
+
+  const filteredDesigns = activeCategory === 'All' 
+    ? invitationDesigns 
+    : invitationDesigns.filter(design => design.category === activeCategory);
 
   return (
     <section id="showcase" className="py-24 bg-gradient-to-b from-primary-light/5 to-background">
@@ -78,8 +91,9 @@ const InvitationShowcase = () => {
           {categories.map((category) => (
             <Button
               key={category}
-              variant={category === 'All' ? 'default' : 'outline'}
+              variant={category === activeCategory ? 'default' : 'outline'}
               className="rounded-full px-6 py-2 text-sm font-medium"
+              onClick={() => setActiveCategory(category)}
             >
               {category}
             </Button>
@@ -87,69 +101,64 @@ const InvitationShowcase = () => {
         </div>
 
         {/* Designs Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {invitationDesigns.map((design, index) => (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredDesigns.map((design, index) => (
             <div
               key={design.id}
-              className="group relative bg-card rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+              className="group relative bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Popular Badge */}
               {design.popular && (
-                <div className="absolute top-4 left-4 bg-accent text-accent-foreground px-3 py-1 rounded-full text-xs font-medium z-10 flex items-center gap-1">
+                <div className="absolute top-3 left-3 bg-accent text-accent-foreground px-2.5 py-1 rounded-full text-[10px] font-medium z-10 flex items-center gap-1">
                   <Heart className="w-3 h-3 fill-current" />
                   Popular
                 </div>
               )}
 
               {/* Image */}
-              <div className="relative aspect-[3/4] overflow-hidden">
+              <div className="relative aspect-[4/3] overflow-hidden">
                 <img
                   src={design.image}
                   alt={design.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-                
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="secondary" className="rounded-full bg-background/20 backdrop-blur-sm border-0 text-white hover:bg-background/30">
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                      <Button size="sm" variant="secondary" className="rounded-full bg-background/20 backdrop-blur-sm border-0 text-white hover:bg-background/30">
-                        <Share2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                    <Button size="sm" className="rounded-full bg-primary hover:bg-primary-glow">
-                      <Download className="w-4 h-4 mr-1" />
-                      Use This
-                    </Button>
-                  </div>
-                </div>
               </div>
 
               {/* Content */}
-              <div className="p-6 space-y-3">
+              <div className="p-3 space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full">
+                  <div className="text-[10px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
                     {design.category}
                   </div>
+                  {/* Color dots */}
+                  <div className="flex items-center gap-1">
+                    {design.colors.map((c, i) => (
+                      <span key={i} className="w-3 h-3 rounded-full border border-white" style={{ backgroundColor: c }} />
+                    ))}
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold text-card-foreground group-hover:text-primary transition-colors duration-300">
+                <h3 className="text-base font-bold text-card-foreground">
                   {design.title}
                 </h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
+                <p className="text-muted-foreground text-xs line-clamp-1">
                   {design.description}
                 </p>
+
+                <div className="pt-1">
+                  <Button size="sm" className="rounded-full bg-primary hover:bg-primary-glow text-xs px-3 py-1">
+                    <Eye className="w-3 h-3 mr-1" />
+                    Preview
+                  </Button>
+                </div>
               </div>
             </div>
           ))}
         </div>
 
         {/* Load More */}
-        <div className="text-center mt-12">
-          <Button variant="outline" size="lg" className="rounded-full px-8">
+        <div className="text-center mt-8">
+          <Button variant="outline" size="sm" className="rounded-full px-6">
             Load More Designs
           </Button>
         </div>
