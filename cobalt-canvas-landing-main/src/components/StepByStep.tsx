@@ -1,6 +1,8 @@
 import { ArrowRight, CheckCircle, Palette, Users, Send, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+const appName = (import.meta as any).env.VITE_APP_NAME || 'WeddingPro';
+
 const StepByStep = () => {
   const steps = [
     {
@@ -153,7 +155,7 @@ const StepByStep = () => {
         <div className="text-center mt-20 space-y-6">
           <h3 className="text-3xl font-bold">Ready to create your perfect invitation?</h3>
           <p className="text-muted-foreground text-lg">
-            Join thousands of happy couples who chose WeddingPro
+            Join thousands of happy couples who chose {appName}
           </p>
           <Button size="lg" className="text-lg px-8 py-4">
             Mulai Buat Undangan

@@ -4,60 +4,60 @@ import { Button } from './ui/button';
 const Pricing = () => {
   const plans = [
     {
-      name: 'Gratis',
-      price: 'Rp 0',
-      description: 'Coba fitur dasar Wedew',
+      name: 'GRATIS',
+      price: 'Rp. 0',
+      description: 'Paket gratis untuk mencoba fitur dasar',
       features: [
-        '1 Undangan Digital',
-        'Template Dasar',
-        'Share via WhatsApp',
-        'Analytics Dasar',
-        'Support Email'
+        'Edit Tanpa Batas',
+        'Amplop Digital',
+        'Hitung Mundur',
+        'Quotes',
+        'Background Music',
+        'Masa Aktif 2 Hari'
       ],
       popular: false,
-      cta: 'Mulai Gratis'
+      cta: 'Pilih Paket'
     },
     {
-      name: 'Premium',
-      price: 'Rp 99.000',
-      period: '/bulan',
-      description: 'Paket lengkap untuk pernikahanmu',
+      name: 'DIAMOND',
+      price: 'Rp. 125.000',
+      period: '',
+      description: 'Paket premium dengan fitur terlengkap',
       features: [
-        'Unlimited Undangan',
-        'Template Premium',
-        'Auto Send WhatsApp',
-        'RSVP Tracking',
-        'Manajemen Tamu',
-        'Analytics Lengkap',
-        'Support Prioritas',
-        'Custom Domain',
+        'Edit Tanpa Batas',
+        'Amplop Digital',
+        'Google Maps',
+        'Compress Foto Otomatis',
+        'Buku Tamu',
+        'Nama Tamu Undangan',
+        'Galeri Foto',
+        'Share ke Whatsapp',
+        'Live Streaming',
+        'Embed Video Youtube',
+        'Hitung Mundur',
+        'Quotes',
         'Background Music',
-        'Foto Galeri',
-        'Ucapan & Doa',
-        'Peta Lokasi'
+        'Aktif Selamanya'
       ],
       popular: true,
-      cta: 'Mulai Premium'
+      cta: 'Pilih Paket'
     },
     {
-      name: 'Enterprise',
-      price: 'Custom',
+      name: 'PAKET SILVER',
+      price: 'Rp. 79.000',
       period: '',
-      description: 'Solusi khusus untuk event besar',
+      description: 'Paket lengkap untuk pernikahanmu',
       features: [
-        'Semua fitur Premium',
-        'Custom Design',
-        'White Label',
-        'API Access',
-        'Dedicated Manager',
-        'Support 24/7',
-        'Custom Integrations',
-        'Advanced Security',
-        'Multiple Events',
-        'Branding Custom'
+        'Edit Tanpa Batas',
+        'Amplop Digital',
+        'Google Maps',
+        'Hitung Mundur',
+        'Quotes',
+        'Background Music',
+        'Aktif Selamanya'
       ],
       popular: false,
-      cta: 'Hubungi Kami'
+      cta: 'Pilih Paket'
     }
   ];
 
@@ -93,7 +93,7 @@ const Pricing = () => {
             >
               {/* Popular Badge */}
               {plan.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-accent text-accent-foreground px-6 py-2 rounded-full text-sm font-medium flex items-center space-x-2">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-6 py-2 rounded-full text-sm font-medium flex items-center space-x-2">
                   <Star className="w-4 h-4 fill-current" />
                   <span>Most Popular</span>
                 </div>

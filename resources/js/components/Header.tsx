@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Menu, X, Heart } from 'lucide-react';
 import { Button } from './ui/button';
 
+const appName = (import.meta as any).env.VITE_APP_NAME || 'WeddingPro';
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -21,7 +23,7 @@ const Header = () => {
             <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary-glow rounded-lg flex items-center justify-center">
               <Heart className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold text-gradient-primary">WeddingPro</span>
+            <span className="text-xl font-bold text-gradient-primary">{appName}</span>
           </div>
 
           {/* Desktop Navigation */}

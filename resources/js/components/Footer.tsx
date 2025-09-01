@@ -1,5 +1,7 @@
 import { Heart, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin, Youtube } from 'lucide-react';
 
+const appName = (import.meta as any).env.VITE_APP_NAME || 'WeddingPro';
+
 const Footer = () => {
   const footerLinks = {
     product: [
@@ -51,7 +53,7 @@ const Footer = () => {
               <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary-glow rounded-lg flex items-center justify-center">
                 <Heart className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold text-gradient-primary">Inveet</span>
+              <span className="text-xl font-bold text-gradient-primary">{appName}</span>
             </div>
             <p className="text-muted-foreground leading-relaxed max-w-md">
               Platform undangan digital terdepan yang membantu ribuan pasangan menciptakan momen spesial mereka dengan mudah dan indah.
@@ -148,7 +150,7 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             {/* Copyright */}
             <div className="text-muted-foreground text-sm">
-              © 2024 Inveet. All rights reserved. Made with ❤️ in Indonesia.
+              © 2024 {appName}. All rights reserved. Made with ❤️ in Indonesia.
             </div>
 
             {/* Social Links */}

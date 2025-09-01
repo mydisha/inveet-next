@@ -1,5 +1,7 @@
 import { Heart, Instagram, Facebook, Twitter, Mail } from 'lucide-react';
 
+const appName = (import.meta as any).env.VITE_APP_NAME || 'WeddingPro';
+
 const Footer = () => {
   const links = {
     company: [
@@ -26,7 +28,7 @@ const Footer = () => {
     { name: 'Instagram', icon: Instagram, href: '#' },
     { name: 'Facebook', icon: Facebook, href: '#' },
     { name: 'Twitter', icon: Twitter, href: '#' },
-    { name: 'Email', icon: Mail, href: 'mailto:hello@weddingpro.id' }
+    { name: 'Email', icon: Mail, href: `mailto:hello@${appName.toLowerCase()}.id` }
   ];
 
   return (
@@ -40,7 +42,7 @@ const Footer = () => {
               <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary-glow rounded-lg flex items-center justify-center">
                 <Heart className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold text-gradient-primary">WeddingPro</span>
+              <span className="text-xl font-bold text-gradient-primary">{appName}</span>
             </div>
             <p className="text-muted-foreground leading-relaxed max-w-md">
               Platform pernikahan digital terdepan di Indonesia. Kami membantu pasangan 
@@ -143,7 +145,7 @@ const Footer = () => {
         <div className="border-t border-border py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-muted-foreground text-sm">
-              © 2024 WeddingPro. All rights reserved. Made with ❤️ in Indonesia.
+              © 2024 {appName}. All rights reserved. Made with ❤️ in Indonesia.
             </div>
             <div className="flex items-center space-x-6 text-sm text-muted-foreground">
               <span>🇮🇩 Indonesia</span>

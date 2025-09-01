@@ -1,6 +1,8 @@
 import { ArrowRight, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+const appName = (import.meta as any).env.VITE_APP_NAME || 'WeddingPro';
+
 const CTA = () => {
   return (
     <section id="contact" className="py-24 bg-gradient-to-br from-primary via-primary-glow to-accent relative overflow-hidden">
@@ -68,7 +70,7 @@ const CTA = () => {
                 </div>
                 <div>
                   <div className="font-semibold">Email</div>
-                  <div className="text-primary-foreground/80">hello@weddingpro.id</div>
+                  <div className="text-primary-foreground/80">hello@{appName.toLowerCase()}.id</div>
                 </div>
               </div>
             </div>

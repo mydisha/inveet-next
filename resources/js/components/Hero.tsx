@@ -84,13 +84,6 @@ const Hero = () => {
               <div className="absolute -inset-4 bg-gradient-to-r from-accent/30 to-primary-glow/30 rounded-3xl blur-xl animate-pulse-glow"></div>
               
               {/* Phone Container */}
-              <div className="relative bg-gradient-to-br from-background/20 to-background/10 backdrop-blur-sm rounded-3xl p-8 border border-primary-foreground/20">
-                <img
-                  src="/build/assets/phone-mockup.jpg"
-                  alt="Digital wedding invitation on smartphone"
-                  className="w-full max-w-sm mx-auto rounded-2xl shadow-elegant"
-                />
-              </div>
             </div>
           </div>
         </div>

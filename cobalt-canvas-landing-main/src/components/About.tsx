@@ -1,6 +1,8 @@
 import { CheckCircle, Award, Users2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+const appName = (import.meta as any).env.VITE_APP_NAME || 'WeddingPro';
+
 const About = () => {
   const features = [
     {
@@ -40,7 +42,7 @@ const About = () => {
           <div className="space-y-8">
             <div className="space-y-4">
               <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2">
-                <span className="text-primary text-sm font-medium">About WeddingPro</span>
+                <span className="text-primary text-sm font-medium">About {appName}</span>
               </div>
               <h2 className="text-4xl md:text-5xl font-bold">
                 Transforming Wedding
@@ -113,7 +115,7 @@ const About = () => {
                   ))}
                 </div>
                 <blockquote className="text-lg font-medium text-foreground/90 italic">
-                  "WeddingPro made our wedding planning journey so much easier. 
+                  "{appName} made our wedding planning journey so much easier. 
                   The digital invitations were beautiful and the guest management 
                   system saved us countless hours."
                 </blockquote>
