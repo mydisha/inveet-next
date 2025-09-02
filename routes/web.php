@@ -8,7 +8,7 @@ use App\Http\Controllers\FrontendController;
 Route::get('/test', function () {
     try {
         Log::info('Attempting to render Inertia page: Test');
-        
+
         // Try to render a very simple page using the helper
         return inertia('Test', [
             'message' => 'Hello from Inertia!',
@@ -26,10 +26,13 @@ Route::get('/test', function () {
     }
 });
 
-
+// Simple test route for React component
+Route::get('/simple-test', function () {
+    return inertia('SimpleTest');
+});
 
 // Simple test route without Inertia
-Route::get('/simple-test', function () {
+Route::get('/simple-test-json', function () {
     Log::info('Simple test route executed');
     return response()->json(['message' => 'Simple route is working!']);
 });
@@ -45,17 +48,28 @@ Route::middleware('guest')->group(function () {
 // Public routes (no auth required)
 Route::get('/', [FrontendController::class, 'landing'])->name('home');
 
+// Dashboard route (temporarily without auth for testing)
+Route::get('/dashboard', [FrontendController::class, 'dashboard'])->name('dashboard');
+
+// Simple dashboard test route
+Route::get('/dashboard-simple', function () {
+    return inertia('DashboardSimple', [
+        'user' => null
+    ]);
+});
+
 // Protected routes (require authentication)
-Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [FrontendController::class, 'dashboard'])->name('dashboard');
+Route::middleware('guest')->group(function () {
     Route::get('/onboarding', [FrontendController::class, 'onboarding'])->name('onboarding');
     Route::get('/onboarding/couple-info', [FrontendController::class, 'coupleInfo'])->name('onboarding.couple-info');
     Route::get('/onboarding/wedding-details', [FrontendController::class, 'weddingDetails'])->name('onboarding.wedding-details');
     Route::get('/onboarding/custom-url', [FrontendController::class, 'customUrl'])->name('onboarding.custom-url');
     Route::get('/onboarding/design-selection', [FrontendController::class, 'designSelection'])->name('onboarding.design-selection');
     Route::get('/onboarding/activation', [FrontendController::class, 'activation'])->name('onboarding.activation');
-    
+
     Route::get('/my-weddings', [FrontendController::class, 'myWeddings'])->name('weddings.my');
+    Route::get('/orders', [FrontendController::class, 'orders'])->name('orders.index');
+    Route::get('/analytics', [FrontendController::class, 'analytics'])->name('analytics.index');
     Route::get('/profile', [FrontendController::class, 'profile'])->name('profile');
     Route::get('/settings', [FrontendController::class, 'settings'])->name('settings');
 });

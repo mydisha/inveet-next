@@ -20,7 +20,7 @@ class FrontendController extends Controller
      */
     public function login()
     {
-        return Inertia::render('auth/Login');
+        return Inertia::render('auth/login');
     }
 
     /**
@@ -57,8 +57,8 @@ class FrontendController extends Controller
     {
         // Get user data if authenticated
         $user = $request->user();
-        
-        return Inertia::render('Dashboard', [
+
+        return Inertia::render('DashboardFixed', [
             'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
@@ -123,7 +123,7 @@ class FrontendController extends Controller
     {
         // Get wedding data from API
         $wedding = app(\App\Services\WeddingService::class)->findBySlug($slug);
-        
+
         if (!$wedding) {
             abort(404);
         }
@@ -139,7 +139,7 @@ class FrontendController extends Controller
     public function myWeddings(Request $request)
     {
         $user = $request->user();
-        
+
         if (!$user) {
             return redirect()->route('login');
         }
@@ -185,7 +185,7 @@ class FrontendController extends Controller
     public function profile(Request $request)
     {
         $user = $request->user();
-        
+
         if (!$user) {
             return redirect()->route('login');
         }
@@ -201,13 +201,58 @@ class FrontendController extends Controller
     public function settings(Request $request)
     {
         $user = $request->user();
-        
+
         if (!$user) {
             return redirect()->route('login');
         }
 
         return Inertia::render('Settings/Index', [
             'user' => $user,
+        ]);
+    }
+
+    /**
+     * Show user's orders
+     */
+    public function orders(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $orders = $user->orders()->with(['package', 'wedding'])->get();
+
+        return Inertia::render('Order/Index', [
+            'orders' => $orders,
+        ]);
+    }
+
+    /**
+     * Show analytics dashboard
+     */
+    public function analytics(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        // Get user's wedding analytics
+        $weddings = $user->weddings()->with(['package'])->get();
+        $totalViews = $weddings->sum('views');
+        $totalOrders = $user->orders()->count();
+
+        return Inertia::render('Analytics/Index', [
+            'user' => $user,
+            'weddings' => $weddings,
+            'stats' => [
+                'totalWeddings' => $weddings->count(),
+                'totalViews' => $totalViews,
+                'totalOrders' => $totalOrders,
+            ],
         ]);
     }
 }
