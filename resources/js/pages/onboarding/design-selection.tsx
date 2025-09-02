@@ -1,3 +1,4 @@
+import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Head, Link, useForm } from '@inertiajs/react';
@@ -19,6 +20,7 @@ interface DesignSelectionProps {
     id: number;
     name: string;
     email: string;
+    hasWedding: boolean;
   } | null;
 }
 
@@ -67,218 +69,241 @@ export default function DesignSelection({ user }: DesignSelectionProps) {
       category: 'Romantic',
       description: 'Beautiful floral design perfect for romantic weddings',
       preview: '/api/placeholder/400/300',
-      features: ['Floral elements', 'Romantic colors', 'Soft typography', 'Elegant borders'],
+      features: ['Floral elements', 'Romantic colors', 'Soft typography', 'Elegant layout'],
       colors: ['#E91E63', '#F8BBD9', '#FFF8E1']
     },
     {
-      id: 'vintage-charm',
-      name: 'Vintage Charm',
-      category: 'Vintage',
-      description: 'Retro-inspired design with vintage typography and elements',
+      id: 'rustic-chic',
+      name: 'Rustic Chic',
+      category: 'Rustic',
+      description: 'Rustic and charming design with natural elements',
       preview: '/api/placeholder/400/300',
-      features: ['Vintage typography', 'Retro elements', 'Classic patterns', 'Nostalgic feel'],
-      colors: ['#8D6E63', '#D7CCC8', '#BCAAA4']
+      features: ['Natural textures', 'Rustic elements', 'Warm colors', 'Charming style'],
+      colors: ['#8D6E63', '#A1887F', '#EFEBE9']
+    },
+    {
+      id: 'vintage-elegance',
+      name: 'Vintage Elegance',
+      category: 'Vintage',
+      description: 'Classic vintage design with timeless appeal',
+      preview: '/api/placeholder/400/300',
+      features: ['Vintage typography', 'Classic elements', 'Elegant layout', 'Timeless style'],
+      colors: ['#5D4037', '#BCAAA4', '#F3E5F5']
     },
     {
       id: 'tropical-paradise',
       name: 'Tropical Paradise',
-      category: 'Destination',
-      description: 'Perfect for beach or destination weddings',
+      category: 'Tropical',
+      description: 'Vibrant tropical design perfect for destination weddings',
       preview: '/api/placeholder/400/300',
-      features: ['Tropical elements', 'Bright colors', 'Beach vibes', 'Destination feel'],
-      colors: ['#4CAF50', '#81C784', '#C8E6C9']
-    },
-    {
-      id: 'rustic-charm',
-      name: 'Rustic Charm',
-      category: 'Rustic',
-      description: 'Warm, rustic design with natural elements',
-      preview: '/api/placeholder/400/300',
-      features: ['Natural textures', 'Warm colors', 'Rustic elements', 'Cozy feel'],
-      colors: ['#795548', '#A1887F', '#D7CCC8']
+      features: ['Tropical elements', 'Vibrant colors', 'Exotic feel', 'Paradise vibes'],
+      colors: ['#4CAF50', '#FF9800', '#E1F5FE']
     }
   ];
-
-  const getCategoryColor = (category: string) => {
-    const colors: { [key: string]: string } = {
-      'Traditional': 'bg-blue-100 text-blue-800',
-      'Contemporary': 'bg-purple-100 text-purple-800',
-      'Romantic': 'bg-pink-100 text-pink-800',
-      'Vintage': 'bg-amber-100 text-amber-800',
-      'Destination': 'bg-green-100 text-green-800',
-      'Rustic': 'bg-orange-100 text-orange-800',
-    };
-    return colors[category] || 'bg-gray-100 text-gray-800';
-  };
 
   return (
     <>
       <Head title="Design Selection - Onboarding" />
 
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary-light/10">
-        {/* Background decorative elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 right-20 w-32 h-32 bg-primary/10 rounded-full opacity-30 animate-pulse"></div>
-          <div className="absolute bottom-32 left-16 w-24 h-24 bg-primary-glow/10 rounded-full opacity-30 animate-pulse" style={{ animationDelay: '2s' }}></div>
-          <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-primary-light/20 rounded-full opacity-30 animate-pulse" style={{ animationDelay: '4s' }}></div>
+      <DashboardLayout user={user || null} currentPath="/onboarding/design-selection">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            Choose Your Design 🎨
+          </h1>
+          <p className="text-muted-foreground">
+            Select the perfect design for your wedding invitation
+          </p>
         </div>
 
-        <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
-          <div className="w-full max-w-6xl">
-            {/* Header */}
-            <div className="text-center mb-8">
-              <div className="flex items-center justify-center mb-4">
-                <img
-                  src="/inveet-logo.png"
-                  alt="Inveet.Id"
-                  className="h-12 w-auto"
-                />
+        {/* Progress Bar */}
+        <div className="mb-8">
+          <div className="flex items-center justify-center space-x-4">
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium">
+                1
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Choose Your Design 🎨
-              </h1>
-              <p className="text-lg text-gray-600">
-                Select the perfect design for your wedding invitation
-              </p>
+              <span className="ml-2 text-sm text-muted-foreground">Couple Info</span>
             </div>
-
-            {/* Progress Bar */}
-            <div className="mb-8">
-              <div className="flex items-center justify-center space-x-4">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-semibold">
-                    ✓
-                  </div>
-                  <span className="ml-2 text-sm font-medium text-primary">Couple Info</span>
-                </div>
-                <div className="w-16 h-1 bg-primary rounded"></div>
-                <div className="flex items-center">
-                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-semibold">
-                    ✓
-                  </div>
-                  <span className="ml-2 text-sm font-medium text-primary">Location</span>
-                </div>
-                <div className="w-16 h-1 bg-primary rounded"></div>
-                <div className="flex items-center">
-                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-semibold">
-                    3
-                  </div>
-                  <span className="ml-2 text-sm font-medium text-primary">Design</span>
-                </div>
-                <div className="w-16 h-1 bg-gray-200 rounded"></div>
-                <div className="flex items-center">
-                  <div className="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-sm font-semibold">
-                    4
-                  </div>
-                  <span className="ml-2 text-sm font-medium text-gray-500">URL</span>
-                </div>
+            <div className="w-16 h-0.5 bg-primary"></div>
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium">
+                2
               </div>
+              <span className="ml-2 text-sm text-muted-foreground">Location</span>
             </div>
-
-            {/* Design Selection */}
-            <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                {designs.map((design) => (
-                  <Card
-                    key={design.id}
-                    className={`cursor-pointer transition-all duration-200 hover:shadow-lg ${
-                      selectedDesign === design.id
-                        ? 'ring-2 ring-primary shadow-lg'
-                        : 'hover:shadow-md'
-                    }`}
-                    onClick={() => setSelectedDesign(design.id)}
-                  >
-                    <CardHeader className="p-4">
-                      <div className="relative">
-                        <div className="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center mb-4">
-                          <Palette className="h-12 w-12 text-gray-400" />
-                        </div>
-                        {selectedDesign === design.id && (
-                          <div className="absolute top-2 right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                            <Check className="h-4 w-4 text-white" />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-lg font-semibold text-gray-900">
-                            {design.name}
-                          </CardTitle>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(design.category)}`}>
-                            {design.category}
-                          </span>
-                        </div>
-
-                        <CardDescription className="text-sm text-gray-600">
-                          {design.description}
-                        </CardDescription>
-                      </div>
-                    </CardHeader>
-
-                    <CardContent className="p-4 pt-0">
-                      <div className="space-y-3">
-                        <div>
-                          <h4 className="text-sm font-medium text-gray-700 mb-2">Features:</h4>
-                          <ul className="text-xs text-gray-600 space-y-1">
-                            {design.features.map((feature, index) => (
-                              <li key={index} className="flex items-center">
-                                <Sparkles className="h-3 w-3 text-primary mr-1" />
-                                {feature}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <div>
-                          <h4 className="text-sm font-medium text-gray-700 mb-2">Color Palette:</h4>
-                          <div className="flex space-x-2">
-                            {design.colors.map((color, index) => (
-                              <div
-                                key={index}
-                                className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
-                                style={{ backgroundColor: color }}
-                                title={color}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+            <div className="w-16 h-0.5 bg-primary"></div>
+            <div className="flex items-center">
+              <div className="icon-container icon-gradient-3">
+                <span className="text-sm font-medium text-primary-foreground">3</span>
               </div>
-
-              {/* Action Buttons */}
-              <div className="flex justify-between">
-                <Link
-                  href="/onboarding/wedding-location"
-                  className="flex items-center px-6 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back
-                </Link>
-
-                <Button
-                  type="submit"
-                  disabled={processing || !selectedDesign}
-                  className="bg-gradient-to-r from-primary to-primary-glow hover:from-primary/90 hover:to-primary-glow/90 text-white px-8 py-2 shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {processing ? 'Saving...' : 'Continue'}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
+              <span className="ml-2 text-sm font-medium text-foreground">Design</span>
+            </div>
+            <div className="w-16 h-0.5 bg-muted"></div>
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium">
+                4
               </div>
-            </form>
-
-            {/* Footer */}
-            <div className="text-center mt-8">
-              <p className="text-sm text-gray-500">
-                Need help? Contact our support team
-              </p>
+              <span className="ml-2 text-sm text-muted-foreground">URL</span>
             </div>
           </div>
         </div>
-      </div>
+
+        <div className="max-w-6xl mx-auto">
+          <Card className="card-elegant hover:shadow-2xl transition-all duration-300 mb-8">
+            <CardHeader className="pb-3">
+              <div className="flex items-center space-x-3">
+                <div className="icon-container icon-gradient-3">
+                  <Palette className="w-5 h-5 text-primary-foreground" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Design Templates</CardTitle>
+                  <CardDescription>Choose from our beautiful collection of wedding invitation designs</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit}>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {designs.map((design) => (
+                    <div
+                      key={design.id}
+                      className={`relative cursor-pointer transition-all duration-300 ${
+                        selectedDesign === design.id
+                          ? 'ring-2 ring-primary ring-offset-2'
+                          : 'hover:shadow-lg'
+                      }`}
+                      onClick={() => setSelectedDesign(design.id)}
+                    >
+                      <Card className={`card-elegant h-full ${
+                        selectedDesign === design.id
+                          ? 'border-primary shadow-lg'
+                          : 'hover:shadow-xl'
+                      } transition-all duration-300`}>
+                        <CardHeader className="pb-3">
+                          <div className="relative">
+                            <div className="w-full h-48 bg-muted rounded-lg flex items-center justify-center mb-4">
+                              <div className="text-center">
+                                <Palette className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
+                                <p className="text-sm text-muted-foreground">Preview</p>
+                              </div>
+                            </div>
+                            {selectedDesign === design.id && (
+                              <div className="absolute top-2 right-2 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center">
+                                <Check className="w-4 h-4" />
+                              </div>
+                            )}
+                          </div>
+                          <CardTitle className="text-lg">{design.name}</CardTitle>
+                          <CardDescription>{design.description}</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-3">
+                            <div>
+                              <p className="text-sm font-medium text-foreground mb-2">Category:</p>
+                              <span className="inline-block px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                                {design.category}
+                              </span>
+                            </div>
+
+                            <div>
+                              <p className="text-sm font-medium text-foreground mb-2">Features:</p>
+                              <ul className="text-xs text-muted-foreground space-y-1">
+                                {design.features.slice(0, 3).map((feature, index) => (
+                                  <li key={index} className="flex items-center">
+                                    <Check className="w-3 h-3 mr-1 text-primary" />
+                                    {feature}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            <div>
+                              <p className="text-sm font-medium text-foreground mb-2">Colors:</p>
+                              <div className="flex space-x-1">
+                                {design.colors.map((color, index) => (
+                                  <div
+                                    key={index}
+                                    className="w-4 h-4 rounded-full border border-border"
+                                    style={{ backgroundColor: color }}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  ))}
+                </div>
+
+                {errors.selected_design && (
+                  <p className="text-sm text-destructive mt-4 text-center">{errors.selected_design}</p>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex items-center justify-between pt-8 mt-8 border-t">
+                  <Link href="/onboarding/wedding-location">
+                    <Button variant="outline" className="flex items-center">
+                      <ArrowLeft className="w-4 h-4 mr-2" />
+                      Back
+                    </Button>
+                  </Link>
+
+                  <Button
+                    type="submit"
+                    disabled={processing || !selectedDesign}
+                    className="btn-hero flex items-center"
+                  >
+                    Continue
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+
+          {/* Design Preview Info */}
+          <Card className="card-elegant hover:shadow-2xl transition-all duration-300">
+            <CardHeader className="pb-3">
+              <div className="flex items-center space-x-3">
+                <div className="icon-container icon-gradient-4">
+                  <Sparkles className="w-5 h-5 text-primary-foreground" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Design Customization</CardTitle>
+                  <CardDescription>You can customize your chosen design after selection</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center p-4 bg-muted/50 rounded-lg">
+                  <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <Palette className="w-4 h-4 text-primary" />
+                  </div>
+                  <h4 className="font-medium text-foreground mb-1">Custom Colors</h4>
+                  <p className="text-sm text-muted-foreground">Change colors to match your theme</p>
+                </div>
+                <div className="text-center p-4 bg-muted/50 rounded-lg">
+                  <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <Check className="w-4 h-4 text-primary" />
+                  </div>
+                  <h4 className="font-medium text-foreground mb-1">Easy Editing</h4>
+                  <p className="text-sm text-muted-foreground">Edit text and details easily</p>
+                </div>
+                <div className="text-center p-4 bg-muted/50 rounded-lg">
+                  <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <Sparkles className="w-4 h-4 text-primary" />
+                  </div>
+                  <h4 className="font-medium text-foreground mb-1">Premium Quality</h4>
+                  <p className="text-sm text-muted-foreground">High-quality designs for your special day</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </DashboardLayout>
     </>
   );
 }

@@ -1,5 +1,8 @@
+import DashboardLayout from '@/components/layout/DashboardLayout';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Head, Link } from '@inertiajs/react';
-import { ArrowRight, CheckCircle, Globe, Heart, MapPin, Palette } from 'lucide-react';
+import { ArrowRight, CheckCircle, Globe, Heart, MapPin, Palette, Sparkles } from 'lucide-react';
 import { useEffect } from 'react';
 
 interface OnboardingIndexProps {
@@ -65,125 +68,122 @@ export default function OnboardingIndex({ user, currentStep = 1 }: OnboardingInd
     <>
       <Head title="Welcome to Inveet - Onboarding" />
 
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary-light/10">
-        {/* Background decorative elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 right-20 w-32 h-32 bg-primary/10 rounded-full opacity-30 animate-pulse"></div>
-          <div className="absolute bottom-32 left-16 w-24 h-24 bg-primary-glow/10 rounded-full opacity-30 animate-pulse" style={{ animationDelay: '2s' }}></div>
-          <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-primary-light/20 rounded-full opacity-30 animate-pulse" style={{ animationDelay: '4s' }}></div>
+      <DashboardLayout user={user || null} currentPath="/onboarding">
+        {/* Welcome Section */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            Welcome to Inveet! 🎉
+          </h1>
+          <p className="text-muted-foreground">
+            Let's create your beautiful wedding invitation. We'll guide you through a few simple steps to get started.
+          </p>
         </div>
 
-        <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
-          <div className="w-full max-w-4xl">
-            {/* Header */}
-            <div className="text-center mb-12">
-              <div className="flex items-center justify-center mb-6">
-                <img
-                  src="/inveet-logo.png"
-                  alt="Inveet.Id"
-                  className="h-16 w-auto"
-                />
-              </div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                Welcome to Inveet! 🎉
-              </h1>
-              <p className="text-xl text-gray-600 mb-2">
-                Let's create your beautiful wedding invitation
-              </p>
-              <p className="text-lg text-gray-500">
-                We'll guide you through a few simple steps to get started
-              </p>
-            </div>
-
-            {/* Steps Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-              {steps.map((step, index) => {
-                const Icon = step.icon;
-                return (
-                  <div
-                    key={step.id}
-                    className="relative"
-                  >
-                    {/* Connection Line */}
-                    {index < steps.length - 1 && (
-                      <div className="hidden lg:block absolute top-8 left-full w-full h-0.5 bg-gray-200 z-0" style={{ width: 'calc(100% - 2rem)' }}>
-                        <div className="absolute top-0 left-0 w-0 h-full bg-primary transition-all duration-500" style={{ width: currentStep > step.id ? '100%' : '0%' }}></div>
-                      </div>
-                    )}
-
-                    <div className="relative z-10 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 text-center group cursor-pointer">
-                      <div className="mb-4">
-                        <div className={`w-16 h-16 mx-auto rounded-full bg-gradient-to-r from-primary/20 to-primary-glow/20 flex items-center justify-center group-hover:from-primary/30 group-hover:to-primary-glow/30 transition-all duration-300`}>
-                          <Icon className={`h-8 w-8 ${step.color}`} />
-                        </div>
-                      </div>
-
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        {step.title}
-                      </h3>
-
-                      <p className="text-sm text-gray-600 mb-4">
-                        {step.description}
-                      </p>
-
-                      <div className="flex items-center justify-center">
-                        <span className="text-xs font-medium text-primary group-hover:text-primary-glow transition-colors">
-                          Step {step.id}
-                        </span>
-                      </div>
+        {/* Steps Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {steps.map((step, index) => {
+            const Icon = step.icon;
+            return (
+              <Card key={step.id} className="card-elegant hover:shadow-2xl transition-all duration-300 cursor-pointer group">
+                <CardHeader className="pb-3">
+                  <div className="flex flex-col items-center text-center">
+                    <div className={`icon-container mx-auto mb-4 ${
+                      currentStep >= step.id
+                        ? 'icon-gradient-1 text-primary-foreground'
+                        : 'bg-muted text-muted-foreground'
+                    }`}>
+                      <Icon className="w-8 h-8" />
                     </div>
+                    <CardTitle className="text-lg mb-2">{step.title}</CardTitle>
+                    <CardDescription>{step.description}</CardDescription>
                   </div>
-                );
-              })}
-            </div>
-
-            {/* Start Button */}
-            <div className="text-center">
-              <Link
-                href="/onboarding/couple-info"
-                className="inline-flex items-center bg-gradient-to-r from-primary to-primary-glow hover:from-primary/90 hover:to-primary-glow/90 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                Start Creating Your Invitation
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </div>
-
-            {/* Features */}
-            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gradient-to-r from-primary/20 to-primary-glow/20 flex items-center justify-center">
-                  <CheckCircle className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Easy Setup</h3>
-                <p className="text-gray-600">Simple step-by-step process to create your invitation</p>
-              </div>
-
-              <div className="text-center">
-                <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gradient-to-r from-primary/20 to-primary-glow/20 flex items-center justify-center">
-                  <Palette className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Beautiful Designs</h3>
-                <p className="text-gray-600">Choose from our collection of stunning templates</p>
-              </div>
-
-              <div className="text-center">
-                <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gradient-to-r from-primary/20 to-primary-glow/20 flex items-center justify-center">
-                  <Globe className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Custom URL</h3>
-                <p className="text-gray-600">Get your own personalized invitation link</p>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="text-center mt-12">
-              <p className="text-sm text-gray-500">
-                Need help? Contact our support team
-              </p>
-            </div>
-          </div>
+                </CardHeader>
+                <CardContent>
+                  <Link href={step.href}>
+                    <Button
+                      variant={currentStep > step.id ? "outline" : "default"}
+                      className="w-full group-hover:scale-105 transition-transform"
+                    >
+                      {currentStep > step.id ? (
+                        <>
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          Completed
+                        </>
+                      ) : currentStep === step.id ? (
+                        <>
+                          Get Started
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </>
+                      ) : (
+                        <>
+                          Start Step
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </>
+                      )}
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
-      </div>
+
+        {/* Start Button */}
+        <div className="text-center mb-8">
+          <Link href="/onboarding/couple-info">
+            <Button className="btn-hero">
+              <Sparkles className="w-4 h-4 mr-2" />
+              Start Creating Your Invitation
+            </Button>
+          </Link>
+        </div>
+
+        {/* Features */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className="card-elegant hover:shadow-2xl transition-all duration-300 text-center group">
+            <CardHeader className="pb-3">
+              <div className="icon-container icon-gradient-2 mx-auto mb-4 group-hover:scale-110 transition-transform">
+                <CheckCircle className="h-6 w-6" />
+              </div>
+              <CardTitle className="text-lg">Easy Setup</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription>Simple step-by-step process to create your invitation</CardDescription>
+            </CardContent>
+          </Card>
+
+          <Card className="card-elegant hover:shadow-2xl transition-all duration-300 text-center group">
+            <CardHeader className="pb-3">
+              <div className="icon-container icon-gradient-3 mx-auto mb-4 group-hover:scale-110 transition-transform">
+                <Palette className="h-6 w-6" />
+              </div>
+              <CardTitle className="text-lg">Beautiful Designs</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription>Choose from our collection of stunning templates</CardDescription>
+            </CardContent>
+          </Card>
+
+          <Card className="card-elegant hover:shadow-2xl transition-all duration-300 text-center group">
+            <CardHeader className="pb-3">
+              <div className="icon-container icon-gradient-4 mx-auto mb-4 group-hover:scale-110 transition-transform">
+                <Globe className="h-6 w-6" />
+              </div>
+              <CardTitle className="text-lg">Custom URL</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription>Get your own personalized invitation link</CardDescription>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center">
+          <p className="text-sm text-muted-foreground">
+            Need help? Contact our support team
+          </p>
+        </div>
+      </DashboardLayout>
     </>
   );
 }

@@ -55,16 +55,26 @@ class FrontendController extends Controller
      */
     public function dashboard(Request $request)
     {
-        // Get user data if authenticated
+        // Get user data if authenticated, otherwise provide mock data for testing
         $user = $request->user();
 
+        if (!$user) {
+            // Mock user data for testing without authentication
+            $user = (object) [
+                'id' => 1,
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'hasWedding' => false,
+            ];
+        }
+
         return Inertia::render('DashboardFixed', [
-            'user' => $user ? [
+            'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'hasWedding' => $user->weddings()->exists(),
-            ] : null,
+                'hasWedding' => $user->hasWedding ?? false,
+            ],
         ]);
     }
 
@@ -75,13 +85,23 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
+        if (!$user) {
+            // Mock user data for testing without authentication
+            $user = (object) [
+                'id' => 1,
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'hasWedding' => false,
+            ];
+        }
+
         return Inertia::render('onboarding/index', [
-            'user' => $user ? [
+            'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'hasWedding' => $user->weddings()->exists(),
-            ] : null,
+                'hasWedding' => $user->hasWedding ?? false,
+            ],
             'currentStep' => 1,
         ]);
     }
@@ -93,12 +113,23 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
+        if (!$user) {
+            // Mock user data for testing without authentication
+            $user = (object) [
+                'id' => 1,
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'hasWedding' => false,
+            ];
+        }
+
         return Inertia::render('onboarding/couple-info', [
-            'user' => $user ? [
+            'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-            ] : null,
+                'hasWedding' => $user->hasWedding ?? false,
+            ],
         ]);
     }
 
@@ -109,12 +140,23 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
+        if (!$user) {
+            // Mock user data for testing without authentication
+            $user = (object) [
+                'id' => 1,
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'hasWedding' => false,
+            ];
+        }
+
         return Inertia::render('onboarding/wedding-location', [
-            'user' => $user ? [
+            'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-            ] : null,
+                'hasWedding' => $user->hasWedding ?? false,
+            ],
         ]);
     }
 
@@ -183,12 +225,33 @@ class FrontendController extends Controller
         $user = $request->user();
 
         if (!$user) {
-            return redirect()->route('login');
+            // Mock user data for testing without authentication
+            $user = (object) [
+                'id' => 1,
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'hasWedding' => false,
+            ];
         }
 
-        $weddings = $user->weddings()->with('package')->get();
+        // Mock weddings data for testing
+        $weddings = collect([
+            (object) [
+                'id' => 1,
+                'title' => 'Sample Wedding',
+                'slug' => 'sample-wedding',
+                'status' => 'active',
+                'package' => (object) ['name' => 'Premium Package'],
+            ]
+        ]);
 
         return Inertia::render('Wedding/MyWeddings', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'hasWedding' => $user->hasWedding ?? false,
+            ],
             'weddings' => $weddings,
         ]);
     }
@@ -229,11 +292,22 @@ class FrontendController extends Controller
         $user = $request->user();
 
         if (!$user) {
-            return redirect()->route('login');
+            // Mock user data for testing without authentication
+            $user = (object) [
+                'id' => 1,
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'hasWedding' => false,
+            ];
         }
 
         return Inertia::render('Profile/Index', [
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'hasWedding' => $user->hasWedding ?? false,
+            ],
         ]);
     }
 
@@ -245,11 +319,22 @@ class FrontendController extends Controller
         $user = $request->user();
 
         if (!$user) {
-            return redirect()->route('login');
+            // Mock user data for testing without authentication
+            $user = (object) [
+                'id' => 1,
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'hasWedding' => false,
+            ];
         }
 
         return Inertia::render('Settings/Index', [
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'hasWedding' => $user->hasWedding ?? false,
+            ],
         ]);
     }
 
@@ -261,12 +346,33 @@ class FrontendController extends Controller
         $user = $request->user();
 
         if (!$user) {
-            return redirect()->route('login');
+            // Mock user data for testing without authentication
+            $user = (object) [
+                'id' => 1,
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'hasWedding' => false,
+            ];
         }
 
-        $orders = $user->orders()->with(['package', 'wedding'])->get();
+        // Mock orders data for testing
+        $orders = collect([
+            (object) [
+                'id' => 1,
+                'status' => 'completed',
+                'package' => (object) ['name' => 'Premium Package'],
+                'wedding' => (object) ['title' => 'Sample Wedding'],
+                'created_at' => now(),
+            ]
+        ]);
 
         return Inertia::render('Order/Index', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'hasWedding' => $user->hasWedding ?? false,
+            ],
             'orders' => $orders,
         ]);
     }
@@ -279,22 +385,195 @@ class FrontendController extends Controller
         $user = $request->user();
 
         if (!$user) {
-            return redirect()->route('login');
+            // Mock user data for testing without authentication
+            $user = (object) [
+                'id' => 1,
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'hasWedding' => false,
+            ];
         }
 
-        // Get user's wedding analytics
-        $weddings = $user->weddings()->with(['package'])->get();
-        $totalViews = $weddings->sum('views');
-        $totalOrders = $user->orders()->count();
+        // Mock analytics data for testing
+        $weddings = collect([
+            (object) [
+                'id' => 1,
+                'title' => 'Sample Wedding',
+                'views' => 150,
+                'package' => (object) ['name' => 'Premium Package'],
+            ]
+        ]);
 
         return Inertia::render('Analytics/Index', [
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'hasWedding' => $user->hasWedding ?? false,
+            ],
             'weddings' => $weddings,
             'stats' => [
-                'totalWeddings' => $weddings->count(),
-                'totalViews' => $totalViews,
-                'totalOrders' => $totalOrders,
+                'totalWeddings' => 1,
+                'totalViews' => 150,
+                'totalOrders' => 1,
             ],
+        ]);
+    }
+
+    /**
+     * Show wedding invitation list
+     */
+    public function weddingInvitations(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            // Mock user data for testing without authentication
+            $user = (object) [
+                'id' => 1,
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'hasWedding' => false,
+            ];
+        }
+
+        // Mock weddings data with cover photos for testing
+        $weddings = collect([
+            (object) [
+                'id' => 1,
+                'slug' => 'rafi-nuna-wedding',
+                'wedding_start' => '2024-06-15 10:00:00',
+                'wedding_end' => '2024-06-15 22:00:00',
+                'view_count' => 245,
+                'is_active' => true,
+                'is_draft' => false,
+                'is_published' => true,
+                'cover_photo' => '/api/placeholder/400/300?text=Rafi+%26+Nuna',
+                'couple_names' => 'Rafi & Nuna',
+                'theme' => (object) [
+                    'id' => 1,
+                    'name' => 'Elegant Classic',
+                    'color' => '#8B4513'
+                ],
+                'package' => (object) [
+                    'id' => 1,
+                    'name' => 'Diamond Package',
+                    'price' => 2500000
+                ],
+                'created_at' => '2024-01-15 10:00:00',
+                'updated_at' => '2024-01-20 15:30:00',
+            ],
+            (object) [
+                'id' => 2,
+                'slug' => 'ahmad-siti-wedding',
+                'wedding_start' => '2024-07-20 09:00:00',
+                'wedding_end' => '2024-07-20 21:00:00',
+                'view_count' => 189,
+                'is_active' => true,
+                'is_draft' => true,
+                'is_published' => false,
+                'cover_photo' => '/api/placeholder/400/300?text=Ahmad+%26+Siti',
+                'couple_names' => 'Ahmad & Siti',
+                'theme' => (object) [
+                    'id' => 2,
+                    'name' => 'Modern Minimalist',
+                    'color' => '#2C3E50'
+                ],
+                'package' => (object) [
+                    'id' => 2,
+                    'name' => 'Gold Package',
+                    'price' => 1800000
+                ],
+                'created_at' => '2024-01-10 14:00:00',
+                'updated_at' => '2024-01-18 09:15:00',
+            ],
+            (object) [
+                'id' => 3,
+                'slug' => 'david-maya-wedding',
+                'wedding_start' => '2024-08-10 11:00:00',
+                'wedding_end' => '2024-08-10 23:00:00',
+                'view_count' => 156,
+                'is_active' => true,
+                'is_draft' => false,
+                'is_published' => true,
+                'cover_photo' => '/api/placeholder/400/300?text=David+%26+Maya',
+                'couple_names' => 'David & Maya',
+                'theme' => (object) [
+                    'id' => 3,
+                    'name' => 'Romantic Floral',
+                    'color' => '#E91E63'
+                ],
+                'package' => (object) [
+                    'id' => 3,
+                    'name' => 'Platinum Package',
+                    'price' => 3200000
+                ],
+                'created_at' => '2024-01-05 16:30:00',
+                'updated_at' => '2024-01-22 11:45:00',
+            ],
+        ]);
+
+        return Inertia::render('Wedding/InvitationList', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'hasWedding' => $user->hasWedding ?? false,
+            ],
+            'weddings' => $weddings,
+        ]);
+    }
+
+    /**
+     * Show wedding invitation configuration
+     */
+    public function weddingConfiguration(Request $request, $id)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            // Mock user data for testing without authentication
+            $user = (object) [
+                'id' => 1,
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'hasWedding' => false,
+            ];
+        }
+
+        // Mock wedding data for testing
+        $wedding = (object) [
+            'id' => (int) $id,
+            'slug' => 'rafi-nuna-wedding',
+            'wedding_start' => '2024-06-15 10:00:00',
+            'wedding_end' => '2024-06-15 22:00:00',
+            'view_count' => 245,
+            'is_active' => true,
+            'is_draft' => false,
+            'is_published' => true,
+            'couple_names' => 'Rafi & Nuna',
+            'theme' => (object) [
+                'id' => 1,
+                'name' => 'Elegant Classic',
+                'color' => '#8B4513'
+            ],
+            'package' => (object) [
+                'id' => 1,
+                'name' => 'Diamond Package',
+                'price' => 2500000
+            ],
+            'created_at' => '2024-01-15 10:00:00',
+            'updated_at' => '2024-01-20 15:30:00',
+        ];
+
+        return Inertia::render('Wedding/Configuration', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'hasWedding' => $user->hasWedding ?? false,
+            ],
+            'wedding' => $wedding,
         ]);
     }
 }

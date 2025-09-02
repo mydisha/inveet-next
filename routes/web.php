@@ -66,14 +66,14 @@ Route::get('/onboarding/design-selection', [FrontendController::class, 'designSe
 Route::get('/onboarding/wedding-url', [FrontendController::class, 'weddingUrl'])->name('onboarding.wedding-url');
 Route::get('/onboarding/activation', [FrontendController::class, 'activation'])->name('onboarding.activation');
 
-// Protected routes (require authentication)
-Route::middleware('auth')->group(function () {
-    Route::get('/my-weddings', [FrontendController::class, 'myWeddings'])->name('weddings.my');
-    Route::get('/orders', [FrontendController::class, 'orders'])->name('orders.index');
-    Route::get('/analytics', [FrontendController::class, 'analytics'])->name('analytics.index');
-    Route::get('/profile', [FrontendController::class, 'profile'])->name('profile');
-    Route::get('/settings', [FrontendController::class, 'settings'])->name('settings');
-});
+// Dashboard routes (accessible without auth for testing)
+Route::get('/my-weddings', [FrontendController::class, 'myWeddings'])->name('weddings.my');
+Route::get('/wedding-invitations', [FrontendController::class, 'weddingInvitations'])->name('weddings.invitations');
+Route::get('/wedding/{id}/configuration', [FrontendController::class, 'weddingConfiguration'])->name('weddings.configuration');
+Route::get('/orders', [FrontendController::class, 'orders'])->name('orders.index');
+Route::get('/analytics', [FrontendController::class, 'analytics'])->name('analytics.index');
+Route::get('/profile', [FrontendController::class, 'profile'])->name('profile');
+Route::get('/settings', [FrontendController::class, 'settings'])->name('settings');
 
 // Public wedding routes
 Route::get('/preview/{slug}', [FrontendController::class, 'showWedding'])->name('wedding.preview');

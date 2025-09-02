@@ -240,37 +240,37 @@ All colors MUST be HSL for consistency and theming
     @apply border border-primary-glow/20;
   }
 
-  /* NEW: Optimized icon gradient variants */
+  /* NEW: Solid color icon variants - UI/UX friendly */
   .icon-gradient-1 {
-    background: var(--gradient-icon-1);
+    @apply bg-primary text-primary-foreground;
   }
 
   .icon-gradient-2 {
-    background: var(--gradient-icon-2);
+    @apply bg-accent text-accent-foreground;
   }
 
   .icon-gradient-3 {
-    background: var(--gradient-icon-3);
+    @apply bg-warm text-warm-foreground;
   }
 
   .icon-gradient-4 {
-    background: var(--gradient-icon-4);
+    @apply bg-primary-glow text-primary-foreground;
   }
 
   .icon-gradient-5 {
-    background: var(--gradient-icon-5);
+    @apply bg-accent text-accent-foreground;
   }
 
   .icon-gradient-6 {
-    background: var(--gradient-icon-6);
+    @apply bg-primary text-primary-foreground;
   }
 
   .icon-gradient-7 {
-    background: var(--gradient-icon-7);
+    @apply bg-warm text-warm-foreground;
   }
 
   .icon-gradient-8 {
-    background: var(--gradient-icon-8);
+    @apply bg-primary-glow text-primary-foreground;
   }
 
   /* NEW: Enhanced hover effects for cards */
