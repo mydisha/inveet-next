@@ -1,11 +1,8 @@
-import { useState } from 'react';
-import { Link } from '@inertiajs/react';
-import { Heart, ArrowLeft, ArrowRight, Palette, Clock, Image, Star, CheckCircle, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Toggle } from '@/components/ui/toggle';
-import { Label } from '@/components/ui/label';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { ArrowLeft, ArrowRight, Check, Palette, Sparkles } from 'lucide-react';
+import { useState } from 'react';
 
 interface Design {
   id: string;
@@ -14,63 +11,64 @@ interface Design {
   description: string;
   preview: string;
   features: string[];
-  isPopular?: boolean;
-  isNew?: boolean;
   colors: string[];
 }
 
-interface DesignSettings {
-  showCouplePhotos: boolean;
-  showCountdown: boolean;
-  showRSVP: boolean;
-  showGallery: boolean;
-  showLoveStory: boolean;
-  showParents: boolean;
-  showSocialMedia: boolean;
-  showVenueMap: boolean;
+interface DesignSelectionProps {
+  user?: {
+    id: number;
+    name: string;
+    email: string;
+  } | null;
 }
 
-export default function DesignSelection() {
+export default function DesignSelection({ user }: DesignSelectionProps) {
   const [selectedDesign, setSelectedDesign] = useState<string>('');
-  const [settings, setSettings] = useState<DesignSettings>({
-    showCouplePhotos: true,
-    showCountdown: true,
-    showRSVP: true,
-    showGallery: true,
-    showLoveStory: true,
-    showParents: true,
-    showSocialMedia: true,
-    showVenueMap: true
+
+  const { data, setData, post, processing, errors } = useForm({
+    selected_design: '',
   });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedDesign) return;
+
+    setData('selected_design', selectedDesign);
+    post('/onboarding/design-selection', {
+      onSuccess: () => {
+        // Navigate to next step
+        window.location.href = '/onboarding/wedding-url';
+      },
+    });
+  };
 
   const designs: Design[] = [
     {
       id: 'elegant-classic',
       name: 'Elegant Classic',
       category: 'Traditional',
-      description: 'Timeless design with sophisticated typography and elegant spacing',
+      description: 'Timeless and sophisticated design with elegant typography',
       preview: '/api/placeholder/400/300',
-      features: ['Clean typography', 'Elegant spacing', 'Traditional layout', 'Professional look'],
-      isPopular: true,
-      colors: ['#8B7355', '#F5F5DC', '#D2B48C']
+      features: ['Elegant typography', 'Classic layout', 'Gold accents', 'Formal style'],
+      colors: ['#8B4513', '#DAA520', '#F5F5DC']
     },
     {
-      id: 'modern-minimal',
-      name: 'Modern Minimal',
+      id: 'modern-minimalist',
+      name: 'Modern Minimalist',
       category: 'Contemporary',
-      description: 'Clean, minimalist design with plenty of white space',
+      description: 'Clean and modern design with minimalist aesthetics',
       preview: '/api/placeholder/400/300',
-      features: ['Minimalist layout', 'Clean lines', 'Modern typography', 'Plenty of whitespace'],
-      colors: ['#2C3E50', '#ECF0F1', '#95A5A6']
+      features: ['Clean lines', 'Modern typography', 'Minimal design', 'Contemporary feel'],
+      colors: ['#2C3E50', '#E74C3C', '#ECF0F1']
     },
     {
       id: 'romantic-floral',
       name: 'Romantic Floral',
       category: 'Romantic',
-      description: 'Beautiful floral elements with romantic color palette',
+      description: 'Beautiful floral design perfect for romantic weddings',
       preview: '/api/placeholder/400/300',
-      features: ['Floral elements', 'Romantic colors', 'Soft textures', 'Elegant curves'],
-      colors: ['#E91E63', '#F8BBD9', '#FCE4EC']
+      features: ['Floral elements', 'Romantic colors', 'Soft typography', 'Elegant borders'],
+      colors: ['#E91E63', '#F8BBD9', '#FFF8E1']
     },
     {
       id: 'vintage-charm',
@@ -101,13 +99,6 @@ export default function DesignSelection() {
     }
   ];
 
-  const handleSettingToggle = (setting: keyof DesignSettings) => {
-    setSettings(prev => ({
-      ...prev,
-      [setting]: !prev[setting]
-    }));
-  };
-
   const getCategoryColor = (category: string) => {
     const colors: { [key: string]: string } = {
       'Traditional': 'bg-blue-100 text-blue-800',
@@ -115,260 +106,179 @@ export default function DesignSelection() {
       'Romantic': 'bg-pink-100 text-pink-800',
       'Vintage': 'bg-amber-100 text-amber-800',
       'Destination': 'bg-green-100 text-green-800',
-      'Rustic': 'bg-orange-100 text-orange-800'
+      'Rustic': 'bg-orange-100 text-orange-800',
     };
     return colors[category] || 'bg-gray-100 text-gray-800';
   };
 
   return (
-    <div className="min-h-screen bg-wedding-gradient">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-rose-gold rounded-full flex items-center justify-center">
-              <Heart className="w-6 h-6 text-white" />
+    <>
+      <Head title="Design Selection - Onboarding" />
+
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary-light/10">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 right-20 w-32 h-32 bg-primary/10 rounded-full opacity-30 animate-pulse"></div>
+          <div className="absolute bottom-32 left-16 w-24 h-24 bg-primary-glow/10 rounded-full opacity-30 animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-primary-light/20 rounded-full opacity-30 animate-pulse" style={{ animationDelay: '4s' }}></div>
+        </div>
+
+        <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
+          <div className="w-full max-w-6xl">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <div className="flex items-center justify-center mb-4">
+                <img
+                  src="/inveet-logo.png"
+                  alt="Inveet.Id"
+                  className="h-12 w-auto"
+                />
+              </div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Choose Your Design 🎨
+              </h1>
+              <p className="text-lg text-gray-600">
+                Select the perfect design for your wedding invitation
+              </p>
             </div>
-            <span className="text-2xl font-bold text-rose-gold">Inveet</span>
-          </div>
-          
-          <Link href="/onboarding">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Onboarding
-            </Button>
-          </Link>
-        </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        {/* Page Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center space-x-2 bg-peach/20 px-4 py-2 rounded-full mb-4">
-            <span className="text-2xl">🎨</span>
-            <span className="text-peach font-medium">Step 4 of 5</span>
-          </div>
-          
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            Choose Your Perfect Design
-          </h1>
-          
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Select from our beautiful collection of wedding invitation templates and customize the features to match your style.
-          </p>
-        </div>
+            {/* Progress Bar */}
+            <div className="mb-8">
+              <div className="flex items-center justify-center space-x-4">
+                <div className="flex items-center">
+                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-semibold">
+                    ✓
+                  </div>
+                  <span className="ml-2 text-sm font-medium text-primary">Couple Info</span>
+                </div>
+                <div className="w-16 h-1 bg-primary rounded"></div>
+                <div className="flex items-center">
+                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-semibold">
+                    ✓
+                  </div>
+                  <span className="ml-2 text-sm font-medium text-primary">Location</span>
+                </div>
+                <div className="w-16 h-1 bg-primary rounded"></div>
+                <div className="flex items-center">
+                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-semibold">
+                    3
+                  </div>
+                  <span className="ml-2 text-sm font-medium text-primary">Design</span>
+                </div>
+                <div className="w-16 h-1 bg-gray-200 rounded"></div>
+                <div className="flex items-center">
+                  <div className="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-sm font-semibold">
+                    4
+                  </div>
+                  <span className="ml-2 text-sm font-medium text-gray-500">URL</span>
+                </div>
+              </div>
+            </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Design Selection */}
-          <div className="lg:col-span-2">
-            <Card className="border-0 shadow-lg mb-8">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold text-gray-800 flex items-center space-x-2">
-                  <Palette className="w-6 h-6 text-rose-gold" />
-                  <span>Available Designs</span>
-                </CardTitle>
-                <CardDescription>
-                  Browse through our curated collection of beautiful wedding invitation designs
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 gap-4">
-                  {designs.map((design) => (
-                    <div
-                      key={design.id}
-                      className={`relative border-2 rounded-lg p-4 cursor-pointer transition-all hover:shadow-lg ${
-                        selectedDesign === design.id
-                          ? 'border-rose-gold bg-rose-gold/5'
-                          : 'border-gray-200 hover:border-rose-gold/50'
-                      }`}
-                      onClick={() => setSelectedDesign(design.id)}
-                    >
-                      {/* Badges */}
-                      <div className="absolute top-2 right-2 flex space-x-1">
-                        {design.isPopular && (
-                          <Badge className="bg-rose-gold text-white text-xs">
-                            <Star className="w-3 h-3 mr-1" />
-                            Popular
-                          </Badge>
-                        )}
-                        {design.isNew && (
-                          <Badge className="bg-green-500 text-white text-xs">
-                            New
-                          </Badge>
-                        )}
-                      </div>
-
-                      {/* Preview Image */}
-                      <div className="w-full h-32 bg-gray-200 rounded-lg mb-3 flex items-center justify-center">
-                        <div className="text-center text-gray-500">
-                          <Image className="w-8 h-8 mx-auto mb-1" />
-                          <span className="text-xs">Design Preview</span>
+            {/* Design Selection */}
+            <form onSubmit={handleSubmit}>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                {designs.map((design) => (
+                  <Card
+                    key={design.id}
+                    className={`cursor-pointer transition-all duration-200 hover:shadow-lg ${
+                      selectedDesign === design.id
+                        ? 'ring-2 ring-primary shadow-lg'
+                        : 'hover:shadow-md'
+                    }`}
+                    onClick={() => setSelectedDesign(design.id)}
+                  >
+                    <CardHeader className="p-4">
+                      <div className="relative">
+                        <div className="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center mb-4">
+                          <Palette className="h-12 w-12 text-gray-400" />
                         </div>
+                        {selectedDesign === design.id && (
+                          <div className="absolute top-2 right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                            <Check className="h-4 w-4 text-white" />
+                          </div>
+                        )}
                       </div>
 
-                      {/* Design Info */}
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <h3 className="font-semibold text-gray-800 text-sm">{design.name}</h3>
-                          <Badge className={`${getCategoryColor(design.category)} text-xs`}>
+                          <CardTitle className="text-lg font-semibold text-gray-900">
+                            {design.name}
+                          </CardTitle>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(design.category)}`}>
                             {design.category}
-                          </Badge>
+                          </span>
                         </div>
-                        <p className="text-xs text-gray-600 line-clamp-2">{design.description}</p>
-                        
-                        {/* Color Palette */}
-                        <div className="flex items-center space-x-2 mt-2">
-                          <div className="flex space-x-1">
+
+                        <CardDescription className="text-sm text-gray-600">
+                          {design.description}
+                        </CardDescription>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="p-4 pt-0">
+                      <div className="space-y-3">
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-700 mb-2">Features:</h4>
+                          <ul className="text-xs text-gray-600 space-y-1">
+                            {design.features.map((feature, index) => (
+                              <li key={index} className="flex items-center">
+                                <Sparkles className="h-3 w-3 text-primary mr-1" />
+                                {feature}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-700 mb-2">Color Palette:</h4>
+                          <div className="flex space-x-2">
                             {design.colors.map((color, index) => (
                               <div
                                 key={index}
-                                className="w-4 h-4 rounded-full border border-gray-200"
+                                className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
                                 style={{ backgroundColor: color }}
+                                title={color}
                               />
                             ))}
                           </div>
-                          <MoreHorizontal className="w-3 h-3 text-gray-400" />
                         </div>
                       </div>
-
-                      {/* Selection Indicator */}
-                      {selectedDesign === design.id && (
-                        <div className="absolute top-2 left-2 w-5 h-5 bg-rose-gold rounded-full flex items-center justify-center">
-                          <CheckCircle className="w-3 h-3 text-white" />
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Selected Design Preview */}
-            {selectedDesign && (
-              <Card className="border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="text-xl font-bold text-gray-800">
-                    Preview: {designs.find(d => d.id === selectedDesign)?.name}
-                  </CardTitle>
-                  <CardDescription>
-                    This is how your invitation will look with the selected design
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="bg-gray-100 rounded-lg p-8 text-center">
-                    <div className="w-full h-64 bg-white rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
-                      <div className="text-center text-gray-500">
-                        <Palette className="w-16 h-16 mx-auto mb-4 text-rose-gold" />
-                        <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                          {designs.find(d => d.id === selectedDesign)?.name}
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          Design preview will be displayed here
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-
-          {/* Design Settings */}
-          <div className="space-y-6">
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-xl font-bold text-gray-800">
-                  Design Features
-                </CardTitle>
-                <CardDescription>
-                  Customize which elements to show or hide on your invitation
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {[
-                  { key: 'showCouplePhotos', label: 'Couple Photos', icon: Image, description: 'Display your beautiful photos' },
-                  { key: 'showCountdown', label: 'Wedding Countdown', icon: Clock, description: 'Show days until your special day' },
-                  { key: 'showRSVP', label: 'RSVP Form', icon: Heart, description: 'Allow guests to respond' },
-                  { key: 'showGallery', label: 'Photo Gallery', icon: Image, description: 'Share more memories' },
-                  { key: 'showLoveStory', label: 'Love Story', icon: Heart, description: 'Tell your journey together' },
-                  { key: 'showParents', label: 'Parents Names', icon: Heart, description: 'Include family information' },
-                  { key: 'showSocialMedia', label: 'Social Media', icon: Heart, description: 'Connect with guests' },
-                  { key: 'showVenueMap', label: 'Venue Map', icon: Heart, description: 'Help guests find the location' }
-                ].map((setting) => (
-                  <div key={setting.key} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <setting.icon className="w-4 h-4 text-rose-gold" />
-                      <div>
-                        <Label className="text-sm font-medium text-gray-700 cursor-pointer">
-                          {setting.label}
-                        </Label>
-                        <p className="text-xs text-gray-500">{setting.description}</p>
-                      </div>
-                    </div>
-                    <Button
-                      variant={settings[setting.key as keyof DesignSettings] ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => handleSettingToggle(setting.key as keyof DesignSettings)}
-                      className={settings[setting.key as keyof DesignSettings] ? "bg-rose-gold hover:bg-rose-gold/90" : ""}
-                    >
-                      {settings[setting.key as keyof DesignSettings] ? 'On' : 'Off'}
-                    </Button>
-                  </div>
+                    </CardContent>
+                  </Card>
                 ))}
-              </CardContent>
-            </Card>
+              </div>
 
-            {/* Design Tips */}
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-soft-pink/10 to-sage/10">
-              <CardHeader>
-                <CardTitle className="text-lg font-bold text-gray-800">
-                  Design Tips
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm text-gray-600">
-                <div className="flex items-start space-x-2">
-                  <span className="text-rose-gold">💡</span>
-                  <span>Choose a design that reflects your wedding theme and personal style</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <span className="text-rose-gold">💡</span>
-                  <span>Consider your venue and wedding colors when selecting</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <span className="text-rose-gold">💡</span>
-                  <span>You can always customize colors and fonts later</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <span className="text-rose-gold">💡</span>
-                  <span>Popular designs are tested and loved by many couples</span>
-                </div>
-              </CardContent>
-            </Card>
+              {/* Action Buttons */}
+              <div className="flex justify-between">
+                <Link
+                  href="/onboarding/wedding-location"
+                  className="flex items-center px-6 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back
+                </Link>
+
+                <Button
+                  type="submit"
+                  disabled={processing || !selectedDesign}
+                  className="bg-gradient-to-r from-primary to-primary-glow hover:from-primary/90 hover:to-primary-glow/90 text-white px-8 py-2 shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {processing ? 'Saving...' : 'Continue'}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+            </form>
+
+            {/* Footer */}
+            <div className="text-center mt-8">
+              <p className="text-sm text-gray-500">
+                Need help? Contact our support team
+              </p>
+            </div>
           </div>
         </div>
-
-        {/* Navigation */}
-        <div className="flex items-center justify-between mt-12">
-          <Link href="/onboarding/custom-url">
-            <Button variant="outline" size="lg" className="border-gray-300 text-gray-600 hover:border-rose-gold hover:text-rose-gold">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Custom URL
-            </Button>
-          </Link>
-          
-          <Link href="/onboarding/activation">
-            <Button 
-              size="lg" 
-              className="bg-rose-gold hover:bg-rose-gold/90 text-white px-8"
-              disabled={!selectedDesign}
-            >
-              Continue to Activation
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </Link>
-        </div>
-      </main>
-    </div>
+      </div>
+    </>
   );
 }

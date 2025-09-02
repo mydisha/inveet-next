@@ -71,41 +71,83 @@ class FrontendController extends Controller
     /**
      * Show the onboarding overview
      */
-    public function onboarding()
+    public function onboarding(Request $request)
     {
-        return Inertia::render('Onboarding');
+        $user = $request->user();
+
+        return Inertia::render('onboarding/index', [
+            'user' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'hasWedding' => $user->weddings()->exists(),
+            ] : null,
+            'currentStep' => 1,
+        ]);
     }
 
     /**
      * Show the couple info step
      */
-    public function coupleInfo()
+    public function coupleInfo(Request $request)
     {
-        return Inertia::render('Onboarding/CoupleInfo');
+        $user = $request->user();
+
+        return Inertia::render('onboarding/couple-info', [
+            'user' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ] : null,
+        ]);
     }
 
     /**
-     * Show the wedding details step
+     * Show the wedding location step
      */
-    public function weddingDetails()
+    public function weddingLocation(Request $request)
     {
-        return Inertia::render('Onboarding/WeddingDetails');
-    }
+        $user = $request->user();
 
-    /**
-     * Show the custom URL step
-     */
-    public function customUrl()
-    {
-        return Inertia::render('Onboarding/CustomUrl');
+        return Inertia::render('onboarding/wedding-location', [
+            'user' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ] : null,
+        ]);
     }
 
     /**
      * Show the design selection step
      */
-    public function designSelection()
+    public function designSelection(Request $request)
     {
-        return Inertia::render('Onboarding/DesignSelection');
+        $user = $request->user();
+
+        return Inertia::render('onboarding/design-selection', [
+            'user' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ] : null,
+        ]);
+    }
+
+    /**
+     * Show the wedding URL step
+     */
+    public function weddingUrl(Request $request)
+    {
+        $user = $request->user();
+
+        return Inertia::render('onboarding/wedding-url', [
+            'user' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ] : null,
+        ]);
     }
 
     /**

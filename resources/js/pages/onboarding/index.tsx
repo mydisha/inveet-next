@@ -1,206 +1,189 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Link } from '@inertiajs/react';
-import { ArrowLeft, CheckCircle } from 'lucide-react';
-import { useState } from 'react';
+import { Head, Link } from '@inertiajs/react';
+import { ArrowRight, CheckCircle, Globe, Heart, MapPin, Palette } from 'lucide-react';
+import { useEffect } from 'react';
 
-export default function Onboarding() {
-  const [currentStep, setCurrentStep] = useState(0);
+interface OnboardingIndexProps {
+  user?: {
+    id: number;
+    name: string;
+    email: string;
+    hasWedding: boolean;
+  } | null;
+  currentStep?: number;
+}
+
+export default function OnboardingIndex({ user, currentStep = 1 }: OnboardingIndexProps) {
+  useEffect(() => {
+    // Auto-redirect to the appropriate step if user has already started onboarding
+    if (currentStep > 1) {
+      const steps = [
+        '/onboarding/couple-info',
+        '/onboarding/wedding-location',
+        '/onboarding/design-selection',
+        '/onboarding/wedding-url'
+      ];
+      window.location.href = steps[currentStep - 1];
+    }
+  }, [currentStep]);
 
   const steps = [
     {
-      id: 'couple-info',
+      id: 1,
       title: 'Couple Information',
-      description: 'Tell us about yourselves',
-      icon: '👰‍♀️🤵‍♂️',
-      path: '/onboarding/couple-info'
+      description: 'Tell us about the bride and groom',
+      icon: Heart,
+      href: '/onboarding/couple-info',
+      color: 'text-primary'
     },
     {
-      id: 'wedding-details',
-      title: 'Wedding Details',
-      description: 'Venue, date, and time',
-      icon: '🏛️',
-      path: '/onboarding/wedding-details'
+      id: 2,
+      title: 'Wedding Location',
+      description: 'Where will your special day take place?',
+      icon: MapPin,
+      href: '/onboarding/wedding-location',
+      color: 'text-primary'
     },
     {
-      id: 'custom-url',
-      title: 'Custom URL',
-      description: 'Choose your invitation link',
-      icon: '🔗',
-      path: '/onboarding/custom-url'
-    },
-    {
-      id: 'design-selection',
+      id: 3,
       title: 'Design Selection',
-      description: 'Pick your perfect template',
-      icon: '🎨',
-      path: '/onboarding/design-selection'
+      description: 'Choose your perfect invitation design',
+      icon: Palette,
+      href: '/onboarding/design-selection',
+      color: 'text-primary'
     },
     {
-      id: 'activation',
-      title: 'Activation',
-      description: 'Final setup and launch',
-      icon: '✨',
-      path: '/onboarding/activation'
+      id: 4,
+      title: 'Wedding URL',
+      description: 'Create your unique invitation link',
+      icon: Globe,
+      href: '/onboarding/wedding-url',
+      color: 'text-primary'
     }
   ];
 
   return (
-    <div className="min-h-screen bg-wedding-gradient">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <div className="flex items-center">
-            <img
-              src="/inveet-logo.png"
-              alt="Inveet.Id"
-              className="h-10 w-auto"
-            />
-          </div>
+    <>
+      <Head title="Welcome to Inveet - Onboarding" />
 
-          <Link href="/dashboard">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Dashboard
-            </Button>
-          </Link>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-6 py-12">
-        {/* Progress Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            Let's Create Your Wedding Invitation
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            We'll guide you through each step to create a beautiful, personalized digital invitation for your special day.
-          </p>
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary-light/10">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 right-20 w-32 h-32 bg-primary/10 rounded-full opacity-30 animate-pulse"></div>
+          <div className="absolute bottom-32 left-16 w-24 h-24 bg-primary-glow/10 rounded-full opacity-30 animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-primary-light/20 rounded-full opacity-30 animate-pulse" style={{ animationDelay: '4s' }}></div>
         </div>
 
-        {/* Progress Steps */}
-        <div className="mb-12">
-          <div className="flex items-center justify-between mb-8">
-            {steps.map((step, index) => (
-              <div key={step.id} className="flex items-center">
-                <div className="flex flex-col items-center">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 ${
-                    index <= currentStep
-                      ? 'bg-rose-gold text-white'
-                      : 'bg-gray-200 text-gray-400'
-                  }`}>
-                    {index < currentStep ? (
-                      <CheckCircle className="w-6 h-6" />
-                    ) : (
-                      <span className="text-lg">{step.icon}</span>
-                    )}
-                  </div>
-                  <span className={`text-sm font-medium ${
-                    index <= currentStep ? 'text-gray-800' : 'text-gray-400'
-                  }`}>
-                    {step.title}
-                  </span>
-                </div>
-                {index < steps.length - 1 && (
-                  <div className={`w-16 h-1 mx-4 ${
-                    index < currentStep ? 'bg-rose-gold' : 'bg-gray-200'
-                  }`}></div>
-                )}
+        <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
+          <div className="w-full max-w-4xl">
+            {/* Header */}
+            <div className="text-center mb-12">
+              <div className="flex items-center justify-center mb-6">
+                <img
+                  src="/inveet-logo.png"
+                  alt="Inveet.Id"
+                  className="h-16 w-auto"
+                />
               </div>
-            ))}
-          </div>
-        </div>
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                Welcome to Inveet! 🎉
+              </h1>
+              <p className="text-xl text-gray-600 mb-2">
+                Let's create your beautiful wedding invitation
+              </p>
+              <p className="text-lg text-gray-500">
+                We'll guide you through a few simple steps to get started
+              </p>
+            </div>
 
-        {/* Step Cards */}
-        <div className="grid gap-6">
-          {steps.map((step, index) => (
-            <Card
-              key={step.id}
-              className={`border-2 transition-all hover:shadow-lg ${
-                index === currentStep
-                  ? 'border-rose-gold bg-rose-gold/5'
-                  : index < currentStep
-                    ? 'border-green-200 bg-green-50'
-                    : 'border-gray-200 bg-white'
-              }`}
-            >
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl ${
-                      index === currentStep
-                        ? 'bg-rose-gold text-white'
-                        : index < currentStep
-                          ? 'bg-green-100 text-green-600'
-                          : 'bg-gray-100 text-gray-400'
-                    }`}>
-                      {index < currentStep ? (
-                        <CheckCircle className="w-8 h-8" />
-                      ) : (
-                        <span>{step.icon}</span>
-                      )}
-                    </div>
-                    <div>
-                      <h3 className={`text-xl font-semibold ${
-                        index === currentStep ? 'text-rose-gold' : 'text-gray-800'
-                      }`}>
+            {/* Steps Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              {steps.map((step, index) => {
+                const Icon = step.icon;
+                return (
+                  <div
+                    key={step.id}
+                    className="relative"
+                  >
+                    {/* Connection Line */}
+                    {index < steps.length - 1 && (
+                      <div className="hidden lg:block absolute top-8 left-full w-full h-0.5 bg-gray-200 z-0" style={{ width: 'calc(100% - 2rem)' }}>
+                        <div className="absolute top-0 left-0 w-0 h-full bg-primary transition-all duration-500" style={{ width: currentStep > step.id ? '100%' : '0%' }}></div>
+                      </div>
+                    )}
+
+                    <div className="relative z-10 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 text-center group cursor-pointer">
+                      <div className="mb-4">
+                        <div className={`w-16 h-16 mx-auto rounded-full bg-gradient-to-r from-primary/20 to-primary-glow/20 flex items-center justify-center group-hover:from-primary/30 group-hover:to-primary-glow/30 transition-all duration-300`}>
+                          <Icon className={`h-8 w-8 ${step.color}`} />
+                        </div>
+                      </div>
+
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
                         {step.title}
                       </h3>
-                      <p className="text-gray-600">{step.description}</p>
+
+                      <p className="text-sm text-gray-600 mb-4">
+                        {step.description}
+                      </p>
+
+                      <div className="flex items-center justify-center">
+                        <span className="text-xs font-medium text-primary group-hover:text-primary-glow transition-colors">
+                          Step {step.id}
+                        </span>
+                      </div>
                     </div>
                   </div>
+                );
+              })}
+            </div>
 
-                  <div className="flex items-center space-x-3">
-                    {index < currentStep && (
-                      <span className="text-green-600 text-sm font-medium">Completed</span>
-                    )}
-                    {index === currentStep && (
-                      <span className="text-rose-gold text-sm font-medium">Current Step</span>
-                    )}
-                    {index > currentStep && (
-                      <span className="text-gray-400 text-sm">Upcoming</span>
-                    )}
-
-                    <Link href={step.path}>
-                      <Button
-                        variant={index === currentStep ? "default" : "outline"}
-                        className={index === currentStep
-                          ? 'bg-rose-gold hover:bg-rose-gold/90'
-                          : 'border-gray-300 text-gray-600 hover:border-rose-gold hover:text-rose-gold'
-                        }
-                        disabled={index > currentStep}
-                      >
-                        {index < currentStep ? 'Edit' : index === currentStep ? 'Start' : 'Locked'}
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Quick Start */}
-        <div className="mt-12 text-center">
-          <Card className="bg-gradient-to-r from-soft-pink/20 to-sage/20 border-0">
-            <CardContent className="p-8">
-              <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                Ready to Get Started?
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Begin with the first step to create your beautiful wedding invitation.
-                You can always come back and edit any section later.
-              </p>
-              <Link href="/onboarding/couple-info">
-                <Button size="lg" className="bg-rose-gold hover:bg-rose-gold/90 text-white px-8 py-4">
-                  Start with Couple Information
-                </Button>
+            {/* Start Button */}
+            <div className="text-center">
+              <Link
+                href="/onboarding/couple-info"
+                className="inline-flex items-center bg-gradient-to-r from-primary to-primary-glow hover:from-primary/90 hover:to-primary-glow/90 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                Start Creating Your Invitation
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
-            </CardContent>
-          </Card>
+            </div>
+
+            {/* Features */}
+            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="text-center">
+                <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gradient-to-r from-primary/20 to-primary-glow/20 flex items-center justify-center">
+                  <CheckCircle className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Easy Setup</h3>
+                <p className="text-gray-600">Simple step-by-step process to create your invitation</p>
+              </div>
+
+              <div className="text-center">
+                <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gradient-to-r from-primary/20 to-primary-glow/20 flex items-center justify-center">
+                  <Palette className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Beautiful Designs</h3>
+                <p className="text-gray-600">Choose from our collection of stunning templates</p>
+              </div>
+
+              <div className="text-center">
+                <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gradient-to-r from-primary/20 to-primary-glow/20 flex items-center justify-center">
+                  <Globe className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Custom URL</h3>
+                <p className="text-gray-600">Get your own personalized invitation link</p>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="text-center mt-12">
+              <p className="text-sm text-gray-500">
+                Need help? Contact our support team
+              </p>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </>
   );
 }
