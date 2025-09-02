@@ -1,4 +1,4 @@
-import { Heart, Mail, Phone, MapPin } from 'lucide-react';
+import { Heart, Mail, MapPin, Phone } from 'lucide-react';
 
 const appName = (import.meta as any).env.VITE_APP_NAME || 'Inveet';
 
@@ -17,9 +17,9 @@ const Footer = () => {
               <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">{appName}</span>
             </div>
             <p className="text-muted-foreground leading-relaxed max-w-md">
-              Inveet.id adalah layanan untuk membuat undangan pernikahan secara online gratis dengan mudah. Undangan yang dibuat akan berbentuk sebuah website yang dapat di akses dan dibagikan kapanpun.
+              Buat undangan pernikahan online dengan mudah
             </p>
-            
+
             {/* Contact Info */}
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-muted-foreground">
@@ -43,7 +43,7 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             {/* Copyright */}
             <div className="text-muted-foreground text-sm">
-              © 2019 - {new Date().getFullYear()} {appName}.  
+              © 2019 - {new Date().getFullYear()} {appName}.
               Developed with ❤️ by Dias Taufik Rahman.
             </div>
           </div>

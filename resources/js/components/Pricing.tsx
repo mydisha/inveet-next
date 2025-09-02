@@ -73,10 +73,10 @@ const Pricing = () => {
             <span className="text-primary text-sm font-medium">Harga Undangan</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold">
-            Pilih paket undangan pernikahan online sesuai dengan kebutuhanmu
+            Pilih paket sesuai kebutuhanmu
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Tenang harganya terjangkau banget 😉 Mulai dari gratis hingga fitur lengkap
+            Mulai dari gratis hingga fitur lengkap
           </p>
         </div>
 
@@ -95,7 +95,7 @@ const Pricing = () => {
               {/* Popular Badge */}
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground px-6 py-2 rounded-full text-sm font-medium flex items-center justify-center space-x-2 shadow-lg z-10 animate-bounce-gentle">
-                  <Star className="w-4 h-4 fill-current animate-wiggle" />
+                  <Star className="w-4 h-4 fill-current" />
                   <span>Diminati</span>
                 </div>
               )}

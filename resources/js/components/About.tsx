@@ -1,4 +1,4 @@
-import { Users, Award, Globe, Heart, Star, TrendingUp, CheckCircle } from 'lucide-react';
+import { Award, CheckCircle, Globe, Heart, Star, TrendingUp, Users } from 'lucide-react';
 
 const About = () => {
   const stats = [
@@ -65,14 +65,10 @@ const About = () => {
             <Star className="w-5 h-5 text-primary" />
             <span className="text-primary text-sm font-semibold">Mereka yang Mempercayai Kami</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold">
-            Inveet telah dipercaya oleh{' '}
-            <span className="bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">441,666 pengguna</span>
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-            Serta telah terkirim ke <strong>11,938,912 tamu</strong>, total biaya percetakan yang dihemat mencapai{' '}
-            <span className="text-primary font-semibold">Rp 47.755.648.000</span>
-          </p>
+                        <h2 className="text-4xl md:text-5xl font-bold">
+                Inveet telah dipercaya oleh{' '}
+                <span className="bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">441,666 pengguna</span>
+              </h2>
         </div>
 
         {/* Stats Grid with Enhanced Design */}
@@ -87,15 +83,15 @@ const About = () => {
               >
                 {/* Background Pattern */}
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                
+
                 {/* Icon with Gradient Background */}
-                <div className={`relative w-16 h-16 bg-gradient-to-br ${stat.gradient} rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform duration-500 ease-out animate-float-gentle`}>
+                <div className={`relative w-16 h-16 bg-gradient-to-br ${stat.gradient} rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform duration-500 ease-out`}>
                   <IconComponent className="w-8 h-8 text-white" />
                 </div>
-                
+
                 {/* Content */}
                 <div className="relative text-center space-y-3">
-                  <div className="text-3xl md:text-4xl font-bold text-card-foreground animate-pulse-gentle">
+                  <div className="text-3xl md:text-4xl font-bold text-card-foreground">
                     {stat.number}
                   </div>
                   <div className="text-lg font-semibold text-card-foreground">

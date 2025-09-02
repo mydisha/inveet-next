@@ -1,6 +1,6 @@
-import { ArrowRight, Play, Star, Sparkles, Heart } from 'lucide-react';
-import { Button } from './ui/button';
+import { ArrowRight, Heart, Play, Sparkles, Star } from 'lucide-react';
 import heroCouple from '../assets/hero-couple.jpg';
+import { Button } from './ui/button';
 
 const Hero = () => {
   return (
@@ -14,7 +14,7 @@ const Hero = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/70 to-primary-glow/80"></div>
       </div>
-      
+
       {/* Enhanced Geometric Shapes with sophisticated animations */}
       <div className="shape-float-1 top-20 right-20 w-32 h-32" style={{ animationDelay: '0s' }}></div>
       <div className="shape-float-2 bottom-32 left-16 w-24 h-24" style={{ animationDelay: '2s' }}></div>
@@ -22,11 +22,11 @@ const Hero = () => {
       <div className="shape-float-4 top-1/3 left-1/4 w-20 h-20" style={{ animationDelay: '1s' }}></div>
       <div className="shape-float-1 bottom-1/4 right-1/3 w-12 h-12" style={{ animationDelay: '3s' }}></div>
       <div className="shape-float-2 top-3/4 left-1/3 w-28 h-28" style={{ animationDelay: '5s' }}></div>
-      
+
       {/* Glow Orbs for atmospheric effect */}
       <div className="glow-orb top-1/4 right-1/3 w-64 h-64" style={{ animationDelay: '1s' }}></div>
       <div className="glow-orb bottom-1/4 left-1/3 w-48 h-48" style={{ animationDelay: '3s' }}></div>
-      
+
       {/* Particle Effects */}
       <div className="particle top-1/4 left-1/4" style={{ animationDelay: '0s' }}></div>
       <div className="particle top-1/3 right-1/3" style={{ animationDelay: '1s' }}></div>
@@ -65,9 +65,9 @@ const Hero = () => {
                   </span>
                 </div>
               </h1>
-              <p className="hero-description text-xl md:text-2xl text-primary-foreground/80 max-w-lg leading-relaxed">
-                Dikemas dalam bentuk website yang menarik serta dapat dibagikan kapanpun dan dimanapun. <strong>Simple, 5 menit undangan selesai 😉</strong>
-              </p>
+                          <p className="hero-description text-xl md:text-2xl text-primary-foreground/80 max-w-lg leading-relaxed">
+              Simple, 5 menit undangan selesai 😉
+            </p>
             </div>
 
             {/* CTA Buttons with enhanced interactions */}
@@ -115,7 +115,7 @@ const Hero = () => {
               {/* Enhanced Glow Effect */}
               <div className="absolute -inset-6 bg-gradient-to-r from-primary/30 to-primary-glow/40 rounded-3xl blur-2xl animate-pulse-glow"></div>
               <div className="absolute -inset-4 bg-gradient-to-r from-accent/20 to-warm/30 rounded-3xl blur-xl animate-pulse-glow" style={{ animationDelay: '2s' }}></div>
-              
+
               {/* Phone Container with enhanced styling */}
               <div className="relative bg-gradient-to-br from-background/90 to-background/70 backdrop-blur-sm rounded-3xl p-8 border border-primary/20 shadow-2xl hero-interactive">
                 <div className="w-64 h-96 bg-gradient-to-br from-primary/10 to-primary-light/20 rounded-2xl flex items-center justify-center">
@@ -131,7 +131,7 @@ const Hero = () => {
                   </div>
                 </div>
               </div>
-              
+
               {/* Floating elements around phone */}
               <div className="absolute -top-4 -right-4 w-8 h-8 bg-accent/30 rounded-full animate-float-1"></div>
               <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-warm/40 rounded-full animate-float-2"></div>
@@ -140,7 +140,7 @@ const Hero = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Bottom decorative elements */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background/20 to-transparent"></div>
     </section>

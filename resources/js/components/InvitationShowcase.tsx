@@ -1,6 +1,6 @@
-import { Heart, Eye } from 'lucide-react';
-import { Button } from './ui/button';
+import { Eye, Heart } from 'lucide-react';
 import { useState } from 'react';
+import { Button } from './ui/button';
 
 const InvitationShowcase = () => {
   const [activeCategory, setActiveCategory] = useState('All');
@@ -64,8 +64,8 @@ const InvitationShowcase = () => {
 
   const categories = ['All', 'Classic', 'Contemporary', 'Vintage', 'Themed', 'Premium', 'Boho'];
 
-  const filteredDesigns = activeCategory === 'All' 
-    ? invitationDesigns 
+  const filteredDesigns = activeCategory === 'All'
+    ? invitationDesigns
     : invitationDesigns.filter(design => design.category === activeCategory);
 
   return (
@@ -76,12 +76,9 @@ const InvitationShowcase = () => {
           <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2">
             <span className="text-primary text-sm font-medium">Pilihan Desain</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold">
-            Pilih dan gunakan tema undangan pernikahan yang menarik serta unik
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Berbagai pilihan desain yang cantik dan elegan untuk undangan pernikahanmu
-          </p>
+                      <h2 className="text-4xl md:text-5xl font-bold">
+              Pilih tema undangan yang menarik
+            </h2>
         </div>
 
         {/* Category Filter */}
@@ -108,8 +105,8 @@ const InvitationShowcase = () => {
             >
               {/* Popular Badge */}
               {design.popular && (
-                <div className="absolute top-3 left-3 bg-accent text-accent-foreground px-2.5 py-1 rounded-full text-[10px] font-medium z-10 flex items-center gap-1 animate-bounce-gentle">
-                  <Heart className="w-3 h-3 fill-current animate-pulse-gentle" />
+                <div className="absolute top-3 left-3 bg-accent text-accent-foreground px-2.5 py-1 rounded-full text-[10px] font-medium z-10 flex items-center gap-1">
+                  <Heart className="w-3 h-3 fill-current" />
                   Popular
                 </div>
               )}

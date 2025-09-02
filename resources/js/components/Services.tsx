@@ -1,7 +1,7 @@
-import { Smartphone, Users, Calendar, Gift, Zap, HeartHandshake, Send, BarChart3, Music, MapPin, MessageCircle, Image } from 'lucide-react';
+import { BarChart3, Image, MapPin, MessageCircle, Music, Send, Smartphone, Users } from 'lucide-react';
 import { GradientCard } from './ui/card';
 
-type CardGradient = 'card-gradient-1' | 'card-gradient-2' | 'card-gradient-3' | 'card-gradient-4' | 
+type CardGradient = 'card-gradient-1' | 'card-gradient-2' | 'card-gradient-3' | 'card-gradient-4' |
                     'card-gradient-5' | 'card-gradient-6' | 'card-gradient-7' | 'card-gradient-8';
 
 type IconGradient = 'icon-gradient-1' | 'icon-gradient-2' | 'icon-gradient-3' | 'icon-gradient-4' |
@@ -84,14 +84,11 @@ const Services = () => {
           <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2">
             <span className="text-primary text-sm font-medium">Fitur Unggulan</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold">
-            Semua lebih praktis
-            <br />
-            <span className="bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">#bersamaInveet</span>
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Bagaimana Inveet bisa mempermudah pernikahanmu dari awal hingga akhir.
-          </p>
+                      <h2 className="text-4xl md:text-5xl font-bold">
+              Semua lebih praktis
+              <br />
+              <span className="bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">#bersamaInveet</span>
+            </h2>
         </div>
 
         {/* Services Grid */}

@@ -1,4 +1,4 @@
-import { ArrowRight, Star, CheckCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle, Star } from 'lucide-react';
 import { Button } from './ui/button';
 
 const CTA = () => {
@@ -31,7 +31,7 @@ const CTA = () => {
           {/* Main Heading */}
           <div className="space-y-6">
             <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight">
-              Inveet.id adalah layanan untuk membuat undangan pernikahan secara online gratis dengan mudah. Undangan yang dibuat akan berbentuk sebuah website yang dapat di akses dan dibagikan kapanpun.
+              Buat undangan pernikahan online dengan mudah
             </h2>
           </div>
 
@@ -51,14 +51,14 @@ const CTA = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
+            <Button
               size="lg"
               className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-4 rounded-full font-semibold group"
             >
               Buat Undangan Sekarang
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button 
+            <Button
               variant="outline"
               size="lg"
               className="border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-4 rounded-full font-semibold bg-transparent"
