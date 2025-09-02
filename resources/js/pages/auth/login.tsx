@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Link, useForm, usePage } from '@inertiajs/react';
-import { Heart, Eye, EyeOff, Mail, Lock, ArrowRight, Sparkles, CheckCircle, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Link, useForm, usePage } from '@inertiajs/react';
+import { ArrowRight, CheckCircle, Eye, EyeOff, Lock, Mail, Sparkles, XCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [showFlashMessage, setShowFlashMessage] = useState(false);
-  
+
   const { flash } = usePage().props as any;
-  
+
   const { data, setData, post, processing, errors } = useForm({
     email: '',
     password: '',
@@ -49,10 +49,13 @@ export default function Login() {
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-primary-glow rounded-2xl mb-4 shadow-lg">
-            <Heart className="w-8 h-8 text-primary-foreground" />
+          <div className="inline-flex items-center justify-center mb-4">
+            <img
+              src="/inveet-logo.png"
+              alt="Inveet.Id"
+              className="h-12 w-auto"
+            />
           </div>
-          <h1 className="text-3xl font-bold text-gradient-primary">Inveet</h1>
           <p className="text-foreground/70 mt-2">Your Digital Wedding Journey</p>
         </div>
 
@@ -66,7 +69,7 @@ export default function Login() {
               Sign in to continue to your dashboard
             </CardDescription>
           </CardHeader>
-          
+
           <CardContent className="space-y-6">
             {/* Flash Messages */}
             {showFlashMessage && flash?.success && (
@@ -75,7 +78,7 @@ export default function Login() {
                 {flash.success}
               </div>
             )}
-            
+
             {showFlashMessage && flash?.error && (
               <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg flex items-center">
                 <XCircle className="w-5 h-5 mr-2" />
@@ -84,9 +87,9 @@ export default function Login() {
             )}
 
             {/* Google Sign In */}
-            <Button 
+            <Button
               type="button"
-              variant="outline" 
+              variant="outline"
               className="w-full border-2 border-border hover:border-primary hover:bg-primary/5 transition-all duration-300 group"
               size="lg"
               onClick={handleGoogleLogin}
@@ -200,8 +203,8 @@ export default function Login() {
                 </Link>
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full btn-hero group"
                 size="lg"
                 disabled={processing}

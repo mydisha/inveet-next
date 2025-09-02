@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link, useForm } from "@inertiajs/react";
-import { ArrowRight, Eye, EyeOff, Heart, Lock, Mail, Sparkles, User } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Lock, Mail, Sparkles, User } from "lucide-react";
 import { useState } from "react";
 
 export default function Register() {
@@ -41,10 +41,13 @@ export default function Register() {
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-primary-glow rounded-2xl mb-4 shadow-lg">
-            <Heart className="w-8 h-8 text-primary-foreground" />
+          <div className="inline-flex items-center justify-center mb-4">
+            <img
+              src="/inveet-logo.png"
+              alt="Inveet.Id"
+              className="h-12 w-auto"
+            />
           </div>
-          <h1 className="text-3xl font-bold text-gradient-primary">Inveet</h1>
           <p className="text-foreground/70 mt-2">Your Digital Wedding Journey</p>
         </div>
 

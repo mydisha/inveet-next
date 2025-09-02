@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Menu, X, Heart } from 'lucide-react';
-import { Button } from './ui/button';
 import { Link } from '@inertiajs/react';
+import { Menu, X } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from './ui/button';
 
 const appName = (import.meta as any).env.VITE_APP_NAME || 'Inveet';
 
@@ -20,11 +20,12 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary-glow rounded-lg flex items-center justify-center">
-              <Heart className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">{appName}</span>
+          <div className="flex items-center">
+            <img
+              src="/inveet-logo.png"
+              alt="Inveet.Id"
+              className="h-8 w-auto"
+            />
           </div>
 
           {/* Desktop Navigation */}

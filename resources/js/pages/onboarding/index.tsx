@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { Link } from '@inertiajs/react';
-import { Heart, ArrowLeft, CheckCircle, Circle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { Link } from '@inertiajs/react';
+import { ArrowLeft, CheckCircle } from 'lucide-react';
+import { useState } from 'react';
 
 export default function Onboarding() {
   const [currentStep, setCurrentStep] = useState(0);
-  
+
   const steps = [
     {
       id: 'couple-info',
@@ -50,13 +50,14 @@ export default function Onboarding() {
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-rose-gold rounded-full flex items-center justify-center">
-              <Heart className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-rose-gold">Inveet</span>
+          <div className="flex items-center">
+            <img
+              src="/inveet-logo.png"
+              alt="Inveet.Id"
+              className="h-10 w-auto"
+            />
           </div>
-          
+
           <Link href="/dashboard">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -85,8 +86,8 @@ export default function Onboarding() {
               <div key={step.id} className="flex items-center">
                 <div className="flex flex-col items-center">
                   <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 ${
-                    index <= currentStep 
-                      ? 'bg-rose-gold text-white' 
+                    index <= currentStep
+                      ? 'bg-rose-gold text-white'
                       : 'bg-gray-200 text-gray-400'
                   }`}>
                     {index < currentStep ? (
@@ -114,13 +115,13 @@ export default function Onboarding() {
         {/* Step Cards */}
         <div className="grid gap-6">
           {steps.map((step, index) => (
-            <Card 
-              key={step.id} 
+            <Card
+              key={step.id}
               className={`border-2 transition-all hover:shadow-lg ${
-                index === currentStep 
-                  ? 'border-rose-gold bg-rose-gold/5' 
-                  : index < currentStep 
-                    ? 'border-green-200 bg-green-50' 
+                index === currentStep
+                  ? 'border-rose-gold bg-rose-gold/5'
+                  : index < currentStep
+                    ? 'border-green-200 bg-green-50'
                     : 'border-gray-200 bg-white'
               }`}
             >
@@ -128,10 +129,10 @@ export default function Onboarding() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <div className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl ${
-                      index === currentStep 
-                        ? 'bg-rose-gold text-white' 
-                        : index < currentStep 
-                          ? 'bg-green-100 text-green-600' 
+                      index === currentStep
+                        ? 'bg-rose-gold text-white'
+                        : index < currentStep
+                          ? 'bg-green-100 text-green-600'
                           : 'bg-gray-100 text-gray-400'
                     }`}>
                       {index < currentStep ? (
@@ -149,7 +150,7 @@ export default function Onboarding() {
                       <p className="text-gray-600">{step.description}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-3">
                     {index < currentStep && (
                       <span className="text-green-600 text-sm font-medium">Completed</span>
@@ -160,12 +161,12 @@ export default function Onboarding() {
                     {index > currentStep && (
                       <span className="text-gray-400 text-sm">Upcoming</span>
                     )}
-                    
+
                     <Link href={step.path}>
-                      <Button 
+                      <Button
                         variant={index === currentStep ? "default" : "outline"}
-                        className={index === currentStep 
-                          ? 'bg-rose-gold hover:bg-rose-gold/90' 
+                        className={index === currentStep
+                          ? 'bg-rose-gold hover:bg-rose-gold/90'
                           : 'border-gray-300 text-gray-600 hover:border-rose-gold hover:text-rose-gold'
                         }
                         disabled={index > currentStep}
@@ -188,7 +189,7 @@ export default function Onboarding() {
                 Ready to Get Started?
               </h3>
               <p className="text-gray-600 mb-6">
-                Begin with the first step to create your beautiful wedding invitation. 
+                Begin with the first step to create your beautiful wedding invitation.
                 You can always come back and edit any section later.
               </p>
               <Link href="/onboarding/couple-info">
