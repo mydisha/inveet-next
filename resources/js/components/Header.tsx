@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Menu, X, Heart } from 'lucide-react';
 import { Button } from './ui/button';
+import { Link } from '@inertiajs/react';
 
 const appName = (import.meta as any).env.VITE_APP_NAME || 'Inveet';
 
@@ -9,9 +10,9 @@ const Header = () => {
 
   const navigation = [
     { name: 'Home', href: '#home' },
-    { name: 'Services', href: '#services' },
-    { name: 'About', href: '#about' },
-    { name: 'Contact', href: '#contact' },
+    { name: 'Fitur', href: '#services' },
+    { name: 'Desain', href: '#showcase' },
+    { name: 'Harga', href: '#pricing' },
   ];
 
   return (
@@ -23,7 +24,7 @@ const Header = () => {
             <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary-glow rounded-lg flex items-center justify-center">
               <Heart className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold text-gradient-primary">{appName}</span>
+            <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">{appName}</span>
           </div>
 
           {/* Desktop Navigation */}
@@ -41,11 +42,11 @@ const Header = () => {
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" className="text-foreground/80 hover:text-primary">
-              Login
+            <Button variant="ghost" className="text-foreground/80 hover:text-primary" asChild>
+              <Link href="/login">Masuk</Link>
             </Button>
-            <Button className="btn-hero">
-              Get Started
+            <Button className="btn-hero" asChild>
+              <Link href="/register">Buat Undangan</Link>
             </Button>
           </div>
 
@@ -82,11 +83,11 @@ const Header = () => {
               </a>
             ))}
             <div className="px-3 py-2 space-y-2">
-              <Button variant="ghost" className="w-full justify-start">
-                Login
+              <Button variant="ghost" className="w-full justify-start" asChild>
+                <Link href="/login">Masuk</Link>
               </Button>
-              <Button className="btn-hero w-full">
-                Get Started
+              <Button className="btn-hero w-full" asChild>
+                <Link href="/register">Buat Undangan</Link>
               </Button>
             </div>
           </div>

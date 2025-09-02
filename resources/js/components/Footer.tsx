@@ -14,10 +14,10 @@ const Footer = () => {
               <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary-glow rounded-lg flex items-center justify-center">
                 <Heart className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold text-gradient-primary">{appName}</span>
+              <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">{appName}</span>
             </div>
             <p className="text-muted-foreground leading-relaxed max-w-md">
-              Platform undangan digital terdepan yang membantu ribuan pasangan menciptakan momen spesial mereka dengan mudah dan indah.
+              Inveet.id adalah layanan untuk membuat undangan pernikahan secara online gratis dengan mudah. Undangan yang dibuat akan berbentuk sebuah website yang dapat di akses dan dibagikan kapanpun.
             </p>
             
             {/* Contact Info */}
@@ -43,7 +43,8 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             {/* Copyright */}
             <div className="text-muted-foreground text-sm">
-              © {new Date().getFullYear()} {appName}. All rights reserved. Made with ❤️ in Indonesia.
+              © 2019 - {new Date().getFullYear()} {appName}.  
+              Developed with ❤️ by Dias Taufik Rahman.
             </div>
           </div>
         </div>

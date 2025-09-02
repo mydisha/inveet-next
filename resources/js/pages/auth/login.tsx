@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { Link } from '@inertiajs/react';
-import { Heart, Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Link, useForm, usePage } from '@inertiajs/react';
+import { Heart, Eye, EyeOff, Mail, Lock, ArrowRight, Sparkles, CheckCircle, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,40 +8,89 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [showFlashMessage, setShowFlashMessage] = useState(false);
+  
+  const { flash } = usePage().props as any;
+  
+  const { data, setData, post, processing, errors } = useForm({
+    email: '',
+    password: '',
+    remember: false,
+  });
+
+  useEffect(() => {
+    if (flash?.success || flash?.error) {
+      setShowFlashMessage(true);
+      const timer = setTimeout(() => setShowFlashMessage(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [flash]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    post('/login');
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = '/auth/google';
+  };
 
   return (
-    <div className="min-h-screen bg-wedding-gradient flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary-light/10 flex items-center justify-center p-6 relative overflow-hidden">
+      {/* Background decorative elements matching landing page */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="shape-float-1 top-20 right-20 w-32 h-32" style={{ animationDelay: '0s' }}></div>
+        <div className="shape-float-2 bottom-32 left-16 w-24 h-24" style={{ animationDelay: '2s' }}></div>
+        <div className="shape-float-3 top-1/2 right-1/4 w-16 h-16" style={{ animationDelay: '4s' }}></div>
+        <div className="glow-orb top-1/4 right-1/3 w-64 h-64 opacity-20" style={{ animationDelay: '1s' }}></div>
+        <div className="glow-orb bottom-1/4 left-1/3 w-48 h-48 opacity-20" style={{ animationDelay: '3s' }}></div>
+      </div>
+
+      <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-rose-gold rounded-full mb-4">
-            <Heart className="w-8 h-8 text-white" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-primary-glow rounded-2xl mb-4 shadow-lg">
+            <Heart className="w-8 h-8 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-800">Inveet</h1>
-          <p className="text-gray-600 mt-2">Your Digital Wedding Journey</p>
+          <h1 className="text-3xl font-bold text-gradient-primary">Inveet</h1>
+          <p className="text-foreground/70 mt-2">Your Digital Wedding Journey</p>
         </div>
 
         {/* Auth Card */}
-        <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
+        <Card className="shadow-2xl border border-border/50 bg-card/95 backdrop-blur-sm">
           <CardHeader className="text-center pb-6">
-            <CardTitle className="text-2xl font-bold text-gray-800">
-              {isSignUp ? 'Create Your Account' : 'Welcome Back'}
+            <CardTitle className="text-2xl font-bold text-foreground">
+              Welcome Back
             </CardTitle>
-            <CardDescription className="text-gray-600">
-              {isSignUp 
-                ? 'Start creating your beautiful wedding invitation' 
-                : 'Sign in to continue to your dashboard'
-              }
+            <CardDescription className="text-muted-foreground">
+              Sign in to continue to your dashboard
             </CardDescription>
           </CardHeader>
           
           <CardContent className="space-y-6">
+            {/* Flash Messages */}
+            {showFlashMessage && flash?.success && (
+              <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg flex items-center">
+                <CheckCircle className="w-5 h-5 mr-2" />
+                {flash.success}
+              </div>
+            )}
+            
+            {showFlashMessage && flash?.error && (
+              <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg flex items-center">
+                <XCircle className="w-5 h-5 mr-2" />
+                {flash.error}
+              </div>
+            )}
+
             {/* Google Sign In */}
             <Button 
+              type="button"
               variant="outline" 
-              className="w-full border-2 border-gray-200 hover:border-rose-gold hover:bg-rose-gold/5 transition-colors"
+              className="w-full border-2 border-border hover:border-primary hover:bg-primary/5 transition-all duration-300 group"
               size="lg"
+              onClick={handleGoogleLogin}
+              disabled={processing}
             >
               <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
                 <path
@@ -62,118 +111,117 @@ export default function Login() {
                 />
               </svg>
               Continue with Google
+              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
             </Button>
 
             {/* Divider */}
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-gray-200" />
+                <span className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-gray-500">Or continue with email</span>
+                <span className="bg-card px-2 text-muted-foreground">Or continue with email</span>
               </div>
             </div>
 
             {/* Form */}
-            <form className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-700 font-medium">
+                <Label htmlFor="email" className="text-foreground font-medium">
                   Email address
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
                     id="email"
                     type="email"
                     placeholder="Enter your email"
-                    className="pl-10 border-2 border-gray-200 focus:border-rose-gold focus:ring-rose-gold/20 transition-colors"
+                    className={`pl-10 border-2 transition-all duration-300 ${
+                      errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-border focus:border-primary focus:ring-primary/20'
+                    }`}
+                    value={data.email}
+                    onChange={(e) => setData('email', e.target.value)}
                     required
                   />
                 </div>
+                {errors.email && (
+                  <p className="text-sm text-red-500">{errors.email}</p>
+                )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-700 font-medium">
+                <Label htmlFor="password" className="text-foreground font-medium">
                   Password
                 </Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Enter your password"
-                    className="pl-10 pr-10 border-2 border-gray-200 focus:border-rose-gold focus:ring-rose-gold/20 transition-colors"
+                    className={`pl-10 pr-10 border-2 transition-all duration-300 ${
+                      errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-border focus:border-primary focus:ring-primary/20'
+                    }`}
+                    value={data.password}
+                    onChange={(e) => setData('password', e.target.value)}
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors duration-300"
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
+                {errors.password && (
+                  <p className="text-sm text-red-500">{errors.password}</p>
+                )}
               </div>
 
-              {isSignUp && (
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-gray-700 font-medium">
-                    Confirm Password
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="remember"
+                    className="w-4 h-4 text-primary border-border rounded focus:ring-primary/20"
+                    checked={data.remember}
+                    onChange={(e) => setData('remember', e.target.checked)}
+                  />
+                  <Label htmlFor="remember" className="text-sm text-muted-foreground">
+                    Remember me
                   </Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <Input
-                      id="confirmPassword"
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="Confirm your password"
-                      className="pl-10 pr-10 border-2 border-gray-200 focus:border-rose-gold focus:ring-rose-gold/20 transition-colors"
-                      required
-                    />
-                  </div>
                 </div>
-              )}
-
-              {!isSignUp && (
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="remember"
-                      className="w-4 h-4 text-rose-gold border-gray-300 rounded focus:ring-rose-gold/20"
-                    />
-                    <Label htmlFor="remember" className="text-sm text-gray-600">
-                      Remember me
-                    </Label>
-                  </div>
-                  <Link
-                    href="/forgot-password"
-                    className="text-sm text-rose-gold hover:text-rose-gold/80 transition-colors"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
-              )}
+                <Link
+                  href="/forgot-password"
+                  className="text-sm text-primary hover:text-primary/80 transition-colors duration-300"
+                >
+                  Forgot password?
+                </Link>
+              </div>
 
               <Button 
                 type="submit" 
-                className="w-full bg-rose-gold hover:bg-rose-gold/90 text-white transition-colors"
+                className="w-full btn-hero group"
                 size="lg"
+                disabled={processing}
               >
-                {isSignUp ? 'Create Account' : 'Sign In'}
-                <ArrowRight className="w-4 h-4 ml-2" />
+                <Sparkles className="w-4 h-4 mr-2 animate-pulse" />
+                {processing ? 'Signing In...' : 'Sign In'}
+                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
               </Button>
             </form>
 
-            {/* Toggle Sign In/Sign Up */}
+            {/* Sign Up Link */}
             <div className="text-center pt-4">
-              <p className="text-gray-600">
-                {isSignUp ? 'Already have an account?' : "Don't have an account?"}
-                <button
-                  onClick={() => setIsSignUp(!isSignUp)}
-                  className="ml-1 text-rose-gold hover:text-rose-gold/80 font-medium transition-colors"
+              <p className="text-muted-foreground">
+                Don't have an account?{' '}
+                <Link
+                  href="/register"
+                  className="text-primary hover:text-primary/80 font-medium transition-colors duration-300"
                 >
-                  {isSignUp ? 'Sign in' : 'Sign up'}
-                </button>
+                  Sign up
+                </Link>
               </p>
             </div>
           </CardContent>
@@ -183,9 +231,10 @@ export default function Login() {
         <div className="text-center mt-6">
           <Link
             href="/"
-            className="text-gray-600 hover:text-rose-gold transition-colors text-sm"
+            className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm group inline-flex items-center"
           >
-            ← Back to home
+            <ArrowRight className="w-4 h-4 mr-1 rotate-180 group-hover:-translate-x-1 transition-transform duration-300" />
+            Back to home
           </Link>
         </div>
       </div>

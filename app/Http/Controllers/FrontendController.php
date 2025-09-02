@@ -20,7 +20,7 @@ class FrontendController extends Controller
      */
     public function login()
     {
-        return Inertia::render('Auth/Login');
+        return Inertia::render('auth/Login');
     }
 
     /**
@@ -28,7 +28,26 @@ class FrontendController extends Controller
      */
     public function forgotPassword()
     {
-        return Inertia::render('Auth/ForgotPassword');
+        return Inertia::render('auth/ForgotPassword');
+    }
+
+    /**
+     * Show the reset password page
+     */
+    public function resetPassword(Request $request, $token)
+    {
+        return Inertia::render('auth/ResetPassword', [
+            'email' => $request->query('email'),
+            'token' => $token,
+        ]);
+    }
+
+    /**
+     * Show the register page
+     */
+    public function register()
+    {
+        return Inertia::render('auth/register');
     }
 
     /**

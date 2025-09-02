@@ -1,130 +1,140 @@
-import { useState } from 'react';
-import { Link } from '@inertiajs/react';
-import { Heart, Mail, ArrowLeft, CheckCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Link, useForm, usePage } from '@inertiajs/react';
+import { Heart, Mail, ArrowRight, Sparkles, ArrowLeft, CheckCircle, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function ForgotPassword() {
-  const [email, setEmail] = useState('');
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showFlashMessage, setShowFlashMessage] = useState(false);
+  
+  const { flash } = usePage().props as any;
+  
+  const { data, setData, post, processing, errors, status } = useForm({
+    email: '',
+  });
+
+  useEffect(() => {
+    if (flash?.success || flash?.error || status) {
+      setShowFlashMessage(true);
+      const timer = setTimeout(() => setShowFlashMessage(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [flash, status]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitted(true);
+    post('/forgot-password');
   };
 
   return (
-    <div className="min-h-screen bg-wedding-gradient flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary-light/10 flex items-center justify-center p-6 relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="shape-float-1 top-20 right-20 w-32 h-32" style={{ animationDelay: '0s' }}></div>
+        <div className="shape-float-2 bottom-32 left-16 w-24 h-24" style={{ animationDelay: '2s' }}></div>
+        <div className="shape-float-3 top-1/2 right-1/4 w-16 h-16" style={{ animationDelay: '4s' }}></div>
+        <div className="glow-orb top-1/4 right-1/3 w-64 h-64 opacity-20" style={{ animationDelay: '1s' }}></div>
+        <div className="glow-orb bottom-1/4 left-1/3 w-48 h-48 opacity-20" style={{ animationDelay: '3s' }}></div>
+      </div>
+
+      <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-rose-gold rounded-full mb-4">
-            <Heart className="w-8 h-8 text-white" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-primary-glow rounded-2xl mb-4 shadow-lg">
+            <Heart className="w-8 h-8 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-800">Inveet</h1>
-          <p className="text-gray-600 mt-2">Your Digital Wedding Journey</p>
+          <h1 className="text-3xl font-bold text-gradient-primary">Inveet</h1>
+          <p className="text-foreground/70 mt-2">Your Digital Wedding Journey</p>
         </div>
 
-        {/* Reset Password Card */}
-        <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
+        {/* Auth Card */}
+        <Card className="shadow-2xl border border-border/50 bg-card/95 backdrop-blur-sm">
           <CardHeader className="text-center pb-6">
-            <CardTitle className="text-2xl font-bold text-gray-800">
-              {isSubmitted ? 'Check Your Email' : 'Reset Your Password'}
+            <CardTitle className="text-2xl font-bold text-foreground">
+              Forgot Password
             </CardTitle>
-            <CardDescription className="text-gray-600">
-              {isSubmitted 
-                ? 'We\'ve sent you a password reset link' 
-                : 'Enter your email address and we\'ll send you a link to reset your password'
-              }
+            <CardDescription className="text-muted-foreground">
+              Enter your email to receive a password reset link
             </CardDescription>
           </CardHeader>
           
           <CardContent className="space-y-6">
-            {!isSubmitted ? (
-              <>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-gray-700 font-medium">
-                      Email address
-                    </Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="Enter your email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="pl-10 border-2 border-gray-200 focus:border-rose-gold focus:ring-rose-gold/20 transition-colors"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-rose-gold hover:bg-rose-gold/90 text-white transition-colors"
-                    size="lg"
-                  >
-                    Send Reset Link
-                  </Button>
-                </form>
-
-                <div className="text-center">
-                  <p className="text-gray-600 text-sm">
-                    Remember your password?{' '}
-                    <Link
-                      href="/login"
-                      className="text-rose-gold hover:text-rose-gold/80 font-medium transition-colors"
-                    >
-                      Sign in
-                    </Link>
-                  </p>
-                </div>
-              </>
-            ) : (
-              <div className="text-center space-y-6">
-                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                  <CheckCircle className="w-10 h-10 text-green-600" />
-                </div>
-                
-                <div className="space-y-2">
-                  <h3 className="text-lg font-semibold text-gray-800">
-                    Reset link sent!
-                  </h3>
-                  <p className="text-gray-600 text-sm">
-                    We've sent a password reset link to <strong>{email}</strong>
-                  </p>
-                </div>
-
-                <div className="space-y-3">
-                  <p className="text-gray-500 text-sm">
-                    Didn't receive the email? Check your spam folder or try again.
-                  </p>
-                  
-                  <Button 
-                    onClick={() => setIsSubmitted(false)}
-                    variant="outline"
-                    className="w-full border-rose-gold text-rose-gold hover:bg-rose-gold hover:text-white transition-colors"
-                  >
-                    Send Another Email
-                  </Button>
-                </div>
+            {/* Flash Messages */}
+            {showFlashMessage && (flash?.success || status) && (
+              <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg flex items-center">
+                <CheckCircle className="w-5 h-5 mr-2" />
+                {status || flash.success}
               </div>
             )}
+            
+            {showFlashMessage && flash?.error && (
+              <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg flex items-center">
+                <XCircle className="w-5 h-5 mr-2" />
+                {flash.error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-foreground font-medium">
+                  Email address
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    className={`pl-10 border-2 transition-all duration-300 ${
+                      errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-border focus:border-primary focus:ring-primary/20'
+                    }`}
+                    value={data.email}
+                    onChange={(e) => setData('email', e.target.value)}
+                    required
+                  />
+                </div>
+                {errors.email && (
+                  <p className="text-sm text-red-500">{errors.email}</p>
+                )}
+              </div>
+
+              <Button 
+                type="submit" 
+                className="w-full btn-hero group"
+                size="lg"
+                disabled={processing}
+              >
+                <Sparkles className="w-4 h-4 mr-2 animate-pulse" />
+                {processing ? 'Sending Reset Link...' : 'Send Reset Link'}
+                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+              </Button>
+            </form>
+
+            {/* Back to Login */}
+            <div className="text-center pt-4">
+              <p className="text-muted-foreground">
+                Remember your password?{' '}
+                <Link
+                  href="/login"
+                  className="text-primary hover:text-primary/80 font-medium transition-colors duration-300"
+                >
+                  Sign in
+                </Link>
+              </p>
+            </div>
           </CardContent>
         </Card>
 
-        {/* Back to Login */}
+        {/* Back to Landing */}
         <div className="text-center mt-6">
           <Link
-            href="/login"
-            className="inline-flex items-center text-gray-600 hover:text-rose-gold transition-colors text-sm"
+            href="/"
+            className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm group inline-flex items-center"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to sign in
+            <ArrowLeft className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform duration-300" />
+            Back to home
           </Link>
         </div>
       </div>

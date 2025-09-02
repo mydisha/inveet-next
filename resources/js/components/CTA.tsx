@@ -24,23 +24,15 @@ const CTA = () => {
           <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 border border-white/30">
             <Star className="w-5 h-5 text-white fill-current" />
             <span className="text-white text-sm font-medium">
-              Limited Time Offer
+              Undangan pernikahan online
             </span>
           </div>
 
           {/* Main Heading */}
           <div className="space-y-6">
             <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight">
-              Mulai Buat
-              <br />
-              <span className="text-accent-foreground">Undangan Digital</span>
-              <br />
-              Hari Ini
+              Inveet.id adalah layanan untuk membuat undangan pernikahan secara online gratis dengan mudah. Undangan yang dibuat akan berbentuk sebuah website yang dapat di akses dan dibagikan kapanpun.
             </h2>
-            <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-              Bergabung dengan ribuan pasangan yang sudah merasakan kemudahan undangan digital. 
-              Gratis selamanya, upgrade kapan saja.
-            </p>
           </div>
 
           {/* Benefits */}
@@ -63,7 +55,7 @@ const CTA = () => {
               size="lg"
               className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-4 rounded-full font-semibold group"
             >
-              Mulai Gratis Sekarang
+              Buat Undangan Sekarang
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button 

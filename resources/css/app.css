@@ -45,12 +45,32 @@ All colors MUST be HSL for consistency and theming
 
     --radius: 0.75rem;
     
-    /* Professional gradients */
+    /* Professional gradients - OPTIMIZED */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
     --gradient-hero: linear-gradient(135deg, hsl(var(--primary) / 0.95), hsl(var(--primary-glow) / 0.85));
     --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--warm)));
     --gradient-elegant: linear-gradient(180deg, hsl(var(--background)), hsl(var(--primary-light)));
     --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(var(--card) / 0.8));
+    
+    /* NEW: Optimized card gradients for better performance */
+    --gradient-card-1: linear-gradient(135deg, hsl(var(--primary) / 0.08), hsl(var(--primary-glow) / 0.04));
+    --gradient-card-2: linear-gradient(135deg, hsl(var(--accent) / 0.08), hsl(var(--warm) / 0.04));
+    --gradient-card-3: linear-gradient(135deg, hsl(var(--warm) / 0.08), hsl(var(--primary) / 0.04));
+    --gradient-card-4: linear-gradient(135deg, hsl(var(--primary-glow) / 0.08), hsl(var(--accent) / 0.04));
+    --gradient-card-5: linear-gradient(135deg, hsl(var(--accent) / 0.08), hsl(var(--primary-glow) / 0.04));
+    --gradient-card-6: linear-gradient(135deg, hsl(var(--primary) / 0.08), hsl(var(--warm) / 0.04));
+    --gradient-card-7: linear-gradient(135deg, hsl(var(--warm) / 0.08), hsl(var(--accent) / 0.04));
+    --gradient-card-8: linear-gradient(135deg, hsl(var(--primary-glow) / 0.08), hsl(var(--primary) / 0.04));
+    
+    /* NEW: Icon gradient variants for better visual hierarchy */
+    --gradient-icon-1: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-icon-2: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--warm)));
+    --gradient-icon-3: linear-gradient(135deg, hsl(var(--warm)), hsl(var(--primary)));
+    --gradient-icon-4: linear-gradient(135deg, hsl(var(--primary-glow)), hsl(var(--accent)));
+    --gradient-icon-5: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--primary-glow)));
+    --gradient-icon-6: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--warm)));
+    --gradient-icon-7: linear-gradient(135deg, hsl(var(--warm)), hsl(var(--accent)));
+    --gradient-icon-8: linear-gradient(135deg, hsl(var(--primary-glow)), hsl(var(--primary)));
     
     /* Elegant shadows */
     --shadow-elegant: 0 20px 40px -15px hsl(var(--primary) / 0.15);
@@ -171,11 +191,111 @@ All colors MUST be HSL for consistency and theming
     @apply transition-all duration-300 hover:scale-105;
   }
   
-  /* Card Components */
+  /* OPTIMIZED Card Components with Enhanced Gradients */
   .card-elegant {
     @apply bg-card/80 backdrop-blur-sm border border-border/50;
     @apply rounded-2xl p-8 shadow-lg;
     @apply hover:shadow-2xl transition-all duration-300 hover:-translate-y-1;
+    @apply relative overflow-hidden;
+  }
+  
+  /* NEW: Optimized gradient card variants */
+  .card-gradient-1 {
+    background: var(--gradient-card-1);
+    @apply border border-primary/20;
+  }
+  
+  .card-gradient-2 {
+    background: var(--gradient-card-2);
+    @apply border border-accent/20;
+  }
+  
+  .card-gradient-3 {
+    background: var(--gradient-card-3);
+    @apply border border-warm/20;
+  }
+  
+  .card-gradient-4 {
+    background: var(--gradient-card-4);
+    @apply border border-primary-glow/20;
+  }
+  
+  .card-gradient-5 {
+    background: var(--gradient-card-5);
+    @apply border border-accent/20;
+  }
+  
+  .card-gradient-6 {
+    background: var(--gradient-card-6);
+    @apply border border-primary/20;
+  }
+  
+  .card-gradient-7 {
+    background: var(--gradient-card-7);
+    @apply border border-warm/20;
+  }
+  
+  .card-gradient-8 {
+    background: var(--gradient-card-8);
+    @apply border border-primary-glow/20;
+  }
+  
+  /* NEW: Optimized icon gradient variants */
+  .icon-gradient-1 {
+    background: var(--gradient-icon-1);
+  }
+  
+  .icon-gradient-2 {
+    background: var(--gradient-icon-2);
+  }
+  
+  .icon-gradient-3 {
+    background: var(--gradient-icon-3);
+  }
+  
+  .icon-gradient-4 {
+    background: var(--gradient-icon-4);
+  }
+  
+  .icon-gradient-5 {
+    background: var(--gradient-icon-5);
+  }
+  
+  .icon-gradient-6 {
+    background: var(--gradient-icon-6);
+  }
+  
+  .icon-gradient-7 {
+    background: var(--gradient-icon-7);
+  }
+  
+  .icon-gradient-8 {
+    background: var(--gradient-icon-8);
+  }
+  
+  /* NEW: Enhanced hover effects for cards */
+  .card-elegant::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent;
+    @apply opacity-0 transition-opacity duration-300;
+    @apply pointer-events-none;
+  }
+  
+  .card-elegant:hover::before {
+    @apply opacity-100;
+  }
+  
+  /* NEW: Optimized icon container with better performance */
+  .icon-container {
+    @apply w-16 h-16 rounded-2xl flex items-center justify-center;
+    @apply transition-all duration-300;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+  
+  .icon-container:hover {
+    @apply scale-110;
+    @apply shadow-lg;
   }
   
   /* Text Gradients */
@@ -288,6 +408,384 @@ All colors MUST be HSL for consistency and theming
   .hero-stats,
   .hero-phone {
     animation-fill-mode: forwards;
+  }
+  
+  /* NEW: Performance optimizations for gradient cards */
+  .gradient-card-optimized {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    @apply transform-gpu;
+  }
+  
+  /* NEW: Smooth gradient transitions */
+  .gradient-transition {
+    @apply transition-all duration-500 ease-out;
+    will-change: background;
+  }
+  
+  /* NEW: Elegant Comfort Animations - Performance Optimized */
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+  
+  .animate-fade-in-down {
+    animation: fadeInDown 0.8s ease-out forwards;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+  
+  .animate-fade-in-left {
+    animation: fadeInLeft 0.8s ease-out forwards;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+  
+  .animate-fade-in-right {
+    animation: fadeInRight 0.8s ease-out forwards;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.6s ease-out forwards;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+  
+  .animate-slide-in-left {
+    animation: slideInLeft 0.8s ease-out forwards;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+  
+  .animate-slide-in-right {
+    animation: slideInRight 0.8s ease-out forwards;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+  
+  .animate-float-gentle {
+    animation: floatGentle 6s ease-in-out infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+  
+  .animate-pulse-gentle {
+    animation: pulseGentle 4s ease-in-out infinite;
+    will-change: opacity;
+    backface-visibility: hidden;
+  }
+  
+  .animate-bounce-gentle {
+    animation: bounceGentle 3s ease-in-out infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+  
+  .animate-wiggle {
+    animation: wiggle 2s ease-in-out infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+  
+  .animate-glow-pulse {
+    animation: glowPulse 3s ease-in-out infinite;
+    will-change: box-shadow;
+    backface-visibility: hidden;
+  }
+  
+  /* NEW: Comfort-focused hover effects - Performance Optimized */
+  .comfort-hover {
+    @apply transition-all duration-500 ease-out;
+    @apply hover:scale-105 hover:shadow-2xl;
+    @apply hover:bg-gradient-to-br hover:from-primary/5 hover:to-primary/10;
+    will-change: transform, box-shadow, background;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+  
+  .comfort-card {
+    @apply transition-all duration-700 ease-out;
+    @apply hover:scale-105 hover:shadow-xl;
+    @apply hover:border-primary/30;
+    @apply hover:bg-gradient-to-br hover:from-card hover:to-primary/5;
+    will-change: transform, box-shadow, border-color, background;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+  
+  .comfort-button {
+    @apply transition-all duration-300 ease-out;
+    @apply hover:scale-105 hover:shadow-lg;
+    @apply hover:brightness-110;
+    will-change: transform, box-shadow, filter;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+  
+  /* NEW: Smooth entrance animations - Performance Optimized */
+  .entrance-animation {
+    opacity: 0;
+    transform: translateY(30px) translateZ(0);
+    animation: entranceFade 1s ease-out forwards;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+  }
+  
+  .entrance-animation:nth-child(1) { animation-delay: 0.1s; }
+  .entrance-animation:nth-child(2) { animation-delay: 0.2s; }
+  .entrance-animation:nth-child(3) { animation-delay: 0.3s; }
+  .entrance-animation:nth-child(4) { animation-delay: 0.4s; }
+  .entrance-animation:nth-child(5) { animation-delay: 0.5s; }
+  .entrance-animation:nth-child(6) { animation-delay: 0.6s; }
+  .entrance-animation:nth-child(7) { animation-delay: 0.7s; }
+  .entrance-animation:nth-child(8) { animation-delay: 0.8s; }
+  
+  /* NEW: Staggered animations for comfort - Performance Optimized */
+  .stagger-animation {
+    opacity: 0;
+    transform: translateY(20px) translateZ(0);
+    animation: staggerFade 0.8s ease-out forwards;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+  }
+  
+  .stagger-animation:nth-child(1) { animation-delay: 0.1s; }
+  .stagger-animation:nth-child(2) { animation-delay: 0.2s; }
+  .stagger-animation:nth-child(3) { animation-delay: 0.3s; }
+  .stagger-animation:nth-child(4) { animation-delay: 0.4s; }
+  .stagger-animation:nth-child(5) { animation-delay: 0.5s; }
+  .stagger-animation:nth-child(6) { animation-delay: 0.6s; }
+  .stagger-animation:nth-child(7) { animation-delay: 0.7s; }
+  .stagger-animation:nth-child(8) { animation-delay: 0.8s; }
+  
+  /* NEW: Performance optimization for low-spec devices */
+  .performance-optimized {
+    will-change: auto;
+    backface-visibility: visible;
+    transform: none;
+  }
+  
+  /* NEW: Reduced motion for accessibility and performance */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in-up,
+    .animate-fade-in-down,
+    .animate-fade-in-left,
+    .animate-fade-in-right,
+    .animate-scale-in,
+    .animate-slide-in-left,
+    .animate-slide-in-right,
+    .animate-float-gentle,
+    .animate-pulse-gentle,
+    .animate-bounce-gentle,
+    .animate-wiggle,
+    .animate-glow-pulse,
+    .entrance-animation,
+    .stagger-animation {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+    
+    .comfort-hover,
+    .comfort-card,
+    .comfort-button {
+      transition: none;
+    }
+  }
+  
+  /* NEW: Low-spec device optimizations */
+  @media (max-width: 768px) {
+    .animate-float-gentle,
+    .animate-pulse-gentle,
+    .animate-bounce-gentle,
+    .animate-wiggle,
+    .animate-glow-pulse {
+      animation-duration: 8s; /* Slower animations on mobile */
+    }
+    
+    .comfort-card {
+      transition-duration: 0.3s; /* Faster transitions on mobile */
+    }
+  }
+  
+  /* NEW: Very low-spec device optimizations */
+  @media (max-width: 480px) {
+    .animate-float-gentle,
+    .animate-pulse-gentle,
+    .animate-bounce-gentle,
+    .animate-wiggle,
+    .animate-glow-pulse {
+      animation: none; /* Disable complex animations on very small screens */
+    }
+    
+    .stagger-animation {
+      animation-delay: 0s; /* Remove delays on small screens */
+    }
+  }
+  
+
+  
+
+}
+
+/* NEW: Keyframe animations for comfort */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulseGentle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes bounceGentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(1deg);
+  }
+  75% {
+    transform: rotate(-1deg);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(22, 93, 153, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(22, 93, 153, 0.6);
+  }
+}
+
+@keyframes entranceFade {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes staggerFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

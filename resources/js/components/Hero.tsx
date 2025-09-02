@@ -42,7 +42,7 @@ const Hero = () => {
             <div className="hero-badge inline-flex items-center space-x-2 bg-background/20 backdrop-blur-sm rounded-full px-4 py-2 border border-primary-foreground/20 hover:bg-background/30 transition-all duration-300">
               <Star className="w-4 h-4 text-accent fill-current animate-spin" style={{ animationDuration: '3s' }} />
               <span className="text-primary-foreground/90 text-sm font-medium">
-                #1 Digital Wedding Platform
+                Undangan Pernikahan Online
               </span>
             </div>
 
@@ -51,7 +51,7 @@ const Hero = () => {
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-primary-foreground leading-tight">
                 <div className="hero-text-line overflow-hidden">
                   <span className="inline-block animate-text-reveal" style={{ animationDelay: '0.2s' }}>
-                    Platform
+                    Undangan
                   </span>
                 </div>
                 <div className="hero-text-line overflow-hidden">
@@ -61,12 +61,12 @@ const Hero = () => {
                 </div>
                 <div className="hero-text-line overflow-hidden">
                   <span className="inline-block animate-text-reveal" style={{ animationDelay: '0.6s' }}>
-                    Digital
+                    Online
                   </span>
                 </div>
               </h1>
               <p className="hero-description text-xl md:text-2xl text-primary-foreground/80 max-w-lg leading-relaxed">
-                Solusi pernikahan lebih hemat, praktis, dan kekinian dengan e-invitation yang disebar otomatis.
+                Dikemas dalam bentuk website yang menarik serta dapat dibagikan kapanpun dan dimanapun. <strong>Simple, 5 menit undangan selesai 😉</strong>
               </p>
             </div>
 
@@ -74,12 +74,12 @@ const Hero = () => {
             <div className="hero-cta flex flex-col sm:flex-row gap-4">
               <Button className="btn-hero group text-lg px-8 py-4 hero-interactive">
                 <Sparkles className="mr-2 h-5 w-5 animate-pulse" />
-                Buat Sekarang
+                Buat Undangan
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-2 transition-transform duration-300" />
               </Button>
               <Button variant="outline" className="btn-hero-outline hero-interactive text-lg px-8 py-4">
                 <Play className="mr-2 h-4 w-4" />
-                Watch Demo
+                Lihat Demo
               </Button>
             </div>
 
@@ -88,23 +88,23 @@ const Hero = () => {
               <div className="text-center hero-interactive">
                 <div className="text-2xl font-bold text-primary-foreground flex items-center justify-center">
                   <Heart className="w-5 h-5 mr-2 text-accent animate-pulse" />
-                  10K+
+                  441K+
                 </div>
-                <div className="text-primary-foreground/70 text-sm">Happy Couples</div>
+                <div className="text-primary-foreground/70 text-sm">Pengguna</div>
               </div>
               <div className="text-center hero-interactive">
                 <div className="text-2xl font-bold text-primary-foreground flex items-center justify-center">
                   <Star className="w-4 h-4 mr-2 text-accent animate-spin" style={{ animationDuration: '4s' }} />
-                  50K+
+                  11.9M+
                 </div>
-                <div className="text-primary-foreground/70 text-sm">Invitations Sent</div>
+                <div className="text-primary-foreground/70 text-sm">Tamu Terkirim</div>
               </div>
               <div className="text-center hero-interactive">
                 <div className="text-2xl font-bold text-primary-foreground flex items-center justify-center">
                   <Sparkles className="w-4 h-4 mr-2 text-accent animate-pulse" />
-                  4.9
+                  Rp 47.7M
                 </div>
-                <div className="text-primary-foreground/70 text-sm">Rating</div>
+                <div className="text-primary-foreground/70 text-sm">Biaya Dihemat</div>
               </div>
             </div>
           </div>

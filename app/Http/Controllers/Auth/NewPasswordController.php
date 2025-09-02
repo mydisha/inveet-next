@@ -19,7 +19,7 @@ class NewPasswordController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
         $request->validate([
             'token' => ['required'],
@@ -34,7 +34,7 @@ class NewPasswordController extends Controller
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user) use ($request) {
                 $user->forceFill([
-                    'password' => Hash::make($request->string('password')),
+                    'password' => Hash::make($request->password),
                     'remember_token' => Str::random(60),
                 ])->save();
 
@@ -48,6 +48,6 @@ class NewPasswordController extends Controller
             ]);
         }
 
-        return response()->json(['status' => __($status)]);
+        return redirect('/login')->with('success', 'Your password has been reset successfully. You can now log in with your new password.');
     }
 }

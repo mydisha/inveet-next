@@ -16,7 +16,8 @@ const Pricing = () => {
         'Masa Aktif 2 Hari'
       ],
       popular: false,
-      cta: 'Pilih Paket'
+      cta: 'Pilih Paket',
+      cardGradient: 'card-gradient-1'
     },
     {
       name: 'DIAMOND',
@@ -40,7 +41,8 @@ const Pricing = () => {
         'Aktif Selamanya'
       ],
       popular: true,
-      cta: 'Pilih Paket'
+      cta: 'Pilih Paket',
+      cardGradient: 'card-gradient-2'
     },
     {
       name: 'PAKET SILVER',
@@ -57,7 +59,8 @@ const Pricing = () => {
         'Aktif Selamanya'
       ],
       popular: false,
-      cta: 'Pilih Paket'
+      cta: 'Pilih Paket',
+      cardGradient: 'card-gradient-3'
     }
   ];
 
@@ -67,45 +70,43 @@ const Pricing = () => {
         {/* Header */}
         <div className="text-center space-y-4 mb-16">
           <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2">
-            <span className="text-primary text-sm font-medium">Pricing</span>
+            <span className="text-primary text-sm font-medium">Harga Undangan</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold">
-            Pilih Paket yang
-            <br />
-            <span className="text-gradient-primary">Sesuai Budget</span>
+            Pilih paket undangan pernikahan online sesuai dengan kebutuhanmu
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Mulai dari gratis hingga fitur lengkap. Semua paket sudah termasuk hosting dan support.
+            Tenang harganya terjangkau banget 😉 Mulai dari gratis hingga fitur lengkap
           </p>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid lg:grid-cols-3 gap-8 mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-16">
           {plans.map((plan, index) => (
             <div
               key={plan.name}
-              className={`relative rounded-3xl p-8 transition-all duration-300 hover:-translate-y-2 ${
+              className={`stagger-animation comfort-card relative rounded-3xl p-6 md:p-8 gradient-card-optimized w-full ${
                 plan.popular
-                  ? 'bg-gradient-to-br from-primary/10 to-accent/10 border-2 border-primary ring-4 ring-primary/20'
-                  : 'bg-card border border-border hover:border-primary/50'
+                  ? 'bg-gradient-to-br from-primary/10 to-accent/10 border-2 border-primary ring-4 ring-primary/20 shadow-2xl animate-glow-pulse'
+                  : `${plan.cardGradient} border border-border shadow-lg`
               }`}
-              style={{ animationDelay: `${index * 0.1}s` }}
+              style={{ animationDelay: `${index * 0.2}s` }}
             >
               {/* Popular Badge */}
               {plan.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-6 py-2 rounded-full text-sm font-medium flex items-center space-x-2">
-                  <Star className="w-4 h-4 fill-current" />
-                  <span>Most Popular</span>
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground px-6 py-2 rounded-full text-sm font-medium flex items-center justify-center space-x-2 shadow-lg z-10 animate-bounce-gentle">
+                  <Star className="w-4 h-4 fill-current animate-wiggle" />
+                  <span>Diminati</span>
                 </div>
               )}
 
               {/* Plan Header */}
-              <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-card-foreground mb-2">
+              <div className="text-center mb-6 md:mb-8">
+                <h3 className="text-xl md:text-2xl font-bold text-card-foreground mb-2">
                   {plan.name}
                 </h3>
                 <div className="mb-4">
-                  <span className="text-4xl font-bold text-card-foreground">
+                  <span className="text-3xl md:text-4xl font-bold text-card-foreground">
                     {plan.price}
                   </span>
                   {plan.period && (
@@ -131,7 +132,7 @@ const Pricing = () => {
 
               {/* CTA Button */}
               <Button
-                className={`w-full ${
+                className={`w-full comfort-button ${
                   plan.popular
                     ? 'bg-primary hover:bg-primary-glow'
                     : 'bg-primary/10 text-primary hover:bg-primary/20'

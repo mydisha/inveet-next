@@ -1,56 +1,78 @@
 import { Smartphone, Users, Calendar, Gift, Zap, HeartHandshake, Send, BarChart3, Music, MapPin, MessageCircle, Image } from 'lucide-react';
+import { GradientCard } from './ui/card';
+
+type CardGradient = 'card-gradient-1' | 'card-gradient-2' | 'card-gradient-3' | 'card-gradient-4' | 
+                    'card-gradient-5' | 'card-gradient-6' | 'card-gradient-7' | 'card-gradient-8';
+
+type IconGradient = 'icon-gradient-1' | 'icon-gradient-2' | 'icon-gradient-3' | 'icon-gradient-4' |
+                    'icon-gradient-5' | 'icon-gradient-6' | 'icon-gradient-7' | 'icon-gradient-8';
+
+interface Service {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  description: string;
+  cardGradient: CardGradient;
+  iconGradient: IconGradient;
+  featured?: boolean;
+}
 
 const Services = () => {
-  const services = [
+  const services: Service[] = [
     {
       icon: Smartphone,
       title: 'Undangan Digital',
       description: 'Undangan digital yang cantik dan interaktif yang bisa dibagikan langsung via WhatsApp, email, atau media sosial.',
-      gradient: 'from-primary to-primary-glow'
+      cardGradient: 'card-gradient-1',
+      iconGradient: 'icon-gradient-1'
     },
     {
       icon: Send,
       title: 'Auto Send WhatsApp',
       description: 'Kirim undangan otomatis via WhatsApp dengan pesan yang dipersonalisasi untuk setiap tamu.',
-      gradient: 'from-accent to-warm',
-      featured: true
+      cardGradient: 'card-gradient-2',
+      iconGradient: 'icon-gradient-2'
     },
     {
       icon: BarChart3,
       title: 'RSVP Tracking',
       description: 'Lacak RSVP tamu secara real-time dengan analytics lengkap dan manajemen respons tamu.',
-      gradient: 'from-warm to-primary',
-      featured: true
+      cardGradient: 'card-gradient-3',
+      iconGradient: 'icon-gradient-3'
     },
     {
       icon: Users,
       title: 'Manajemen Tamu',
       description: 'Kelola daftar tamu dengan lengkap termasuk RSVP, preferensi makanan, dan informasi kontak.',
-      gradient: 'from-primary-glow to-accent'
+      cardGradient: 'card-gradient-4',
+      iconGradient: 'icon-gradient-4'
     },
     {
       icon: Music,
       title: 'Background Music',
       description: 'Tambahkan musik latar yang romantis untuk membuat undangan lebih berkesan.',
-      gradient: 'from-accent to-primary-glow'
+      cardGradient: 'card-gradient-5',
+      iconGradient: 'icon-gradient-5'
     },
     {
       icon: Image,
       title: 'Foto Galeri',
       description: 'Tampilkan galeri foto pre-wedding dan momen spesial dalam undangan digital.',
-      gradient: 'from-primary to-warm'
+      cardGradient: 'card-gradient-6',
+      iconGradient: 'icon-gradient-6'
     },
     {
       icon: MessageCircle,
       title: 'Ucapan & Doa',
       description: 'Kumpulkan ucapan dan doa dari tamu dalam satu tempat yang terorganisir.',
-      gradient: 'from-warm to-accent'
+      cardGradient: 'card-gradient-7',
+      iconGradient: 'icon-gradient-7'
     },
     {
       icon: MapPin,
       title: 'Peta Lokasi',
       description: 'Tampilkan lokasi acara dengan peta interaktif dan petunjuk arah yang mudah.',
-      gradient: 'from-primary-glow to-primary'
+      cardGradient: 'card-gradient-8',
+      iconGradient: 'icon-gradient-8'
     }
   ];
 
@@ -65,7 +87,7 @@ const Services = () => {
           <h2 className="text-4xl md:text-5xl font-bold">
             Semua lebih praktis
             <br />
-            <span className="text-gradient-primary">#bersamaInveet</span>
+            <span className="bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">#bersamaInveet</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Bagaimana Inveet bisa mempermudah pernikahanmu dari awal hingga akhir.
@@ -79,33 +101,17 @@ const Services = () => {
             return (
               <div
                 key={service.title}
-                className={`card-elegant group cursor-pointer ${service.featured ? 'ring-2 ring-accent' : ''}`}
+                className="stagger-animation comfort-card"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                {/* Featured Badge */}
-                {service.featured && (
-                  <div className="absolute -top-2 -right-2 bg-accent text-accent-foreground px-3 py-1 rounded-full text-xs font-medium">
-                    ✨ Featured
-                  </div>
-                )}
-                
-                {/* Icon */}
-                <div className={`w-16 h-16 bg-gradient-to-br ${service.gradient} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                  <IconComponent className="w-8 h-8 text-white" />
-                </div>
-
-                {/* Content */}
-                <div className="space-y-4">
-                  <h3 className="text-2xl font-bold text-card-foreground group-hover:text-primary transition-colors duration-300">
-                    {service.title}
-                  </h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {service.description}
-                  </p>
-                </div>
-
-                {/* Hover Effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                <GradientCard
+                  gradient={service.cardGradient}
+                  featured={service.featured}
+                  iconGradient={service.iconGradient}
+                  icon={<IconComponent className="w-8 h-8 text-white" />}
+                  title={service.title}
+                  description={service.description}
+                />
               </div>
             );
           })}

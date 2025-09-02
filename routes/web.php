@@ -26,16 +26,24 @@ Route::get('/test', function () {
     }
 });
 
+
+
 // Simple test route without Inertia
 Route::get('/simple-test', function () {
     Log::info('Simple test route executed');
     return response()->json(['message' => 'Simple route is working!']);
 });
 
-// Public routes
+// Public routes (guest only)
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [FrontendController::class, 'login'])->name('login');
+    Route::get('/register', [FrontendController::class, 'register'])->name('register');
+    Route::get('/forgot-password', [FrontendController::class, 'forgotPassword'])->name('password.request');
+    Route::get('/reset-password/{token}', [FrontendController::class, 'resetPassword'])->name('password.reset');
+});
+
+// Public routes (no auth required)
 Route::get('/', [FrontendController::class, 'landing'])->name('home');
-Route::get('/login', [FrontendController::class, 'login'])->name('login');
-Route::get('/forgot-password', [FrontendController::class, 'forgotPassword'])->name('password.request');
 
 // Protected routes (require authentication)
 Route::middleware('auth')->group(function () {
