@@ -1,9 +1,10 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, ArrowRight, Check, Palette, Sparkles } from 'lucide-react';
-import { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Head, Link } from '@inertiajs/react';
+import { ArrowLeft, ArrowRight, Check, Eye, Filter, Heart, Palette, Sparkles, Star, X } from 'lucide-react';
+import { useMemo, useState } from 'react';
 
 interface Design {
   id: string;
@@ -13,6 +14,8 @@ interface Design {
   preview: string;
   features: string[];
   colors: string[];
+  popular?: boolean;
+  trending?: boolean;
 }
 
 interface DesignSelectionProps {
@@ -26,22 +29,12 @@ interface DesignSelectionProps {
 
 export default function DesignSelection({ user }: DesignSelectionProps) {
   const [selectedDesign, setSelectedDesign] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  const { data, setData, post, processing, errors } = useForm({
-    selected_design: '',
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleContinue = () => {
     if (!selectedDesign) return;
-
-    setData('selected_design', selectedDesign);
-    post('/onboarding/design-selection', {
-      onSuccess: () => {
-        // Navigate to next step
-        window.location.href = '/onboarding/wedding-url';
-      },
-    });
+    // Navigate directly to URL page without form submission
+    window.location.href = '/onboarding/wedding-url';
   };
 
   const designs: Design[] = [
@@ -52,7 +45,8 @@ export default function DesignSelection({ user }: DesignSelectionProps) {
       description: 'Timeless and sophisticated design with elegant typography',
       preview: '/api/placeholder/400/300',
       features: ['Elegant typography', 'Classic layout', 'Gold accents', 'Formal style'],
-      colors: ['#8B4513', '#DAA520', '#F5F5DC']
+      colors: ['#8B4513', '#DAA520', '#F5F5DC'],
+      popular: true
     },
     {
       id: 'modern-minimalist',
@@ -61,7 +55,8 @@ export default function DesignSelection({ user }: DesignSelectionProps) {
       description: 'Clean and modern design with minimalist aesthetics',
       preview: '/api/placeholder/400/300',
       features: ['Clean lines', 'Modern typography', 'Minimal design', 'Contemporary feel'],
-      colors: ['#2C3E50', '#E74C3C', '#ECF0F1']
+      colors: ['#2C3E50', '#E74C3C', '#ECF0F1'],
+      trending: true
     },
     {
       id: 'romantic-floral',
@@ -70,7 +65,8 @@ export default function DesignSelection({ user }: DesignSelectionProps) {
       description: 'Beautiful floral design perfect for romantic weddings',
       preview: '/api/placeholder/400/300',
       features: ['Floral elements', 'Romantic colors', 'Soft typography', 'Elegant layout'],
-      colors: ['#E91E63', '#F8BBD9', '#FFF8E1']
+      colors: ['#E91E63', '#F8BBD9', '#FFF8E1'],
+      popular: true
     },
     {
       id: 'rustic-chic',
@@ -101,207 +97,295 @@ export default function DesignSelection({ user }: DesignSelectionProps) {
     }
   ];
 
+  // Get unique categories
+  const categories = useMemo(() => {
+    const uniqueCategories = Array.from(new Set(designs.map(design => design.category)));
+    return [
+      { id: 'all', name: 'All Designs', count: designs.length },
+      ...uniqueCategories.map(category => ({
+        id: category.toLowerCase(),
+        name: category,
+        count: designs.filter(design => design.category === category).length
+      }))
+    ];
+  }, [designs]);
+
+  // Filter designs based on selected category
+  const filteredDesigns = useMemo(() => {
+    if (selectedCategory === 'all') {
+      return designs;
+    }
+    return designs.filter(design =>
+      design.category.toLowerCase() === selectedCategory
+    );
+  }, [designs, selectedCategory]);
+
   return (
     <>
       <Head title="Design Selection - Onboarding" />
 
       <DashboardLayout user={user || null} currentPath="/onboarding/design-selection">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Choose Your Design 🎨
-          </h1>
-          <p className="text-muted-foreground">
-            Select the perfect design for your wedding invitation
+        {/* Compact Header */}
+        <div className="text-center mb-6 px-4">
+          <div className="flex items-center justify-center mb-3">
+            <div className="icon-container icon-gradient-3 mr-3">
+              <Palette className="w-5 h-5 text-primary-foreground" />
+            </div>
+            <h1 className="text-xl sm:text-2xl font-bold gradient-text-hero">
+              Choose Your Design
+            </h1>
+          </div>
+          <p className="text-muted-foreground text-sm max-w-md mx-auto">
+            Select the perfect template for your wedding invitation. You can customize it later.
           </p>
         </div>
 
-        {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="flex items-center justify-center space-x-4">
+        {/* Compact Progress Indicator */}
+        <div className="mb-6">
+          <div className="flex items-center justify-center space-x-2">
             <div className="flex items-center">
-              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium">
+              <div className="w-6 h-6 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-xs font-medium">
                 1
               </div>
-              <span className="ml-2 text-sm text-muted-foreground">Couple Info</span>
+              <span className="ml-1 text-xs text-muted-foreground hidden sm:block">Info</span>
             </div>
-            <div className="w-16 h-0.5 bg-primary"></div>
+            <div className="w-8 h-0.5 bg-primary"></div>
             <div className="flex items-center">
-              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium">
+              <div className="w-6 h-6 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-xs font-medium">
                 2
               </div>
-              <span className="ml-2 text-sm text-muted-foreground">Location</span>
+              <span className="ml-1 text-xs text-muted-foreground hidden sm:block">Location</span>
             </div>
-            <div className="w-16 h-0.5 bg-primary"></div>
+            <div className="w-8 h-0.5 bg-primary"></div>
             <div className="flex items-center">
-              <div className="icon-container icon-gradient-3">
-                <span className="text-sm font-medium text-primary-foreground">3</span>
+              <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-medium">
+                3
               </div>
-              <span className="ml-2 text-sm font-medium text-foreground">Design</span>
+              <span className="ml-1 text-xs font-medium text-foreground hidden sm:block">Design</span>
             </div>
-            <div className="w-16 h-0.5 bg-muted"></div>
+            <div className="w-8 h-0.5 bg-muted"></div>
             <div className="flex items-center">
-              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium">
+              <div className="w-6 h-6 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-xs font-medium">
                 4
               </div>
-              <span className="ml-2 text-sm text-muted-foreground">URL</span>
+              <span className="ml-1 text-xs text-muted-foreground hidden sm:block">URL</span>
             </div>
           </div>
         </div>
 
-        <div className="max-w-6xl mx-auto">
-          <Card className="card-elegant hover:shadow-2xl transition-all duration-300 mb-8">
-            <CardHeader className="pb-3">
-              <div className="flex items-center space-x-3">
-                <div className="icon-container icon-gradient-3">
-                  <Palette className="w-5 h-5 text-primary-foreground" />
+        <div className="max-w-7xl mx-auto px-4">
+            {/* Category Filter */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-2">
+                  <Filter className="w-4 h-4 text-muted-foreground" />
+                  <h3 className="text-sm font-medium text-foreground">Filter by Style</h3>
                 </div>
-                <div>
-                  <CardTitle className="text-lg">Design Templates</CardTitle>
-                  <CardDescription>Choose from our beautiful collection of wedding invitation designs</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit}>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {designs.map((design) => (
-                    <div
-                      key={design.id}
-                      className={`relative cursor-pointer transition-all duration-300 ${
-                        selectedDesign === design.id
-                          ? 'ring-2 ring-primary ring-offset-2'
-                          : 'hover:shadow-lg'
-                      }`}
-                      onClick={() => setSelectedDesign(design.id)}
-                    >
-                      <Card className={`card-elegant h-full ${
-                        selectedDesign === design.id
-                          ? 'border-primary shadow-lg'
-                          : 'hover:shadow-xl'
-                      } transition-all duration-300`}>
-                        <CardHeader className="pb-3">
-                          <div className="relative">
-                            <div className="w-full h-48 bg-muted rounded-lg flex items-center justify-center mb-4">
-                              <div className="text-center">
-                                <Palette className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
-                                <p className="text-sm text-muted-foreground">Preview</p>
-                              </div>
-                            </div>
-                            {selectedDesign === design.id && (
-                              <div className="absolute top-2 right-2 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center">
-                                <Check className="w-4 h-4" />
-                              </div>
-                            )}
-                          </div>
-                          <CardTitle className="text-lg">{design.name}</CardTitle>
-                          <CardDescription>{design.description}</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-3">
-                            <div>
-                              <p className="text-sm font-medium text-foreground mb-2">Category:</p>
-                              <span className="inline-block px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
-                                {design.category}
-                              </span>
-                            </div>
-
-                            <div>
-                              <p className="text-sm font-medium text-foreground mb-2">Features:</p>
-                              <ul className="text-xs text-muted-foreground space-y-1">
-                                {design.features.slice(0, 3).map((feature, index) => (
-                                  <li key={index} className="flex items-center">
-                                    <Check className="w-3 h-3 mr-1 text-primary" />
-                                    {feature}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-
-                            <div>
-                              <p className="text-sm font-medium text-foreground mb-2">Colors:</p>
-                              <div className="flex space-x-1">
-                                {design.colors.map((color, index) => (
-                                  <div
-                                    key={index}
-                                    className="w-4 h-4 rounded-full border border-border"
-                                    style={{ backgroundColor: color }}
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  ))}
-                </div>
-
-                {errors.selected_design && (
-                  <p className="text-sm text-destructive mt-4 text-center">{errors.selected_design}</p>
-                )}
-
-                {/* Action Buttons */}
-                <div className="flex items-center justify-between pt-8 mt-8 border-t">
-                  <Link href="/onboarding/wedding-location">
-                    <Button variant="outline" className="flex items-center">
-                      <ArrowLeft className="w-4 h-4 mr-2" />
-                      Back
-                    </Button>
-                  </Link>
-
+                {selectedCategory !== 'all' && (
                   <Button
-                    type="submit"
-                    disabled={processing || !selectedDesign}
-                    className="btn-hero flex items-center"
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedCategory('all')}
+                    className="text-xs text-muted-foreground hover:text-foreground"
                   >
-                    Continue
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    <X className="w-3 h-3 mr-1" />
+                    Clear
                   </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-
-          {/* Design Preview Info */}
-          <Card className="card-elegant hover:shadow-2xl transition-all duration-300">
-            <CardHeader className="pb-3">
-              <div className="flex items-center space-x-3">
-                <div className="icon-container icon-gradient-4">
-                  <Sparkles className="w-5 h-5 text-primary-foreground" />
-                </div>
-                <div>
-                  <CardTitle className="text-lg">Design Customization</CardTitle>
-                  <CardDescription>You can customize your chosen design after selection</CardDescription>
-                </div>
+                )}
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-muted/50 rounded-lg">
-                  <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <Palette className="w-4 h-4 text-primary" />
-                  </div>
-                  <h4 className="font-medium text-foreground mb-1">Custom Colors</h4>
-                  <p className="text-sm text-muted-foreground">Change colors to match your theme</p>
+
+              <div className="flex flex-wrap gap-2">
+                {categories.map((category) => (
+                  <Button
+                    key={category.id}
+                    type="button"
+                    variant={selectedCategory === category.id ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`text-xs transition-all duration-200 ${
+                      selectedCategory === category.id
+                        ? 'bg-primary text-primary-foreground shadow-md'
+                        : 'hover:bg-primary/10 hover:border-primary/30'
+                    }`}
+                  >
+                    {category.name}
+                    <Badge
+                      variant="secondary"
+                      className={`ml-2 text-xs ${
+                        selectedCategory === category.id
+                          ? 'bg-primary-foreground/20 text-primary-foreground'
+                          : 'bg-muted text-muted-foreground'
+                      }`}
+                    >
+                      {category.count}
+                    </Badge>
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Design Grid */}
+            {filteredDesigns.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                {filteredDesigns.map((design) => (
+                <div
+                  key={design.id}
+                  className={`relative cursor-pointer transition-all duration-300 group ${
+                    selectedDesign === design.id
+                      ? 'ring-2 ring-primary ring-offset-2 scale-105'
+                      : 'hover:scale-105'
+                  }`}
+                  onClick={() => setSelectedDesign(design.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setSelectedDesign(design.id);
+                    }
+                  }}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`Select ${design.name} design template`}
+                  aria-pressed={selectedDesign === design.id}
+                >
+                  <Card className={`h-full transition-all duration-300 ${
+                    selectedDesign === design.id
+                      ? 'border-primary shadow-xl bg-primary/5'
+                      : 'hover:shadow-lg hover:border-primary/30'
+                  }`}>
+                    {/* Preview Area */}
+                    <div className="relative">
+                      <div className="w-full h-40 bg-gradient-to-br from-muted to-muted/50 rounded-t-lg flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2">
+                            <Palette className="w-8 h-8 text-primary" />
+                          </div>
+                          <p className="text-xs text-muted-foreground font-medium">Preview</p>
+                        </div>
+                      </div>
+
+                      {/* Selection Indicator */}
+                      {selectedDesign === design.id && (
+                        <div className="absolute top-3 right-3 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center shadow-lg">
+                          <Check className="w-4 h-4" />
+                        </div>
+                      )}
+
+                      {/* Badges */}
+                      <div className="absolute top-3 left-3 flex gap-1">
+                        {design.popular && (
+                          <Badge variant="secondary" className="text-xs bg-accent/20 text-accent-foreground border-accent/30">
+                            <Heart className="w-3 h-3 mr-1" />
+                            Popular
+                          </Badge>
+                        )}
+                        {design.trending && (
+                          <Badge variant="secondary" className="text-xs bg-warm/20 text-warm-foreground border-warm/30">
+                            <Star className="w-3 h-3 mr-1" />
+                            Trending
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <CardContent className="p-4">
+                      <div className="space-y-3">
+                        <div>
+                          <h3 className="font-semibold text-foreground text-sm mb-1">{design.name}</h3>
+                          <p className="text-xs text-muted-foreground overflow-hidden" style={{
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical'
+                          }}>{design.description}</p>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <Badge variant="outline" className="text-xs">
+                            {design.category}
+                          </Badge>
+                          <div className="flex space-x-1">
+                            {design.colors.slice(0, 3).map((color, index) => (
+                              <div
+                                key={index}
+                                className="w-3 h-3 rounded-full border border-border/50"
+                                style={{ backgroundColor: color }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center text-xs text-muted-foreground">
+                          <Eye className="w-3 h-3 mr-1" />
+                          <span>{design.features.length} features included</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
-                <div className="text-center p-4 bg-muted/50 rounded-lg">
-                  <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <Check className="w-4 h-4 text-primary" />
-                  </div>
-                  <h4 className="font-medium text-foreground mb-1">Easy Editing</h4>
-                  <p className="text-sm text-muted-foreground">Edit text and details easily</p>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Filter className="w-8 h-8 text-muted-foreground" />
                 </div>
-                <div className="text-center p-4 bg-muted/50 rounded-lg">
-                  <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                <h3 className="text-lg font-medium text-foreground mb-2">No designs found</h3>
+                <p className="text-muted-foreground text-sm mb-4">
+                  No designs match the selected category. Try a different filter.
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedCategory('all')}
+                  className="flex items-center"
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Show All Designs
+                </Button>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-border/50">
+              <Link href="/onboarding/wedding-location" className="w-full sm:w-auto">
+                <Button variant="outline" size="sm" className="flex items-center w-full sm:w-auto">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back
+                </Button>
+              </Link>
+
+              <Button
+                type="button"
+                onClick={handleContinue}
+                disabled={!selectedDesign || filteredDesigns.length === 0}
+                className="btn-hero flex items-center w-full sm:w-auto"
+                size="sm"
+              >
+                Continue
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
+
+          {/* Compact Info Section */}
+          {selectedDesign && (
+            <Card className="mt-6 bg-primary/5 border-primary/20">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
                     <Sparkles className="w-4 h-4 text-primary" />
                   </div>
-                  <h4 className="font-medium text-foreground mb-1">Premium Quality</h4>
-                  <p className="text-sm text-muted-foreground">High-quality designs for your special day</p>
+                  <div>
+                    <h4 className="font-medium text-foreground text-sm">Great choice!</h4>
+                    <p className="text-xs text-muted-foreground">
+                      You can customize colors, text, and layout after selection. All designs are fully editable.
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </DashboardLayout>
     </>

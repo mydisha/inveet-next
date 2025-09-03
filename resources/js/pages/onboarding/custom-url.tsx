@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 
 export default function CustomUrl() {
   const [urlSlug, setUrlSlug] = useState('');
+  const [fullUrl, setFullUrl] = useState('');
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
