@@ -1,151 +1,124 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Head, Link } from '@inertiajs/react';
+import DashboardCard from '@/components/dashboard/DashboardCard';
+import ActivityCard from '@/components/dashboard/ActivityCard';
+import DashboardSection from '@/components/dashboard/DashboardSection';
+import DashboardGrid from '@/components/dashboard/DashboardGrid';
+import LoadingSkeleton from '@/components/dashboard/LoadingSkeleton';
+import { Head } from '@inertiajs/react';
 import {
     Calendar,
     Heart,
     Plus,
     Settings,
-    Sparkles,
     Users,
 } from 'lucide-react';
 
-interface DashboardProps {
-  user: {
-    id: number;
-    name: string;
-    email: string;
-    hasWedding: boolean;
-  } | null;
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  hasWedding: boolean;
 }
 
-export default function Dashboard({ user }: DashboardProps) {
+interface DashboardProps {
+  user: User | null;
+  loading?: boolean;
+}
+
+export default function Dashboard({ user, loading = false }: DashboardProps) {
+  // Mock data for demonstration - in real app, this would come from props or API
+  const recentActivities = user?.hasWedding ? [
+    {
+      id: '1',
+      icon: Heart,
+      title: 'Wedding invitation created',
+      description: 'Your beautiful invitation is ready to share',
+      timestamp: '2 hours ago',
+      status: 'success' as const,
+    },
+    {
+      id: '2',
+      icon: Users,
+      title: 'Guest list updated',
+      description: 'Added 15 new guests to your list',
+      timestamp: '1 day ago',
+      status: 'info' as const,
+    },
+  ] : [];
+
+  if (loading) {
+    return (
+      <>
+        <Head title="Dashboard" />
+        <DashboardLayout user={user} currentPath="/dashboard">
+          <LoadingSkeleton />
+        </DashboardLayout>
+      </>
+    );
+  }
+
   return (
     <>
       <Head title="Dashboard" />
 
       <DashboardLayout user={user} currentPath="/dashboard">
-            {/* Welcome Section */}
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-foreground mb-2">
-                Welcome back, {user?.name}! 👋
-              </h1>
-              <p className="text-muted-foreground">
-                Ready to create your perfect wedding invitation?
-              </p>
-            </div>
+        {/* Welcome Section */}
+        <DashboardSection
+          title={`Welcome back, ${user?.name}! 👋`}
+          description="Ready to create your perfect wedding invitation?"
+          className="mb-8"
+        />
 
-            {/* Quick Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              <Card className="card-elegant hover:shadow-2xl transition-all duration-300 cursor-pointer group">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="icon-container icon-gradient-1 group-hover:scale-110 transition-transform">
-                      <Plus className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">Create New Wedding</CardTitle>
-                      <CardDescription>Start your wedding invitation journey</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <Link href="/onboarding">
-                    <Button className="btn-hero w-full group-hover:scale-105 transition-transform">
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      Get Started
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
+        {/* Quick Actions */}
+        <DashboardSection
+          title="Quick Actions"
+          description="Get started with your wedding invitation journey"
+        >
+          <DashboardGrid columns={3} gap="md">
+            <DashboardCard
+              title="Create New Wedding"
+              description="Start your wedding invitation journey"
+              icon={Plus}
+              iconVariant="primary"
+              href="/onboarding"
+              buttonText="Get Started"
+              buttonVariant="default"
+            />
 
-              <Card className="card-elegant hover:shadow-2xl transition-all duration-300 cursor-pointer group">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="icon-container icon-gradient-2 group-hover:scale-110 transition-transform">
-                      <Calendar className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">My Weddings</CardTitle>
-                      <CardDescription>Manage your existing weddings</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <Link href="/my-weddings">
-                    <Button variant="outline" className="w-full group-hover:border-accent group-hover:text-accent transition-all duration-300">
-                      View All
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
+            <DashboardCard
+              title="My Weddings"
+              description="Manage your existing weddings"
+              icon={Calendar}
+              iconVariant="accent"
+              href="/my-weddings"
+              buttonText="View All"
+              buttonVariant="outline"
+            />
 
-              <Card className="card-elegant hover:shadow-2xl transition-all duration-300 cursor-pointer group">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="icon-container icon-gradient-3 group-hover:scale-110 transition-transform">
-                      <Settings className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">Settings</CardTitle>
-                      <CardDescription>Manage your account settings</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <Link href="/settings">
-                    <Button variant="outline" className="w-full group-hover:border-primary group-hover:text-primary transition-all duration-300">
-                      Configure
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            </div>
+            <DashboardCard
+              title="Settings"
+              description="Manage your account settings"
+              icon={Settings}
+              iconVariant="warm"
+              href="/settings"
+              buttonText="Configure"
+              buttonVariant="outline"
+            />
+          </DashboardGrid>
+        </DashboardSection>
 
-            {/* Recent Activity */}
-            <Card className="card-elegant">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Users className="w-5 h-5 text-primary" />
-                  <span>Recent Activity</span>
-                </CardTitle>
-                <CardDescription>
-                  Your latest wedding invitation activities
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {user?.hasWedding ? (
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
-                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                        <Heart className="w-4 h-4 text-green-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium">Wedding invitation created</p>
-                        <p className="text-xs text-muted-foreground">2 hours ago</p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <div className="w-16 h-16 bg-muted/50 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Heart className="w-8 h-8 text-muted-foreground" />
-                    </div>
-                    <h3 className="text-lg font-medium text-foreground mb-2">No weddings yet</h3>
-                    <p className="text-muted-foreground mb-4">
-                      Start creating your first wedding invitation to see your activity here.
-                    </p>
-                    <Link href="/onboarding">
-                      <Button className="btn-hero">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Create Your First Wedding
-                      </Button>
-                    </Link>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+        {/* Recent Activity */}
+        <DashboardSection>
+          <ActivityCard
+            title="Recent Activity"
+            description="Your latest wedding invitation activities"
+            activities={recentActivities}
+            emptyStateTitle="No weddings yet"
+            emptyStateDescription="Start creating your first wedding invitation to see your activity here."
+            emptyStateActionText="Create Your First Wedding"
+            emptyStateActionHref="/onboarding"
+          />
+        </DashboardSection>
       </DashboardLayout>
     </>
   );
