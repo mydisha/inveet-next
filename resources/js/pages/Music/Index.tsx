@@ -5,6 +5,7 @@ import { MusicListItem, SimpleUploadModal, type MusicItem, type MusicMetadata } 
 import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Input } from '../../components/ui/input';
+import PageHeader from '../../components/ui/page-header';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
 import { getMusicByCategory, musicCategories, predefinedMusic, searchMusic } from '../../data/predefinedMusic';
@@ -90,26 +91,19 @@ export default function MusicIndex({ user }: MusicIndexProps) {
     <DashboardLayout user={user || null} currentPath="/music">
       <div className="container mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground flex items-center space-x-2">
-                <Music className="h-8 w-8" />
-                <span>Music Library</span>
-              </h1>
-              <p className="text-muted-foreground mt-2">
-                Choose from our curated collection or upload your own music for your wedding invitation
-              </p>
-            </div>
-
-            <Button
-              onClick={() => setShowUploadModal(true)}
-              className="flex items-center space-x-2"
-            >
-              <Upload className="h-4 w-4" />
-              <span>Upload Music</span>
-            </Button>
-          </div>
+        <PageHeader
+          icon={Music}
+          title="Music Library"
+          description="Choose from our curated collection or upload your own music for your wedding invitation"
+        >
+          <Button
+            onClick={() => setShowUploadModal(true)}
+            className="flex items-center space-x-2"
+          >
+            <Upload className="h-4 w-4" />
+            <span>Upload Music</span>
+          </Button>
+        </PageHeader>
 
           {/* Search and Filter */}
           <div className="flex flex-col sm:flex-row gap-4">
@@ -264,7 +258,6 @@ export default function MusicIndex({ user }: MusicIndexProps) {
           onClose={() => setShowUploadModal(false)}
           onUpload={handleUpload}
         />
-      </div>
     </DashboardLayout>
   );
 }

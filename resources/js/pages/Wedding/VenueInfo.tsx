@@ -1,12 +1,10 @@
 import DashboardPage from '@/components/dashboard/DashboardPage';
+import StandardFormLayout, { StandardFormSection, StandardInput, StandardTextarea } from '@/components/dashboard/StandardFormLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import {
-  ArrowLeft,
   Calendar,
   MapPin,
   Navigation
@@ -197,23 +195,16 @@ export default function VenueInfo({ user, wedding }: WeddingVenueProps) {
     >
       <Head title="Lokasi & Waktu" />
 
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link
-              href={`/wedding/${wedding.id}`}
-              className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Kembali</span>
-            </Link>
-            <div className="h-6 w-px bg-border" />
-            <h1 className="text-2xl font-bold text-foreground">Lokasi & Waktu</h1>
-          </div>
-
-
-        </div>
+      <StandardFormLayout
+        title="Lokasi & Waktu"
+        backHref={`/wedding/${wedding.id}`}
+        backLabel="Kembali ke Detail Pernikahan"
+        onSubmit={handleSubmit}
+        submitLabel="Simpan Perubahan"
+        isSubmitting={processing}
+        icon={MapPin}
+        maxWidth="6xl"
+      >
 
         {/* Wedding Date & Time Overview */}
         <Card className="border-0 shadow-lg bg-gradient-to-br from-primary/5 via-background to-primary-light/10">
@@ -245,145 +236,103 @@ export default function VenueInfo({ user, wedding }: WeddingVenueProps) {
         </Card>
 
         {/* Venue Information */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-xl font-bold text-foreground flex items-center space-x-2">
-              <MapPin className="w-5 h-5 text-primary" />
-              <span>Informasi Venue</span>
-            </CardTitle>
-            <CardDescription>
-              Detail lokasi dan informasi venue pernikahan
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="venue_name">Nama Venue *</Label>
-                    <Input
-                      id="venue_name"
-                      value={data.venue_name}
-                      onChange={(e) => setData('venue_name', e.target.value)}
-                      placeholder="Nama venue atau tempat"
-                      className="border-2 focus:border-primary"
-                    />
-                    {errors.venue_name && (
-                      <p className="text-sm text-destructive">{errors.venue_name}</p>
-                    )}
-                  </div>
+        <StandardFormSection
+          title="Informasi Venue"
+          description="Detail lokasi dan informasi venue pernikahan"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <StandardInput
+              label="Nama Venue"
+              id="venue_name"
+              value={data.venue_name}
+              onChange={(value) => setData('venue_name', value)}
+              placeholder="Nama venue atau tempat"
+              required
+              error={errors.venue_name}
+            />
 
-                  <div className="space-y-2">
-                    <Label htmlFor="venue_phone">Nomor Telepon</Label>
-                    <Input
-                      id="venue_phone"
-                      value={data.venue_phone}
-                      onChange={(e) => setData('venue_phone', e.target.value)}
-                      placeholder="Nomor telepon venue"
-                      className="border-2 focus:border-primary"
-                    />
-                  </div>
-                </div>
+            <StandardInput
+              label="Nomor Telepon"
+              id="venue_phone"
+              value={data.venue_phone}
+              onChange={(value) => setData('venue_phone', value)}
+              placeholder="Nomor telepon venue"
+            />
+          </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="venue_address">Alamat Lengkap *</Label>
-                  <Textarea
-                    id="venue_address"
-                    value={data.venue_address}
-                    onChange={(e) => setData('venue_address', e.target.value)}
-                    placeholder="Alamat lengkap venue"
-                    rows={3}
-                    className="border-2 focus:border-primary resize-none"
-                  />
-                  {errors.venue_address && (
-                    <p className="text-sm text-destructive">{errors.venue_address}</p>
-                  )}
-                </div>
+          <StandardTextarea
+            label="Alamat Lengkap"
+            id="venue_address"
+            value={data.venue_address}
+            onChange={(value) => setData('venue_address', value)}
+            placeholder="Alamat lengkap venue"
+            rows={3}
+            required
+            error={errors.venue_address}
+          />
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="venue_city">Kota</Label>
-                    <Input
-                      id="venue_city"
-                      value={data.venue_city}
-                      onChange={(e) => setData('venue_city', e.target.value)}
-                      placeholder="Kota"
-                      className="border-2 focus:border-primary"
-                    />
-                  </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <StandardInput
+              label="Kota"
+              id="venue_city"
+              value={data.venue_city}
+              onChange={(value) => setData('venue_city', value)}
+              placeholder="Kota"
+            />
 
-                  <div className="space-y-2">
-                    <Label htmlFor="venue_province">Provinsi</Label>
-                    <Input
-                      id="venue_province"
-                      value={data.venue_province}
-                      onChange={(e) => setData('venue_province', e.target.value)}
-                      placeholder="Provinsi"
-                      className="border-2 focus:border-primary"
-                    />
-                  </div>
+            <StandardInput
+              label="Provinsi"
+              id="venue_province"
+              value={data.venue_province}
+              onChange={(value) => setData('venue_province', value)}
+              placeholder="Provinsi"
+            />
 
-                  <div className="space-y-2">
-                    <Label htmlFor="venue_postal_code">Kode Pos</Label>
-                    <Input
-                      id="venue_postal_code"
-                      value={data.venue_postal_code}
-                      onChange={(e) => setData('venue_postal_code', e.target.value)}
-                      placeholder="Kode pos"
-                      className="border-2 focus:border-primary"
-                    />
-                  </div>
-                </div>
+            <StandardInput
+              label="Kode Pos"
+              id="venue_postal_code"
+              value={data.venue_postal_code}
+              onChange={(value) => setData('venue_postal_code', value)}
+              placeholder="Kode pos"
+            />
+          </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="ceremony_time">Waktu Akad Nikah</Label>
-                    <Input
-                      id="ceremony_time"
-                      type="time"
-                      value={data.ceremony_time}
-                      onChange={(e) => setData('ceremony_time', e.target.value)}
-                      className="border-2 focus:border-primary"
-                    />
-                  </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <StandardInput
+              label="Waktu Akad Nikah"
+              id="ceremony_time"
+              type="time"
+              value={data.ceremony_time}
+              onChange={(value) => setData('ceremony_time', value)}
+            />
 
-                  <div className="space-y-2">
-                    <Label htmlFor="reception_time">Waktu Resepsi</Label>
-                    <Input
-                      id="reception_time"
-                      type="time"
-                      value={data.reception_time}
-                      onChange={(e) => setData('reception_time', e.target.value)}
-                      className="border-2 focus:border-primary"
-                    />
-                  </div>
-                </div>
+            <StandardInput
+              label="Waktu Resepsi"
+              id="reception_time"
+              type="time"
+              value={data.reception_time}
+              onChange={(value) => setData('reception_time', value)}
+            />
+          </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="venue_description">Deskripsi Venue</Label>
-                  <Textarea
-                    id="venue_description"
-                    value={data.venue_description}
-                    onChange={(e) => setData('venue_description', e.target.value)}
-                    placeholder="Deskripsi singkat tentang venue"
-                    rows={3}
-                    className="border-2 focus:border-primary resize-none"
-                  />
-                </div>
+          <StandardTextarea
+            label="Deskripsi Venue"
+            id="venue_description"
+            value={data.venue_description}
+            onChange={(value) => setData('venue_description', value)}
+            placeholder="Deskripsi singkat tentang venue"
+            rows={3}
+          />
 
-                <div className="space-y-2">
-                  <Label htmlFor="venue_notes">Catatan Tambahan</Label>
-                  <Textarea
-                    id="venue_notes"
-                    value={data.venue_notes}
-                    onChange={(e) => setData('venue_notes', e.target.value)}
-                    placeholder="Catatan tambahan untuk tamu (parkir, dress code, dll)"
-                    rows={3}
-                    className="border-2 focus:border-primary resize-none"
-                  />
-                </div>
-              </form>
-          </CardContent>
-        </Card>
+          <StandardTextarea
+            label="Catatan Tambahan"
+            id="venue_notes"
+            value={data.venue_notes}
+            onChange={(value) => setData('venue_notes', value)}
+            placeholder="Catatan tambahan untuk tamu (parkir, dress code, dll)"
+            rows={3}
+          />
+        </StandardFormSection>
 
                 {/* Google Maps */}
         {data.venue_latitude && data.venue_longitude && (
@@ -442,9 +391,7 @@ export default function VenueInfo({ user, wedding }: WeddingVenueProps) {
             </CardContent>
           </Card>
         )}
-
-
-      </div>
+      </StandardFormLayout>
     </DashboardPage>
   );
 }

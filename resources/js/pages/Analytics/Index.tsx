@@ -1,5 +1,6 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import PageHeader from '@/components/ui/page-header';
 import { Head } from '@inertiajs/react';
 import { BarChart3, Eye, Heart, ShoppingCart } from 'lucide-react';
 
@@ -24,14 +25,11 @@ export default function Analytics({ user, weddings, stats }: AnalyticsProps) {
       <Head title="Analytics" />
 
       <DashboardLayout user={user} currentPath="/analytics">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Analytics
-          </h1>
-          <p className="text-muted-foreground">
-            Track your wedding invitation performance
-          </p>
-        </div>
+        <PageHeader
+          icon={BarChart3}
+          title="Analytics"
+          description="Track your wedding invitation performance"
+        />
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

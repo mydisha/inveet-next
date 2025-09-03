@@ -1,8 +1,9 @@
 import { WeddingCard } from '@/components/dashboard';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
+import PageHeader from '@/components/ui/page-header';
 import { Head } from '@inertiajs/react';
-import { Grid, List, Plus, Search } from 'lucide-react';
+import { Grid, Heart, List, Plus, Search } from 'lucide-react';
 import { useState } from 'react';
 
 interface MyWeddingsProps {
@@ -92,68 +93,64 @@ export default function MyWeddings({ user, weddings }: MyWeddingsProps) {
       <Head title="My Weddings" />
 
       <DashboardLayout user={user} currentPath="/my-weddings">
-        {/* Header Section */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                My Weddings
-              </h1>
-              <p className="text-gray-600">
-                Manage and organize your wedding invitations
-              </p>
-            </div>
-            <Button className="bg-primary hover:bg-primary/90 text-white">
-              <Plus className="w-4 h-4 mr-2" />
-              Create New Wedding
-            </Button>
+        <PageHeader
+          icon={Heart}
+          title="My Weddings"
+          description="Manage and organize your wedding invitations"
+        >
+          <Button className="bg-primary hover:bg-primary/90 text-white w-full sm:w-auto">
+            <Plus className="w-4 h-4 mr-2" />
+            Create New Wedding
+          </Button>
+        </PageHeader>
+
+        {/* Search and Filter Bar */}
+        <div className="bg-white/80 backdrop-blur-sm border border-gray-200/60 rounded-2xl p-4 shadow-sm space-y-4">
+          {/* Search Bar - Full width on mobile */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Search weddings..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white/50 text-base"
+            />
           </div>
 
-          {/* Search and Filter Bar */}
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white/80 backdrop-blur-sm border border-gray-200/60 rounded-2xl p-4 shadow-sm">
-            <div className="flex flex-1 items-center space-x-4">
-              {/* Search */}
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Search weddings..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white/50"
-                />
-              </div>
-
-              {/* Status Filter */}
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white/50"
-              >
-                <option value="all">All Status</option>
-                <option value="published">Published</option>
-                <option value="draft">Draft</option>
-                <option value="inactive">Inactive</option>
-              </select>
-            </div>
+          {/* Filter and View Controls - Responsive layout */}
+          <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+            {/* Status Filter */}
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent bg-white/50 text-base sm:w-auto w-full"
+            >
+              <option value="all">All Status</option>
+              <option value="published">Published</option>
+              <option value="draft">Draft</option>
+              <option value="inactive">Inactive</option>
+            </select>
 
             {/* View Mode Toggle */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 sm:ml-auto">
               <Button
                 variant={viewMode === 'grid' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setViewMode('grid')}
-                className="p-2"
+                className="p-2 flex-1 sm:flex-none"
               >
                 <Grid className="w-4 h-4" />
+                <span className="ml-2 sm:hidden">Grid</span>
               </Button>
               <Button
                 variant={viewMode === 'list' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setViewMode('list')}
-                className="p-2"
+                className="p-2 flex-1 sm:flex-none"
               >
                 <List className="w-4 h-4" />
+                <span className="ml-2 sm:hidden">List</span>
               </Button>
             </div>
           </div>
@@ -172,7 +169,7 @@ export default function MyWeddings({ user, weddings }: MyWeddingsProps) {
         {filteredWeddings.length > 0 ? (
           <div className={
             viewMode === 'grid'
-              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6"
               : "space-y-4"
           }>
             {filteredWeddings.map((wedding: Wedding) => (
@@ -183,7 +180,7 @@ export default function MyWeddings({ user, weddings }: MyWeddingsProps) {
                 onEdit={handleWeddingEdit}
                 onDelete={handleWeddingDelete}
                 onDesignConfig={handleDesignConfiguration}
-                className={viewMode === 'list' ? 'flex flex-row h-48' : ''}
+                className={viewMode === 'list' ? 'flex flex-col sm:flex-row h-auto sm:h-48' : ''}
               />
             ))}
           </div>

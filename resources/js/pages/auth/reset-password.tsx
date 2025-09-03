@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { Link, useForm } from '@inertiajs/react';
-import { Heart, Eye, EyeOff, Lock, ArrowRight, Sparkles, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Link, useForm } from '@inertiajs/react';
+import { ArrowLeft, ArrowRight, Eye, EyeOff, Heart, Lock, Sparkles } from 'lucide-react';
+import { useState } from 'react';
 
 interface ResetPasswordProps {
   email: string;
@@ -14,7 +14,7 @@ interface ResetPasswordProps {
 export default function ResetPassword({ email, token }: ResetPasswordProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+
   const { data, setData, post, processing, errors } = useForm({
     email: email,
     password: '',
@@ -30,7 +30,7 @@ export default function ResetPassword({ email, token }: ResetPasswordProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary-light/10 flex items-center justify-center p-6 relative overflow-hidden">
       {/* Background decorative elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div className="shape-float-1 top-20 right-20 w-32 h-32" style={{ animationDelay: '0s' }}></div>
         <div className="shape-float-2 bottom-32 left-16 w-24 h-24" style={{ animationDelay: '2s' }}></div>
         <div className="shape-float-3 top-1/2 right-1/4 w-16 h-16" style={{ animationDelay: '4s' }}></div>
@@ -38,7 +38,7 @@ export default function ResetPassword({ email, token }: ResetPasswordProps) {
         <div className="glow-orb bottom-1/4 left-1/3 w-48 h-48 opacity-20" style={{ animationDelay: '3s' }}></div>
       </div>
 
-      <div className="w-full max-w-md relative z-10">
+      <div className="w-full max-w-md relative z-20">
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-primary-glow rounded-2xl mb-4 shadow-lg">
@@ -58,7 +58,7 @@ export default function ResetPassword({ email, token }: ResetPasswordProps) {
               Enter your new password below
             </CardDescription>
           </CardHeader>
-          
+
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
@@ -134,8 +134,8 @@ export default function ResetPassword({ email, token }: ResetPasswordProps) {
                 )}
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full btn-hero group"
                 size="lg"
                 disabled={processing}

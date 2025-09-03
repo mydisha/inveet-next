@@ -1,4 +1,5 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
+import StandardFormLayout, { StandardInput, StandardFormSection } from '@/components/dashboard/StandardFormLayout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -214,111 +215,74 @@ export default function Profile({ mustVerifyEmail, status, user }: ProfileProps)
           {/* Tab Content */}
           <div className="space-y-6">
             {activeTab === 'profile' && (
-              <Card className="card-elegant">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="flex items-center space-x-2">
-                        <User className="w-5 h-5" />
-                        <span>Personal Information</span>
-                      </CardTitle>
-                      <CardDescription>
-                        Update your personal details and profile information
-                      </CardDescription>
-                    </div>
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsEditing(!isEditing)}
-                      className="group"
-                    >
-                      {isEditing ? (
-                        <>
-                          <X className="w-4 h-4 mr-2" />
-                          Cancel
-                        </>
-                      ) : (
-                        <>
-                          <Edit3 className="w-4 h-4 mr-2" />
-                          Edit
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleProfileUpdate} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Full Name</Label>
-                        {isEditing ? (
-                          <Input
-                            id="name"
-                            value={profileData.name}
-                            onChange={(e) => setProfileData('name', e.target.value)}
-                            className={profileErrors.name ? 'border-red-500' : ''}
-                          />
-                        ) : (
-                          <div className="p-3 bg-muted/50 rounded-lg text-foreground">
-                            {user.name}
-                          </div>
-                        )}
-                        {profileErrors.name && (
-                          <p className="text-sm text-red-500">{profileErrors.name}</p>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email Address</Label>
-                        {isEditing ? (
-                          <Input
-                            id="email"
-                            type="email"
-                            value={profileData.email}
-                            onChange={(e) => setProfileData('email', e.target.value)}
-                            className={profileErrors.email ? 'border-red-500' : ''}
-                          />
-                        ) : (
-                          <div className="p-3 bg-muted/50 rounded-lg text-foreground">
-                            {user.email}
-                          </div>
-                        )}
-                        {profileErrors.email && (
-                          <p className="text-sm text-red-500">{profileErrors.email}</p>
-                        )}
-                      </div>
-                    </div>
-
-                    {isEditing && (
-                      <div className="flex justify-end space-x-3">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => setIsEditing(false)}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          type="submit"
-                          disabled={profileProcessing}
-                          className="group"
-                        >
-                          {profileProcessing ? (
-                            <>
-                              <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                              Saving...
-                            </>
-                          ) : (
-                            <>
-                              <Save className="w-4 h-4 mr-2" />
-                              Save Changes
-                            </>
-                          )}
-                        </Button>
-                      </div>
+              <StandardFormLayout
+                title="Personal Information"
+                description="Update your personal details and profile information"
+                onSubmit={isEditing ? handleProfileUpdate : undefined}
+                onCancel={isEditing ? () => setIsEditing(false) : undefined}
+                submitLabel="Save Changes"
+                cancelLabel="Cancel"
+                isSubmitting={profileProcessing}
+                icon={User}
+                maxWidth="2xl"
+              >
+                <div className="flex items-center justify-end mb-6">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsEditing(!isEditing)}
+                    className="group"
+                  >
+                    {isEditing ? (
+                      <>
+                        <X className="w-4 h-4 mr-2" />
+                        Cancel
+                      </>
+                    ) : (
+                      <>
+                        <Edit3 className="w-4 h-4 mr-2" />
+                        Edit
+                      </>
                     )}
-                  </form>
-                </CardContent>
-              </Card>
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {isEditing ? (
+                    <>
+                      <StandardInput
+                        label="Full Name"
+                        id="name"
+                        value={profileData.name}
+                        onChange={(value) => setProfileData('name', value)}
+                        error={profileErrors.name}
+                      />
+                      <StandardInput
+                        label="Email Address"
+                        id="email"
+                        type="email"
+                        value={profileData.email}
+                        onChange={(value) => setProfileData('email', value)}
+                        error={profileErrors.email}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-foreground">Full Name</Label>
+                        <div className="p-3 bg-muted/50 rounded-lg text-foreground">
+                          {user.name}
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-foreground">Email Address</Label>
+                        <div className="p-3 bg-muted/50 rounded-lg text-foreground">
+                          {user.email}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </StandardFormLayout>
             )}
 
             {activeTab === 'security' && (

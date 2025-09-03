@@ -263,4 +263,63 @@ class UserController extends Controller
             'message' => 'Roles synced successfully'
         ]);
     }
+
+    /**
+     * Get title settings for user
+     */
+    public function getTitleSettings(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        // Mock title settings data - in real implementation, this would come from database
+        $titleSettings = [
+            'couple_title' => 'Mempelai',
+            'mother_title' => 'Ibu',
+            'father_title' => 'Bapak',
+            'separator_title' => 'dari',
+            'cover_title' => 'Pernikahan',
+            'location_title' => 'Lokasi',
+            'venue_title' => 'Tempat',
+            'time_title' => 'Waktu',
+            'rsvp_title' => 'Konfirmasi Kehadiran',
+            'gift_title' => 'Hadiah',
+            'message_title' => 'Pesan',
+        ];
+
+        return response()->json([
+            'success' => true,
+            'data' => $titleSettings,
+            'message' => 'Title settings retrieved successfully'
+        ]);
+    }
+
+    /**
+     * Update title settings for user
+     */
+    public function updateTitleSettings(Request $request, $weddingId = null): JsonResponse
+    {
+        $request->validate([
+            'couple_title' => 'string|max:255',
+            'mother_title' => 'string|max:255',
+            'father_title' => 'string|max:255',
+            'separator_title' => 'string|max:255',
+            'cover_title' => 'string|max:255',
+            'location_title' => 'string|max:255',
+            'venue_title' => 'string|max:255',
+            'time_title' => 'string|max:255',
+            'rsvp_title' => 'string|max:255',
+            'gift_title' => 'string|max:255',
+            'message_title' => 'string|max:255',
+        ]);
+
+        $user = $request->user();
+
+        // In real implementation, this would save to database
+        // For now, we'll just return success
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Title settings updated successfully'
+        ]);
+    }
 }

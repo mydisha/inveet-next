@@ -2,6 +2,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import PageHeader from '@/components/ui/page-header';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
     Table,
@@ -12,7 +13,7 @@ import {
     TableRow
 } from '@/components/ui/table';
 import { Head } from '@inertiajs/react';
-import { ArrowUpDown, Calendar, ChevronLeft, ChevronRight, DollarSign, Eye, FileText, Filter, Package, Search } from 'lucide-react';
+import { ArrowUpDown, Calendar, ChevronLeft, ChevronRight, DollarSign, Eye, FileText, Filter, Package, Search, ShoppingCart } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 interface OrdersProps {
@@ -125,14 +126,11 @@ export default function Orders({ user, orders }: OrdersProps) {
       <Head title="Orders" />
 
       <DashboardLayout user={user} currentPath="/orders">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Orders
-          </h1>
-          <p className="text-muted-foreground">
-            View your order history and status
-          </p>
-        </div>
+        <PageHeader
+          icon={ShoppingCart}
+          title="Orders"
+          description="View your order history and status"
+        />
 
         {/* Filters and Search */}
         <div className="mb-6 space-y-4">

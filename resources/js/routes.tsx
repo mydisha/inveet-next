@@ -37,6 +37,11 @@ export const routes = {
   coupleInfo: (id: string | number) => `/wedding/${id}/couple`,
   venueInfo: (id: string | number) => `/wedding/${id}/location-time`,
 
+  // Guest management routes
+  guestList: (weddingId: string | number) => `/wedding/${weddingId}/guests`,
+  addGuest: (weddingId: string | number) => `/wedding/${weddingId}/guests/add`,
+  editGuest: (weddingId: string | number, guestId: string | number) => `/wedding/${weddingId}/guests/${guestId}/edit`,
+
   // Package routes
   packages: '/packages',
   packageDetails: (id: string | number) => `/packages/${id}`,
@@ -61,6 +66,7 @@ export const routes = {
   // Settings routes
   settings: '/settings',
   profile: '/profile',
+  titleSettings: '/settings/title',
 
   // Admin routes
   admin: {
@@ -70,7 +76,10 @@ export const routes = {
     orders: '/admin/orders',
     weddings: '/admin/weddings',
     invitations: '/admin/invitations',
-  }
+  },
+
+  // Error pages
+  notFound: '/404'
 };
 
 // API endpoints configuration
@@ -93,6 +102,12 @@ export const apiEndpoints = {
     findByEmail: '/api/user/find-by-email',
     updatePassword: '/api/user/password',
     confirmPassword: '/api/user/confirm-password',
+  },
+
+  // Settings management
+  settings: {
+    title: '/api/settings/title',
+    updateTitle: (weddingId?: string | number) => weddingId ? `/api/settings/title/${weddingId}` : '/api/settings/title',
   },
 
   // Wedding management
@@ -163,6 +178,19 @@ export const apiEndpoints = {
     validatePassword: (id: string | number) => `/api/invitations/${id}/validate-password`,
     getActive: '/api/invitations/active',
     getLocked: '/api/invitations/locked',
+  },
+
+  // Guest management
+  guests: {
+    index: '/api/guests',
+    store: '/api/guests',
+    show: (id: string | number) => `/api/guests/${id}`,
+    update: (id: string | number) => `/api/guests/${id}`,
+    destroy: (id: string | number) => `/api/guests/${id}`,
+    findByWeddingId: (weddingId: string | number) => `/api/weddings/${weddingId}/guests`,
+    createBulk: '/api/guests/bulk',
+    export: (weddingId: string | number) => `/api/weddings/${weddingId}/guests/export`,
+    deleteAll: (weddingId: string | number) => `/api/weddings/${weddingId}/guests/delete-all`,
   },
 
   // Music management

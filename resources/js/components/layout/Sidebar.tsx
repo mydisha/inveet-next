@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import {
     BarChart3,
+    BookOpen,
     FileText,
     Heart,
     Home,
@@ -29,6 +30,7 @@ export default function Sidebar({ user, sidebarOpen, setSidebarOpen, currentPath
   const navigationItems = [
     { name: 'Dashboard', href: '/dashboard', icon: Home },
     { name: 'My Weddings', href: '/my-weddings', icon: Heart },
+    { name: 'Guestbook', href: '/guestbook', icon: BookOpen },
     { name: 'Gallery', href: '/gallery', icon: ImageIcon },
     { name: 'Music', href: '/music', icon: Music },
     { name: 'Packages', href: '/packages', icon: Package },
@@ -46,13 +48,13 @@ export default function Sidebar({ user, sidebarOpen, setSidebarOpen, currentPath
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center justify-between h-16 px-6 border-b border-border/50">
-            <div className="flex items-center">
+            <Link href="/dashboard" className="flex items-center">
               <img
                 src="/inveet-logo.png"
                 alt="Inveet.Id"
                 className="h-8 w-auto"
               />
-            </div>
+            </Link>
             <Button
               variant="ghost"
               size="sm"

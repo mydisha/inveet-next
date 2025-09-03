@@ -74,11 +74,13 @@ Route::get('/wedding/{id}/configuration', [FrontendController::class, 'weddingCo
 Route::get('/weddings/{id}/design-configuration', [FrontendController::class, 'designConfiguration'])->name('weddings.design-configuration');
 Route::get('/wedding/{id}/couple', [FrontendController::class, 'weddingCoupleInfo'])->name('wedding.couple');
 Route::get('/wedding/{id}/location-time', [FrontendController::class, 'weddingVenueInfo'])->name('wedding.venue-info');
+Route::get('/wedding/{id}/guests', [FrontendController::class, 'guestList'])->name('wedding.guests');
 Route::get('/orders', [FrontendController::class, 'orders'])->name('orders.index');
 Route::get('/gallery', [FrontendController::class, 'gallery'])->name('gallery.index');
 Route::get('/analytics', [FrontendController::class, 'analytics'])->name('analytics.index');
 Route::get('/profile', [FrontendController::class, 'profile'])->name('profile');
 Route::get('/settings', [FrontendController::class, 'settings'])->name('settings');
+Route::get('/settings/title', [FrontendController::class, 'titleSettings'])->name('settings.title');
 
 // Music routes
 Route::get('/music', [FrontendController::class, 'music'])->name('music.index');
@@ -96,7 +98,29 @@ Route::get('/checkout', [FrontendController::class, 'checkout'])->name('checkout
 Route::get('/checkout/payment', [FrontendController::class, 'checkoutPayment'])->name('checkout.payment');
 Route::get('/checkout/success', [FrontendController::class, 'checkoutSuccess'])->name('checkout.success');
 
-// Catch-all route for SPA (must be last)
-Route::get('/{any?}', [FrontendController::class, 'landing'])->where('any', '.*');
+// Reception QR Scanner routes
+Route::get('/reception/scanner', [FrontendController::class, 'receptionScanner'])->name('reception.scanner');
+Route::get('/reception/monitor', [FrontendController::class, 'monitorDisplay'])->name('reception.monitor');
+Route::get('/reception/guest/{id}', [FrontendController::class, 'guestGreeting'])->name('reception.guest');
+
+// Guestbook routes
+Route::get('/guestbook', [FrontendController::class, 'guestbook'])->name('guestbook.index');
+Route::get('/wedding/{id}/guestbook', [FrontendController::class, 'guestbook'])->name('wedding.guestbook');
+
+// Test routes
+Route::get('/test/qr', function () {
+    return inertia('Test/QRTest');
+})->name('test.qr');
+
+// Test 404 page
+Route::get('/test/404', function () {
+    return inertia('NotFound', [
+        'status' => 404,
+        'message' => 'Test 404 page - Halaman yang Anda cari tidak ditemukan'
+    ]);
+})->name('test.404');
+
+// 404 Not Found route
+Route::fallback([FrontendController::class, 'notFound']);
 
 require __DIR__.'/auth.php';

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import { UploadForm, type MusicMetadata } from '../../components/music';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
+import PageHeader from '../../components/ui/page-header';
 
 interface MusicUploadProps {
   user?: {
@@ -45,30 +46,23 @@ export default function MusicUpload({ user }: MusicUploadProps) {
   return (
     <DashboardLayout user={user || null} currentPath="/music/upload">
       <div className="container mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center space-x-4 mb-4">
-            <Link
-              href="/music"
-              className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span>Back to Music Library</span>
-            </Link>
-          </div>
-
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <Upload className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">Upload Music</h1>
-              <p className="text-muted-foreground mt-1">
-                Add your own music to personalize your wedding invitation
-              </p>
-            </div>
-          </div>
+        {/* Back Navigation */}
+        <div className="mb-4">
+          <Link
+            href="/music"
+            className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to Music Library</span>
+          </Link>
         </div>
+
+        {/* Header */}
+        <PageHeader
+          icon={Upload}
+          title="Upload Music"
+          description="Add your own music to personalize your wedding invitation"
+        />
 
         {/* Success Message */}
         {uploadSuccess && (

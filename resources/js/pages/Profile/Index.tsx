@@ -2,6 +2,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import PageHeader from '@/components/ui/page-header';
 import { Head, Link } from '@inertiajs/react';
 import {
     ArrowRight,
@@ -41,6 +42,13 @@ export default function Profile({ user }: ProfileProps) {
 
       <DashboardLayout user={user} currentPath="/profile">
         <div className="max-w-4xl mx-auto space-y-8">
+          {/* Page Header */}
+          <PageHeader
+            icon={User}
+            title="Profile"
+            description="Manage your account information and preferences"
+          />
+
           {/* Hero Section */}
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-primary-light/5 to-background p-8 border border-primary/20">
             <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent" />

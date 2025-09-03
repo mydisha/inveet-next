@@ -18,11 +18,11 @@ export default function DashboardTemplate({
 }: DashboardTemplateProps) {
   return (
     <div className={cn(
-      "min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary-light/10",
+      "min-h-screen bg-transparent",
       className
     )}>
       {/* Background decorative elements matching landing page */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div className="shape-float-1 top-20 right-20 w-32 h-32" style={{ animationDelay: '0s' }}></div>
         <div className="shape-float-2 bottom-32 left-16 w-24 h-24" style={{ animationDelay: '2s' }}></div>
         <div className="shape-float-3 top-1/2 right-1/4 w-16 h-16" style={{ animationDelay: '4s' }}></div>
@@ -31,7 +31,7 @@ export default function DashboardTemplate({
       </div>
 
       {/* Main content area */}
-      <div className={cn("relative z-10", contentClassName)}>
+      <div className={cn("relative z-20", contentClassName)}>
         {children}
       </div>
     </div>

@@ -1,3 +1,4 @@
+import StandardFormLayout from '@/components/dashboard/StandardFormLayout';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -318,21 +319,14 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
       <Head title="Couple Information - Onboarding" />
 
       <DashboardLayout user={user || null} currentPath="/onboarding/couple-info">
-        <div className="min-h-screen overflow-x-hidden">
-          {/* Modern Header */}
-          <div className="text-center mb-8 px-4">
-          <div className="inline-flex items-center justify-center mb-4">
-            <div className="icon-container icon-gradient-1 mr-4">
-              <Users className="w-8 h-8" />
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-gradient-primary">
-              Couple Information
-            </h1>
-          </div>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Tell us about the happy couple and their special day
-          </p>
-        </div>
+        <StandardFormLayout
+          title="Couple Information"
+          onSubmit={handleSubmit}
+          submitLabel={step < 3 ? "Next" : "Continue to Design"}
+          isSubmitting={processing}
+          icon={Users}
+          maxWidth="6xl"
+        >
 
         {/* Enhanced Progress Bar */}
         <div className="mb-8 overflow-hidden">
@@ -367,8 +361,7 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <Card className="card-elegant hover:shadow-2xl transition-all duration-300">
+        <Card className="card-elegant hover:shadow-2xl transition-all duration-300">
             <CardHeader className="pb-6">
               <div className="flex items-center space-x-3">
                 <div className="icon-container icon-gradient-1">
@@ -386,11 +379,12 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
               <form onSubmit={handleSubmit} className="space-y-8">
                 {step === 1 && (
                   <div className="space-y-8">
-                    {/* Groom Section */}
-                    <div className="space-y-6">
-                      <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
-                        <div className="text-center sm:text-left">
-                          <Label className="text-lg font-medium mb-4 block">Groom's Photo</Label>
+                    {/* Couple Photos Section */}
+                    <div className="flex flex-col items-center space-y-6">
+                      <div className="flex items-center justify-center space-x-8">
+                        {/* Groom Photo */}
+                        <div className="text-center">
+                          <Label className="text-lg font-medium mb-4 block">Groom Photo</Label>
                           <div className="relative">
                             <div className="w-32 h-32 rounded-full border-4 border-dashed border-muted-foreground/30 flex items-center justify-center overflow-hidden bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer group"
                                  onClick={() => groomPhotoRef.current?.click()}>
@@ -419,6 +413,56 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
                               }}
                             />
                           </div>
+                          <div className="mt-3">
+                            <h4 className="font-semibold text-foreground">{data.groom_name || 'Groom Name'}</h4>
+                            <p className="text-sm text-muted-foreground">Mempelai Pria</p>
+                          </div>
+                        </div>
+
+                        {/* Bride Photo */}
+                        <div className="text-center">
+                          <Label className="text-lg font-medium mb-4 block">Bride Photo</Label>
+                          <div className="relative">
+                            <div className="w-32 h-32 rounded-full border-4 border-dashed border-muted-foreground/30 flex items-center justify-center overflow-hidden bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer group"
+                                 onClick={() => bridePhotoRef.current?.click()}>
+                              {bridePhotoPreview ? (
+                                <div className="relative w-full h-full">
+                                  <img src={bridePhotoPreview} alt="Bride preview" className="w-full h-full object-cover" />
+                                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <Camera className="w-6 h-6 text-white" />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="text-center">
+                                  <Camera className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                                  <p className="text-xs text-muted-foreground">Upload Photo</p>
+                                </div>
+                              )}
+                            </div>
+                            <input
+                              ref={bridePhotoRef}
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) handlePhotoUpload(file, 'bride');
+                              }}
+                            />
+                          </div>
+                          <div className="mt-3">
+                            <h4 className="font-semibold text-foreground">{data.bride_name || 'Bride Name'}</h4>
+                            <p className="text-sm text-muted-foreground">Mempelai Wanita</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Groom Information Section */}
+                    <div className="space-y-6">
+                      <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
+                        <div className="text-center sm:text-left">
+                          <Label className="text-lg font-medium mb-4 block">Groom's Information</Label>
                         </div>
 
                         <div className="flex-1 w-full">
@@ -554,46 +598,11 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
                       </div>
                     </div>
 
-                    {/* Divider */}
-                    <div className="flex items-center space-x-4">
-                      <div className="flex-1 h-px bg-border"></div>
-                      <div className="text-muted-foreground text-sm font-medium">AND</div>
-                      <div className="flex-1 h-px bg-border"></div>
-                    </div>
-
-                    {/* Bride Section */}
+                    {/* Bride Information Section */}
                     <div className="space-y-6">
                       <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
                         <div className="text-center sm:text-left">
-                          <Label className="text-lg font-medium mb-4 block">Bride's Photo</Label>
-                          <div className="relative">
-                            <div className="w-32 h-32 rounded-full border-4 border-dashed border-muted-foreground/30 flex items-center justify-center overflow-hidden bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer group"
-                                 onClick={() => bridePhotoRef.current?.click()}>
-                              {bridePhotoPreview ? (
-                                <div className="relative w-full h-full">
-                                  <img src={bridePhotoPreview} alt="Bride preview" className="w-full h-full object-cover" />
-                                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                    <Camera className="w-6 h-6 text-white" />
-                                  </div>
-                                </div>
-                              ) : (
-                                <div className="text-center">
-                                  <Camera className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                                  <p className="text-xs text-muted-foreground">Upload Photo</p>
-                                </div>
-                              )}
-                            </div>
-                            <input
-                              ref={bridePhotoRef}
-                              type="file"
-                              accept="image/*"
-                              className="hidden"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) handlePhotoUpload(file, 'bride');
-                              }}
-                            />
-                          </div>
+                          <Label className="text-lg font-medium mb-4 block">Bride's Information</Label>
                         </div>
 
                         <div className="flex-1 w-full">
@@ -1137,7 +1146,6 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
               Need help? Contact our support team
             </p>
           </div>
-        </div>
 
         {/* Photo Cropper Modal */}
         {showCropper && (
@@ -1248,7 +1256,7 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
             </div>
           </div>
         )}
-        </div>
+        </StandardFormLayout>
       </DashboardLayout>
     </>
   );

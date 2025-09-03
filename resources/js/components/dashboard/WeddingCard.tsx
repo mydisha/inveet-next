@@ -118,7 +118,7 @@ export function WeddingCard({
   };
 
   // Check if this is list view
-  const isListView = className?.includes('flex flex-row');
+  const isListView = className?.includes('flex flex-row') || className?.includes('flex flex-col sm:flex-row');
 
   return (
     <Card className={cn(
@@ -131,7 +131,7 @@ export function WeddingCard({
       {/* Cover Image */}
       <div className={cn(
         "relative overflow-hidden",
-        isListView ? "w-48 h-full" : "h-48"
+        isListView ? "w-full sm:w-48 h-32 sm:h-full" : "h-48"
       )}>
         {wedding.theme?.preview_image && !imageError ? (
           <img
@@ -168,7 +168,7 @@ export function WeddingCard({
 
       <CardHeader className={cn(
         "pb-3 pt-6 px-6",
-        isListView && "flex-1"
+        isListView && "flex-1 sm:flex-1"
       )}>
         <div className={cn(
           "space-y-3",
@@ -178,7 +178,7 @@ export function WeddingCard({
           <div className={cn(
             isListView ? "text-left" : "text-center"
           )}>
-            <h3 className="font-bold text-xl text-gray-900 mb-1">
+            <h3 className="font-bold text-lg sm:text-xl text-gray-900 mb-1">
               {wedding.couple_name_1 && wedding.couple_name_2
                 ? `${wedding.couple_name_1} & ${wedding.couple_name_2}`
                 : wedding.title || 'Untitled Wedding'
@@ -257,7 +257,7 @@ export function WeddingCard({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex space-x-2 pt-2">
+          <div className="flex flex-col sm:flex-row gap-2 pt-2">
             <Button
               variant="outline"
               size="sm"

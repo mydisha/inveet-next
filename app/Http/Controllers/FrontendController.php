@@ -55,26 +55,16 @@ class FrontendController extends Controller
      */
     public function dashboard(Request $request)
     {
-        // Get user data if authenticated, otherwise provide mock data for testing
+        // Get user data if authenticated
         $user = $request->user();
 
-        if (!$user) {
-            // Mock user data for testing without authentication
-            $user = (object) [
-                'id' => 1,
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-                'hasWedding' => false,
-            ];
-        }
-
         return Inertia::render('DashboardFixed', [
-            'user' => [
+            'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'hasWedding' => $user->hasWedding ?? false,
-            ],
+            ] : null,
         ]);
     }
 
@@ -85,23 +75,13 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-        if (!$user) {
-            // Mock user data for testing without authentication
-            $user = (object) [
-                'id' => 1,
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-                'hasWedding' => false,
-            ];
-        }
-
         return Inertia::render('onboarding/index', [
-            'user' => [
+            'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'hasWedding' => $user->hasWedding ?? false,
-            ],
+            ] : null,
             'currentStep' => 1,
         ]);
     }
@@ -113,23 +93,13 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-        if (!$user) {
-            // Mock user data for testing without authentication
-            $user = (object) [
-                'id' => 1,
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-                'hasWedding' => false,
-            ];
-        }
-
         return Inertia::render('onboarding/couple-info', [
-            'user' => [
+            'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'hasWedding' => $user->hasWedding ?? false,
-            ],
+            ] : null,
         ]);
     }
 
@@ -140,23 +110,15 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-        if (!$user) {
-            // Mock user data for testing without authentication
-            $user = (object) [
-                'id' => 1,
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-                'hasWedding' => false,
-            ];
-        }
+
 
         return Inertia::render('onboarding/wedding-location', [
-            'user' => [
+            'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'hasWedding' => $user->hasWedding ?? false,
-            ],
+            ] : null,
         ]);
     }
 
@@ -256,15 +218,7 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-        if (!$user) {
-            // Mock user data for testing without authentication
-            $user = (object) [
-                'id' => 1,
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-                'hasWedding' => false,
-            ];
-        }
+
 
         // Mock wedding data for now - in real app, fetch from database
         $wedding = (object) [
@@ -291,12 +245,12 @@ class FrontendController extends Controller
         ];
 
         return Inertia::render('Wedding/CoupleInfo', [
-            'user' => [
+            'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'hasWedding' => $user->hasWedding ?? false,
-            ],
+            ] : null,
             'wedding' => $wedding,
         ]);
     }
@@ -333,15 +287,7 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-        if (!$user) {
-            // Mock user data for testing without authentication
-            $user = (object) [
-                'id' => 1,
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-                'hasWedding' => false,
-            ];
-        }
+
 
         // Mock weddings data for testing
         $weddings = collect([
@@ -355,12 +301,12 @@ class FrontendController extends Controller
         ]);
 
         return Inertia::render('Wedding/MyWeddings', [
-            'user' => [
+            'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'hasWedding' => $user->hasWedding ?? false,
-            ],
+            ] : null,
             'weddings' => $weddings,
         ]);
     }
@@ -400,23 +346,15 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-        if (!$user) {
-            // Mock user data for testing without authentication
-            $user = (object) [
-                'id' => 1,
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-                'hasWedding' => false,
-            ];
-        }
+
 
         return Inertia::render('Profile/Index', [
-            'user' => [
+            'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'hasWedding' => $user->hasWedding ?? false,
-            ],
+            ] : null,
         ]);
     }
 
@@ -427,23 +365,50 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-        if (!$user) {
-            // Mock user data for testing without authentication
-            $user = (object) [
-                'id' => 1,
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-                'hasWedding' => false,
-            ];
-        }
+
 
         return Inertia::render('Settings/Index', [
-            'user' => [
+            'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'hasWedding' => $user->hasWedding ?? false,
-            ],
+            ] : null,
+        ]);
+    }
+
+    /**
+     * Show title settings
+     */
+    public function titleSettings(Request $request)
+    {
+        $user = $request->user();
+
+
+
+        // Mock title settings data
+        $titleSettings = [
+            'couple_title' => 'Mempelai',
+            'mother_title' => 'Ibu',
+            'father_title' => 'Bapak',
+            'separator_title' => 'dari',
+            'cover_title' => 'Pernikahan',
+            'location_title' => 'Lokasi',
+            'venue_title' => 'Tempat',
+            'time_title' => 'Waktu',
+            'rsvp_title' => 'Konfirmasi Kehadiran',
+            'gift_title' => 'Hadiah',
+            'message_title' => 'Pesan',
+        ];
+
+        return Inertia::render('Settings/title', [
+            'user' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ] : null,
+            'weddingId' => $request->query('wedding'),
+            'titleSettings' => $titleSettings,
         ]);
     }
 
@@ -454,15 +419,7 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-        if (!$user) {
-            // Mock user data for testing without authentication
-            $user = (object) [
-                'id' => 1,
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-                'hasWedding' => false,
-            ];
-        }
+
 
         // Mock orders data for testing
         $orders = collect([
@@ -476,12 +433,12 @@ class FrontendController extends Controller
         ]);
 
         return Inertia::render('Order/Index', [
-            'user' => [
+            'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'hasWedding' => $user->hasWedding ?? false,
-            ],
+            ] : null,
             'orders' => $orders,
         ]);
     }
@@ -493,23 +450,15 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-        if (!$user) {
-            // Mock user data for testing without authentication
-            $user = (object) [
-                'id' => 1,
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-                'hasWedding' => false,
-            ];
-        }
+
 
         return Inertia::render('Gallery', [
-            'user' => [
+            'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'hasWedding' => $user->hasWedding ?? false,
-            ],
+            ] : null,
         ]);
     }
 
@@ -520,15 +469,7 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-        if (!$user) {
-            // Mock user data for testing without authentication
-            $user = (object) [
-                'id' => 1,
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-                'hasWedding' => false,
-            ];
-        }
+
 
         // Mock analytics data for testing
         $weddings = collect([
@@ -541,12 +482,12 @@ class FrontendController extends Controller
         ]);
 
         return Inertia::render('Analytics/Index', [
-            'user' => [
+            'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'hasWedding' => $user->hasWedding ?? false,
-            ],
+            ] : null,
             'weddings' => $weddings,
             'stats' => [
                 'totalWeddings' => 1,
@@ -563,15 +504,7 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-        if (!$user) {
-            // Mock user data for testing without authentication
-            $user = (object) [
-                'id' => 1,
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-                'hasWedding' => false,
-            ];
-        }
+
 
         // Mock weddings data with cover photos for testing
         $weddings = collect([
@@ -650,12 +583,12 @@ class FrontendController extends Controller
         ]);
 
         return Inertia::render('Wedding/InvitationList', [
-            'user' => [
+            'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'hasWedding' => $user->hasWedding ?? false,
-            ],
+            ] : null,
             'weddings' => $weddings,
         ]);
     }
@@ -667,15 +600,7 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-        if (!$user) {
-            // Mock user data for testing without authentication
-            $user = (object) [
-                'id' => 1,
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-                'hasWedding' => false,
-            ];
-        }
+
 
         // Mock wedding data for testing
         $wedding = (object) [
@@ -696,12 +621,12 @@ class FrontendController extends Controller
         ];
 
         return Inertia::render('Wedding/WeddingDetail', [
-            'user' => [
+            'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'hasWedding' => $user->hasWedding ?? false,
-            ],
+            ] : null,
             'wedding' => $wedding,
         ]);
     }
@@ -713,15 +638,7 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-        if (!$user) {
-            // Mock user data for testing without authentication
-            $user = (object) [
-                'id' => 1,
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-                'hasWedding' => false,
-            ];
-        }
+
 
         // Mock wedding data for testing
         $wedding = (object) [
@@ -749,12 +666,12 @@ class FrontendController extends Controller
         ];
 
         return Inertia::render('Wedding/Configuration', [
-            'user' => [
+            'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'hasWedding' => $user->hasWedding ?? false,
-            ],
+            ] : null,
             'wedding' => $wedding,
         ]);
     }
@@ -766,23 +683,15 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-        if (!$user) {
-            // Mock user data for testing without authentication
-            $user = (object) [
-                'id' => 1,
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-                'hasWedding' => false,
-            ];
-        }
+
 
         return Inertia::render('Music/Index', [
-            'user' => [
+            'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'hasWedding' => $user->hasWedding ?? false,
-            ],
+            ] : null,
         ]);
     }
 
@@ -801,23 +710,15 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-        if (!$user) {
-            // Mock user data for testing without authentication
-            $user = (object) [
-                'id' => 1,
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-                'hasWedding' => false,
-            ];
-        }
+
 
         return Inertia::render('Music/Upload', [
-            'user' => [
+            'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'hasWedding' => $user->hasWedding ?? false,
-            ],
+            ] : null,
         ]);
     }
 
@@ -916,15 +817,7 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-        if (!$user) {
-            // Mock user data for testing without authentication
-            $user = (object) [
-                'id' => 1,
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-                'hasWedding' => false,
-            ];
-        }
+
 
         // Mock wedding data for now - in real app, fetch from database with details
         $wedding = (object) [
@@ -951,13 +844,222 @@ class FrontendController extends Controller
         ];
 
         return Inertia::render('Wedding/VenueInfo', [
-            'user' => [
+            'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'hasWedding' => $user->hasWedding ?? false,
-            ],
+            ] : null,
             'wedding' => $wedding,
+        ]);
+    }
+
+    /**
+     * Show the reception QR scanner page
+     */
+    public function receptionScanner()
+    {
+        // Mock stats for now - in real app, fetch from database
+        $stats = [
+            'totalScanned' => 0,
+            'todayScanned' => 0,
+            'vipGuests' => 0,
+        ];
+
+        return Inertia::render('Reception/Scanner', [
+            'stats' => $stats,
+        ]);
+    }
+
+    /**
+     * Show the monitor display page
+     */
+    public function monitorDisplay()
+    {
+        // Mock initial guests for now - in real app, fetch from database
+        $initialGuests = [];
+
+        return Inertia::render('Reception/MonitorDisplay', [
+            'initialGuests' => $initialGuests,
+        ]);
+    }
+
+    /**
+     * Show the guest greeting page
+     */
+    public function guestGreeting(Request $request, $id)
+    {
+        // Mock guest data for now - in real app, fetch from database
+        $guestData = [
+            'id' => $id,
+            'name' => 'Guest Name',
+            'wedding' => [
+                'id' => 1,
+                'slug' => 'sample-wedding',
+                'wedding_start' => '2024-06-15 08:00:00',
+                'wedding_end' => '2024-06-15 18:00:00',
+                'theme' => [
+                    'name' => 'Elegant Garden'
+                ],
+                'user' => [
+                    'name' => 'John & Jane'
+                ]
+            ],
+            'invitation' => [
+                'name' => 'VIP Guest',
+                'description' => 'Thank you for being part of our special day. Your presence means the world to us!'
+            ],
+            'isVip' => true,
+            'tableNumber' => 'A1',
+            'seatNumber' => '12',
+        ];
+
+        $qrCode = $request->query('qrCode', '');
+
+        return Inertia::render('Guest/GuestGreeting', [
+            'guestData' => $guestData,
+            'qrCode' => $qrCode,
+        ]);
+    }
+
+    /**
+     * Show the guest list page
+     */
+    public function guestList(Request $request, $id)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            // Mock user data for testing without authentication
+            $user = (object) [
+                'id' => 1,
+                'name' => 'Dias Taufik Rahman',
+                'email' => 'dias@example.com',
+                'hasWedding' => true,
+            ];
+        }
+
+        // Mock wedding data for testing
+        $wedding = (object) [
+            'id' => (int) $id,
+            'slug' => 'dias-azalia-wedding',
+            'title' => 'Dias & Azalia Wedding',
+        ];
+
+        // Mock invitation link
+        $invitationLink = 'https://inveet.id/invitation/429dbdda-35ae-4f9e-863b-f60987ade6c9/dias-azalia/share';
+
+        return Inertia::render('Guest/GuestList', [
+            'user' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'hasWedding' => $user->hasWedding ?? false,
+            ] : null,
+            'weddingId' => $id,
+            'invitationLink' => $invitationLink,
+        ]);
+    }
+
+    /**
+     * Show the guestbook page
+     */
+    public function guestbook(Request $request, $weddingId = null)
+    {
+        // For now, we'll use a mock wedding ID if none provided
+        // In a real app, this would come from the authenticated user's wedding
+        $weddingId = $weddingId ?? 1;
+
+        // Mock data for demonstration
+        $wedding = (object) [
+            'id' => $weddingId,
+            'slug' => 'sample-wedding',
+            'user' => (object) [
+                'name' => 'Dias Taufik Rahman'
+            ]
+        ];
+
+        // Mock comments data - in real app, this would come from database
+        $comments = [
+            (object) [
+                'id' => 1,
+                'name' => 'Zera Putri & Partner',
+                'comment' => 'Selamat Kepada kedua mempelai Pengantin',
+                'is_attend' => false,
+                'guest_count' => 2,
+                'is_approved' => true,
+                'created_at' => now()->subMonths(5)->toISOString()
+            ],
+            (object) [
+                'id' => 2,
+                'name' => 'Zera Putri',
+                'comment' => 'Selamat Kepada kedua mempelai',
+                'is_attend' => false,
+                'guest_count' => 1,
+                'is_approved' => true,
+                'created_at' => now()->subMonths(5)->toISOString()
+            ],
+            (object) [
+                'id' => 3,
+                'name' => 'Zera Putri',
+                'comment' => 'Semoga bahagia selalu',
+                'is_attend' => true,
+                'guest_count' => 1,
+                'is_approved' => true,
+                'created_at' => now()->subYear()->toISOString()
+            ],
+            (object) [
+                'id' => 4,
+                'name' => 'Ahmad Rizki',
+                'comment' => 'Barakallahu lakuma wa baraka alaikuma wa jama\'a bainakuma fi khair. Semoga menjadi keluarga yang sakinah, mawaddah, wa rahmah.',
+                'is_attend' => true,
+                'guest_count' => 2,
+                'is_approved' => true,
+                'created_at' => now()->subDays(3)->toISOString()
+            ],
+            (object) [
+                'id' => 5,
+                'name' => 'Siti Nurhaliza',
+                'comment' => 'Selamat menempuh hidup baru! Semoga pernikahan kalian penuh berkah dan kebahagiaan.',
+                'is_attend' => null,
+                'guest_count' => 1,
+                'is_approved' => true,
+                'created_at' => now()->subDays(1)->toISOString()
+            ],
+            (object) [
+                'id' => 6,
+                'name' => 'Budi Santoso',
+                'comment' => 'Semoga menjadi keluarga yang harmonis dan penuh cinta kasih.',
+                'is_attend' => true,
+                'guest_count' => 3,
+                'is_approved' => true,
+                'created_at' => now()->subHours(5)->toISOString()
+            ]
+        ];
+
+        // Calculate stats
+        $stats = (object) [
+            'total' => count($comments),
+            'attending' => count(array_filter($comments, fn($c) => $c->is_attend === true)),
+            'not_attending' => count(array_filter($comments, fn($c) => $c->is_attend === false)),
+            'uncertain' => count(array_filter($comments, fn($c) => $c->is_attend === null))
+        ];
+
+        return Inertia::render('Guest/Guestbook', [
+            'wedding' => $wedding,
+            'comments' => $comments,
+            'stats' => $stats
+        ]);
+    }
+
+    /**
+     * Show 404 Not Found page
+     */
+    public function notFound()
+    {
+        return Inertia::render('NotFound', [
+            'status' => 404,
+            'message' => 'Halaman yang Anda cari tidak ditemukan'
         ]);
     }
 }

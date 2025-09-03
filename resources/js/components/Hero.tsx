@@ -16,23 +16,25 @@ const Hero = () => {
       </div>
 
       {/* Enhanced Geometric Shapes with sophisticated animations */}
-      <div className="shape-float-1 top-20 right-20 w-32 h-32" style={{ animationDelay: '0s' }}></div>
-      <div className="shape-float-2 bottom-32 left-16 w-24 h-24" style={{ animationDelay: '2s' }}></div>
-      <div className="shape-float-3 top-1/2 right-1/4 w-16 h-16" style={{ animationDelay: '4s' }}></div>
-      <div className="shape-float-4 top-1/3 left-1/4 w-20 h-20" style={{ animationDelay: '1s' }}></div>
-      <div className="shape-float-1 bottom-1/4 right-1/3 w-12 h-12" style={{ animationDelay: '3s' }}></div>
-      <div className="shape-float-2 top-3/4 left-1/3 w-28 h-28" style={{ animationDelay: '5s' }}></div>
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="shape-float-1 top-20 right-20 w-32 h-32" style={{ animationDelay: '0s' }}></div>
+        <div className="shape-float-2 bottom-32 left-16 w-24 h-24" style={{ animationDelay: '2s' }}></div>
+        <div className="shape-float-3 top-1/2 right-1/4 w-16 h-16" style={{ animationDelay: '4s' }}></div>
+        <div className="shape-float-4 top-1/3 left-1/4 w-20 h-20" style={{ animationDelay: '1s' }}></div>
+        <div className="shape-float-1 bottom-1/4 right-1/3 w-12 h-12" style={{ animationDelay: '3s' }}></div>
+        <div className="shape-float-2 top-3/4 left-1/3 w-28 h-28" style={{ animationDelay: '5s' }}></div>
 
-      {/* Glow Orbs for atmospheric effect */}
-      <div className="glow-orb top-1/4 right-1/3 w-64 h-64" style={{ animationDelay: '1s' }}></div>
-      <div className="glow-orb bottom-1/4 left-1/3 w-48 h-48" style={{ animationDelay: '3s' }}></div>
+        {/* Glow Orbs for atmospheric effect */}
+        <div className="glow-orb top-1/4 right-1/3 w-64 h-64" style={{ animationDelay: '1s' }}></div>
+        <div className="glow-orb bottom-1/4 left-1/3 w-48 h-48" style={{ animationDelay: '3s' }}></div>
 
-      {/* Particle Effects */}
-      <div className="particle top-1/4 left-1/4" style={{ animationDelay: '0s' }}></div>
-      <div className="particle top-1/3 right-1/3" style={{ animationDelay: '1s' }}></div>
-      <div className="particle top-1/2 left-1/2" style={{ animationDelay: '2s' }}></div>
-      <div className="particle bottom-1/3 right-1/4" style={{ animationDelay: '0.5s' }}></div>
-      <div className="particle bottom-1/4 left-1/2" style={{ animationDelay: '1.5s' }}></div>
+        {/* Particle Effects */}
+        <div className="particle top-1/4 left-1/4" style={{ animationDelay: '0s' }}></div>
+        <div className="particle top-1/3 right-1/3" style={{ animationDelay: '1s' }}></div>
+        <div className="particle top-1/2 left-1/2" style={{ animationDelay: '2s' }}></div>
+        <div className="particle bottom-1/3 right-1/4" style={{ animationDelay: '0.5s' }}></div>
+        <div className="particle bottom-1/4 left-1/2" style={{ animationDelay: '1.5s' }}></div>
+      </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
         <div className="grid lg:grid-cols-2 gap-12 items-center">

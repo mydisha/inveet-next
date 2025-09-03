@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import PageHeader from '@/components/ui/page-header';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Head, Link } from '@inertiajs/react';
@@ -251,25 +252,22 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
       <Head title="Design Configuration" />
 
       <DashboardLayout user={user || null} currentPath="/weddings/design-configuration">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-4">
-              <Link href="/my-weddings">
-                <Button variant="outline" size="sm" className="flex items-center">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Weddings
-                </Button>
-              </Link>
-              <div>
-                <h1 className="text-2xl font-bold gradient-text-hero">Design Configuration</h1>
-                <p className="text-muted-foreground">
-                  Customize your wedding invitation design, cover image, and color palette
-                </p>
-              </div>
-            </div>
-          </div>
+        {/* Back Navigation */}
+        <div className="mb-4">
+          <Link href="/my-weddings">
+            <Button variant="outline" size="sm" className="flex items-center">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Weddings
+            </Button>
+          </Link>
         </div>
+
+        {/* Header */}
+        <PageHeader
+          icon={Palette}
+          title="Design Configuration"
+          description="Customize your wedding invitation design, cover image, and color palette"
+        />
 
         <div className="max-w-7xl mx-auto">
           <Tabs defaultValue="cover" className="space-y-6">

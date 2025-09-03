@@ -1,6 +1,7 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import PageHeader from '@/components/ui/page-header';
 import {
     closestCenter,
     DndContext,
@@ -263,20 +264,18 @@ export default function Gallery({ user }: GalleryProps) {
 
       <div className="space-y-6">
         {/* Page Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Gallery</h1>
-            <p className="text-gray-600 mt-1">
-              Upload and manage your wedding photos
-            </p>
-          </div>
+        <PageHeader
+          icon={ImageIcon}
+          title="Gallery"
+          description="Upload and manage your wedding photos"
+        >
           {images.length > 0 && (
             <Button onClick={handleDownloadAll} variant="outline">
               <Download className="h-4 w-4 mr-2" />
               Download All
             </Button>
           )}
-        </div>
+        </PageHeader>
 
         {/* Upload Section */}
         <Card>
