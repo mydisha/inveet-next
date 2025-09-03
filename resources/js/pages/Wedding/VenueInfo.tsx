@@ -6,10 +6,10 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Head, Link, useForm } from '@inertiajs/react';
 import {
-    ArrowLeft,
-    Calendar,
-    MapPin,
-    Navigation
+  ArrowLeft,
+  Calendar,
+  MapPin,
+  Navigation
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -79,71 +79,84 @@ export default function VenueInfo({ user, wedding }: WeddingVenueProps) {
     venue_longitude: initialData.venue_longitude,
   });
 
-  // Load Google Maps API - TEMPORARILY DISABLED
-  // useEffect(() => {
-  //   const loadGoogleMaps = () => {
-  //     if (window.google && window.google.maps) {
-  //       setMapLoaded(true);
-  //       return;
-  //     }
+  // Load Google Maps API with error handling
+  useEffect(() => {
+    const loadGoogleMaps = () => {
+      try {
+        if (window.google && window.google.maps) {
+          setMapLoaded(true);
+          return;
+        }
 
-  //     const script = document.createElement('script');
-  //     script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY || 'YOUR_API_KEY'}&libraries=places`;
-  //     script.async = true;
-  //     script.defer = true;
-  //     script.onload = () => setMapLoaded(true);
-  //     document.head.appendChild(script);
-  //   };
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY || 'YOUR_API_KEY'}&libraries=places`;
+        script.async = true;
+        script.defer = true;
+        script.onload = () => setMapLoaded(true);
+        script.onerror = () => {
+          console.warn('Failed to load Google Maps API');
+          setMapLoaded(false);
+        };
+        document.head.appendChild(script);
+      } catch (error) {
+        console.warn('Error loading Google Maps:', error);
+        setMapLoaded(false);
+      }
+    };
 
-  //   loadGoogleMaps();
-  // }, []);
+    loadGoogleMaps();
+  }, []);
 
-  // Initialize map when loaded and data is available - TEMPORARILY DISABLED
-  // useEffect(() => {
-  //   if (mapLoaded && mapRef.current && data.venue_latitude && data.venue_longitude) {
-  //     const lat = parseFloat(data.venue_latitude);
-  //     const lng = parseFloat(data.venue_longitude);
+  // Initialize map when loaded and data is available with error handling
+  useEffect(() => {
+    try {
+      if (mapLoaded && mapRef.current && data.venue_latitude && data.venue_longitude && window.google && window.google.maps) {
+        const lat = parseFloat(data.venue_latitude);
+        const lng = parseFloat(data.venue_longitude);
 
-  //     if (!isNaN(lat) && !isNaN(lng)) {
-  //       const mapOptions = {
-  //         center: { lat, lng },
-  //         zoom: 15,
-  //         mapTypeId: window.google.maps.MapTypeId.ROADMAP,
-  //         styles: [
-  //           {
-  //             featureType: 'poi',
-  //             elementType: 'labels',
-  //             stylers: [{ visibility: 'off' }]
-  //           }
-  //         ]
-  //       };
+        if (!isNaN(lat) && !isNaN(lng)) {
+          const mapOptions = {
+            center: { lat, lng },
+            zoom: 15,
+            mapTypeId: window.google.maps.MapTypeId.ROADMAP,
+            styles: [
+              {
+                featureType: 'poi',
+                elementType: 'labels',
+                stylers: [{ visibility: 'off' }]
+              }
+            ]
+          };
 
-  //       mapInstance.current = new window.google.maps.Map(mapRef.current, mapOptions);
+          mapInstance.current = new window.google.maps.Map(mapRef.current, mapOptions);
 
-  //       // Add marker
-  //       markerInstance.current = new window.google.maps.Marker({
-  //         position: { lat, lng },
-  //         map: mapInstance.current,
-  //         title: data.venue_name || 'Wedding Venue',
-  //         animation: window.google.maps.Animation.DROP
-  //       });
+          // Add marker
+          markerInstance.current = new window.google.maps.Marker({
+            position: { lat, lng },
+            map: mapInstance.current,
+            title: data.venue_name || 'Wedding Venue',
+            animation: window.google.maps.Animation.DROP
+          });
 
-  //       // Add info window
-  //       const infoWindow = new window.google.maps.InfoWindow({
-  //         content: `
-  //           <div class="p-2">
-  //             <h3 class="font-semibold text-gray-900">${data.venue_name || 'Wedding Venue'}</h3>
-  //             <p class="text-sm text-gray-600">${data.venue_address || ''}</p>
-  //           </div>
-  //         `
-  //       });
+          // Add info window
+          const infoWindow = new window.google.maps.InfoWindow({
+            content: `
+              <div class="p-2">
+                <h3 class="font-semibold text-gray-900">${data.venue_name || 'Wedding Venue'}</h3>
+                <p class="text-sm text-gray-600">${data.venue_address || ''}</p>
+              </div>
+            `
+          });
 
-  //       markerInstance.current.addListener('click', () => {
-  //         infoWindow.open(mapInstance.current, markerInstance.current);
-  //       });
-  //     }
-  //   }
-  // }, [mapLoaded, data.venue_latitude, data.venue_longitude, data.venue_name, data.venue_address]);
+          markerInstance.current.addListener('click', () => {
+            infoWindow.open(mapInstance.current, markerInstance.current);
+          });
+        }
+      }
+    } catch (error) {
+      console.warn('Error initializing Google Maps:', error);
+    }
+  }, [mapLoaded, data.venue_latitude, data.venue_longitude, data.venue_name, data.venue_address]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -372,8 +385,8 @@ export default function VenueInfo({ user, wedding }: WeddingVenueProps) {
           </CardContent>
         </Card>
 
-                {/* Google Maps - TEMPORARILY DISABLED */}
-        {false && data.venue_latitude && data.venue_longitude && (
+                {/* Google Maps */}
+        {data.venue_latitude && data.venue_longitude && (
           <Card className="border-0 shadow-lg">
             <CardHeader>
               <CardTitle className="text-xl font-bold text-foreground flex items-center space-x-2">
@@ -386,12 +399,12 @@ export default function VenueInfo({ user, wedding }: WeddingVenueProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div 
+                <div
                   ref={mapRef}
                   className="w-full h-96 rounded-lg border-2 border-border bg-muted"
                   style={{ minHeight: '400px' }}
                 />
-                
+
                 {!mapLoaded && (
                   <div className="flex items-center justify-center h-96 bg-muted rounded-lg">
                     <div className="text-center space-y-2">
@@ -409,10 +422,14 @@ export default function VenueInfo({ user, wedding }: WeddingVenueProps) {
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      const lat = parseFloat(data.venue_latitude);
-                      const lng = parseFloat(data.venue_longitude);
-                      if (!isNaN(lat) && !isNaN(lng)) {
-                        window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
+                      try {
+                        const lat = parseFloat(data.venue_latitude);
+                        const lng = parseFloat(data.venue_longitude);
+                        if (!isNaN(lat) && !isNaN(lng)) {
+                          window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
+                        }
+                      } catch (error) {
+                        console.warn('Error opening directions:', error);
                       }
                     }}
                     className="flex items-center space-x-2"
