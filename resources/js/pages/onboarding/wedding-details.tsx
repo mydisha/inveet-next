@@ -1,18 +1,20 @@
-import { useState } from 'react';
-import { Link } from '@inertiajs/react';
-import { Heart, ArrowLeft, ArrowRight, MapPin, Calendar, Clock, Plus, X, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { TimePicker } from '@/components/ui/time-picker';
+import { Link } from '@inertiajs/react';
+import { ArrowLeft, ArrowRight, Calendar, Clock, Globe, Heart, MapPin, Plus, X } from 'lucide-react';
+import { useState } from 'react';
 
 interface Event {
   id: string;
   type: string;
   name: string;
-  date: string;
+  date: Date | undefined;
   time: string;
   timezone: string;
   venue: string;
@@ -22,7 +24,7 @@ interface Event {
 
 export default function WeddingDetails() {
   const [formData, setFormData] = useState({
-    mainDate: '',
+    mainDate: undefined as Date | undefined,
     mainTime: '',
     mainTimezone: 'WIB',
     venue: '',
@@ -38,7 +40,7 @@ export default function WeddingDetails() {
       id: '1',
       type: 'akad',
       name: 'Akad Nikah',
-      date: '',
+      date: undefined,
       time: '',
       timezone: 'WIB',
       venue: '',
@@ -49,7 +51,7 @@ export default function WeddingDetails() {
       id: '2',
       type: 'resepsi',
       name: 'Resepsi',
-      date: '',
+      date: undefined,
       time: '',
       timezone: 'WIB',
       venue: '',
@@ -78,7 +80,7 @@ export default function WeddingDetails() {
   };
 
   const handleEventChange = (eventId: string, field: string, value: string) => {
-    setEvents(prev => prev.map(event => 
+    setEvents(prev => prev.map(event =>
       event.id === eventId ? { ...event, [field]: value } : event
     ));
   };
@@ -88,7 +90,7 @@ export default function WeddingDetails() {
       id: Date.now().toString(),
       type: 'custom',
       name: '',
-      date: '',
+      date: undefined,
       time: '',
       timezone: 'WIB',
       venue: '',
@@ -120,7 +122,7 @@ export default function WeddingDetails() {
             </div>
             <span className="text-2xl font-bold text-rose-gold">Inveet</span>
           </div>
-          
+
           <Link href="/onboarding">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -138,11 +140,11 @@ export default function WeddingDetails() {
             <span className="text-2xl">🏛️</span>
             <span className="text-sage font-medium">Step 2 of 5</span>
           </div>
-          
+
           <h1 className="text-4xl font-bold text-gray-800 mb-4">
             Wedding Details & Venue
           </h1>
-          
+
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Share the details of your special day - when and where your celebration will take place.
           </p>
@@ -168,30 +170,27 @@ export default function WeddingDetails() {
                     <Label htmlFor="mainDate" className="text-gray-700 font-medium">
                       Wedding Date *
                     </Label>
-                    <Input
-                      id="mainDate"
-                      type="date"
+                    <DatePicker
                       value={formData.mainDate}
-                      onChange={(e) => handleInputChange('mainDate', e.target.value)}
-                      className="border-2 border-gray-200 focus:border-rose-gold focus:ring-rose-gold/20"
+                      onChange={(date) => handleInputChange('mainDate', date)}
+                      placeholder="Pilih tanggal pernikahan"
                       required
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="mainTime" className="text-gray-700 font-medium">
                       Wedding Time *
                     </Label>
-                    <Input
-                      id="mainTime"
-                      type="time"
+                    <TimePicker
                       value={formData.mainTime}
-                      onChange={(e) => handleInputChange('mainTime', e.target.value)}
-                      className="border-2 border-gray-200 focus:border-rose-gold focus:ring-rose-gold/20"
+                      onChange={(time) => handleInputChange('mainTime', time)}
+                      placeholder="Pilih waktu pernikahan"
+                      showUntilEnd={true}
                       required
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="mainTimezone" className="text-gray-700 font-medium">
                       Timezone *
@@ -271,7 +270,7 @@ export default function WeddingDetails() {
                       required
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="province" className="text-gray-700 font-medium">
                       Province *
@@ -285,7 +284,7 @@ export default function WeddingDetails() {
                       required
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="postalCode" className="text-gray-700 font-medium">
                       Postal Code
@@ -395,21 +394,20 @@ export default function WeddingDetails() {
 
                       <div className="space-y-2">
                         <Label className="text-gray-700 font-medium">Date</Label>
-                        <Input
-                          type="date"
+                        <DatePicker
                           value={event.date}
-                          onChange={(e) => handleEventChange(event.id, 'date', e.target.value)}
-                          className="border-2 border-gray-200 focus:border-rose-gold focus:ring-rose-gold/20"
+                          onChange={(date) => handleEventChange(event.id, 'date', date)}
+                          placeholder="Pilih tanggal acara"
                         />
                       </div>
 
                       <div className="space-y-2">
                         <Label className="text-gray-700 font-medium">Time</Label>
-                        <Input
-                          type="time"
+                        <TimePicker
                           value={event.time}
-                          onChange={(e) => handleEventChange(event.id, 'time', e.target.value)}
-                          className="border-2 border-gray-200 focus:border-rose-gold focus:ring-rose-gold/20"
+                          onChange={(time) => handleEventChange(event.id, 'time', time)}
+                          placeholder="Pilih waktu acara"
+                          showUntilEnd={true}
                         />
                       </div>
 
@@ -464,7 +462,7 @@ export default function WeddingDetails() {
                 Back to Couple Info
               </Button>
             </Link>
-            
+
             <Link href="/onboarding/custom-url">
               <Button size="lg" className="bg-rose-gold hover:bg-rose-gold/90 text-white px-8">
                 Continue to Custom URL

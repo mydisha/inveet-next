@@ -21,4 +21,9 @@ Route::middleware('auth')->group(function () {
     Route::get('settings/appearance', function () {
         return Inertia::render('settings/appearance');
     })->name('appearance');
+
+    Route::patch('settings/preferences', function () {
+        // Handle preferences update
+        return redirect()->back()->with('success', 'Preferences updated successfully');
+    })->name('preferences.update');
 });

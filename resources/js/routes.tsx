@@ -1,5 +1,3 @@
-import { createInertiaApp } from '@inertiajs/react';
-import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 
 // Define route types for better TypeScript support
 export interface RouteParams {
@@ -16,10 +14,10 @@ export const routes = {
   register: '/register',
   forgotPassword: '/forgot-password',
   resetPassword: '/reset-password',
-  
+
   // Dashboard routes
   dashboard: '/dashboard',
-  
+
   // Onboarding routes
   onboarding: '/onboarding',
   coupleInfo: '/onboarding/couple-info',
@@ -27,26 +25,35 @@ export const routes = {
   customUrl: '/onboarding/custom-url',
   designSelection: '/onboarding/design-selection',
   activation: '/onboarding/activation',
-  
+
   // Wedding management routes
   myWeddings: '/my-weddings',
   createWedding: '/weddings/create',
   editWedding: (id: string | number) => `/weddings/${id}/edit`,
   viewWedding: (id: string | number) => `/weddings/${id}`,
+  weddingDetail: (id: string | number) => `/wedding/${id}`,
   previewWedding: (slug: string) => `/preview/${slug}`,
-  
+
   // Package routes
   packages: '/packages',
   packageDetails: (id: string | number) => `/packages/${id}`,
-  
+
   // Order routes
   orders: '/orders',
   orderDetails: (id: string | number) => `/orders/${id}`,
-  
+
+  // Gallery routes
+  gallery: '/gallery',
+
+  // Music routes
+  music: '/music',
+  musicLibrary: '/music/library',
+  musicUpload: '/music/upload',
+
   // Settings routes
   settings: '/settings',
   profile: '/profile',
-  
+
   // Admin routes
   admin: {
     dashboard: '/admin',
@@ -70,7 +77,7 @@ export const apiEndpoints = {
     verifyEmail: '/api/verify-email',
     resendVerification: '/api/email/verification-notification',
   },
-  
+
   // User management
   user: {
     profile: '/api/user/profile',
@@ -79,7 +86,7 @@ export const apiEndpoints = {
     updatePassword: '/api/user/password',
     confirmPassword: '/api/user/confirm-password',
   },
-  
+
   // Wedding management
   weddings: {
     index: '/api/weddings',
@@ -98,7 +105,7 @@ export const apiEndpoints = {
     findByThemeId: (themeId: string | number) => `/api/weddings/theme/${themeId}`,
     incrementView: (id: string | number) => `/api/weddings/${id}/increment-view`,
   },
-  
+
   // Package management
   packages: {
     index: '/api/packages',
@@ -110,7 +117,7 @@ export const apiEndpoints = {
     getStats: '/api/packages/stats',
     getByPriceRange: '/api/packages/price-range',
   },
-  
+
   // Order management
   orders: {
     index: '/api/orders',
@@ -128,7 +135,7 @@ export const apiEndpoints = {
     processPayment: (id: string | number) => `/api/orders/${id}/process-payment`,
     cancel: (id: string | number) => `/api/orders/${id}/cancel`,
   },
-  
+
   // Special invitation management
   invitations: {
     index: '/api/invitations',
@@ -149,7 +156,21 @@ export const apiEndpoints = {
     getActive: '/api/invitations/active',
     getLocked: '/api/invitations/locked',
   },
-  
+
+  // Music management
+  music: {
+    index: '/api/music',
+    store: '/api/music',
+    show: (id: string | number) => `/api/music/${id}`,
+    update: (id: string | number) => `/api/music/${id}`,
+    destroy: (id: string | number) => `/api/music/${id}`,
+    upload: '/api/music/upload',
+    findByUserId: '/api/user/music',
+    getPredefined: '/api/music/predefined',
+    getByCategory: (category: string) => `/api/music/category/${category}`,
+    search: '/api/music/search',
+  },
+
   // Admin routes
   admin: {
     users: {
@@ -190,7 +211,7 @@ export const apiEndpoints = {
       getLocked: '/api/admin/invitations/locked',
     },
   },
-  
+
   // Utility routes
   health: '/api/health',
 };

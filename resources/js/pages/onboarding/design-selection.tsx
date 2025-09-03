@@ -143,33 +143,43 @@ export default function DesignSelection({ user }: DesignSelectionProps) {
         {/* Compact Progress Indicator */}
         <div className="mb-6">
           <div className="flex items-center justify-center space-x-2">
-            <div className="flex items-center">
-              <div className="w-6 h-6 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-xs font-medium">
+            {/* Step 1 - Couple Info */}
+            <a href="/onboarding/couple-info" className="flex items-center group">
+              <div className="w-6 h-6 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-xs font-medium transition-all duration-200 group-hover:bg-primary/20 group-hover:text-primary cursor-pointer">
                 1
               </div>
-              <span className="ml-1 text-xs text-muted-foreground hidden sm:block">Info</span>
-            </div>
+              <span className="ml-1 text-xs text-muted-foreground hidden sm:block group-hover:text-primary transition-colors duration-200">Info</span>
+            </a>
+
             <div className="w-8 h-0.5 bg-primary"></div>
-            <div className="flex items-center">
-              <div className="w-6 h-6 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-xs font-medium">
+
+            {/* Step 2 - Wedding Location */}
+            <a href="/onboarding/wedding-location" className="flex items-center group">
+              <div className="w-6 h-6 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-xs font-medium transition-all duration-200 group-hover:bg-primary/20 group-hover:text-primary cursor-pointer">
                 2
               </div>
-              <span className="ml-1 text-xs text-muted-foreground hidden sm:block">Location</span>
-            </div>
+              <span className="ml-1 text-xs text-muted-foreground hidden sm:block group-hover:text-primary transition-colors duration-200">Location</span>
+            </a>
+
             <div className="w-8 h-0.5 bg-primary"></div>
+
+            {/* Step 3 - Design Selection (Current) */}
             <div className="flex items-center">
               <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-medium">
                 3
               </div>
               <span className="ml-1 text-xs font-medium text-foreground hidden sm:block">Design</span>
             </div>
+
             <div className="w-8 h-0.5 bg-muted"></div>
-            <div className="flex items-center">
-              <div className="w-6 h-6 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-xs font-medium">
+
+            {/* Step 4 - Wedding URL */}
+            <a href="/onboarding/wedding-url" className="flex items-center group">
+              <div className="w-6 h-6 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-xs font-medium transition-all duration-200 group-hover:bg-primary/20 group-hover:text-primary cursor-pointer">
                 4
               </div>
-              <span className="ml-1 text-xs text-muted-foreground hidden sm:block">URL</span>
-            </div>
+              <span className="ml-1 text-xs text-muted-foreground hidden sm:block group-hover:text-primary transition-colors duration-200">URL</span>
+            </a>
           </div>
         </div>
 

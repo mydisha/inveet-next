@@ -71,7 +71,7 @@ export default function Header({ user, setSidebarOpen }: HeaderProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-1"
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
               >
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
@@ -85,14 +85,14 @@ export default function Header({ user, setSidebarOpen }: HeaderProps) {
 
               {/* Dropdown menu */}
               {profileDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-card/95 backdrop-blur-sm border border-border/50 rounded-lg shadow-lg z-50">
-                  <div className="py-1">
+                <div className="absolute right-0 mt-2 w-48 bg-white/95 backdrop-blur-md border border-gray-200/60 rounded-xl shadow-xl z-50 overflow-hidden">
+                  <div className="py-2">
                     <Link
                       href="/profile"
-                      className="flex items-center px-4 py-2 text-sm text-foreground hover:bg-muted/50 transition-colors"
+                      className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-blue-700 transition-all duration-200 group"
                       onClick={() => setProfileDropdownOpen(false)}
                     >
-                      <User className="mr-3 h-4 w-4" />
+                      <User className="mr-3 h-4 w-4 text-gray-500 group-hover:text-blue-600 transition-colors" />
                       Profile
                     </Link>
                     <button
@@ -100,9 +100,9 @@ export default function Header({ user, setSidebarOpen }: HeaderProps) {
                         setProfileDropdownOpen(false);
                         handleLogout();
                       }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-foreground hover:bg-muted/50 transition-colors"
+                      className="flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-rose-50 hover:text-red-700 transition-all duration-200 group"
                     >
-                      <LogOut className="mr-3 h-4 w-4" />
+                      <LogOut className="mr-3 h-4 w-4 text-gray-500 group-hover:text-red-600 transition-colors" />
                       Logout
                     </button>
                   </div>

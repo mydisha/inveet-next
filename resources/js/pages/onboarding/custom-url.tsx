@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Link } from '@inertiajs/react';
-import { Heart, ArrowLeft, ArrowRight, Link as LinkIcon, CheckCircle, XCircle, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Link } from '@inertiajs/react';
+import { ArrowLeft, ArrowRight, CheckCircle, Heart, Link as LinkIcon, Sparkles, XCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function CustomUrl() {
   const [urlSlug, setUrlSlug] = useState('');
@@ -19,11 +18,11 @@ export default function CustomUrl() {
     const suggestions = [];
     if (names[0] && names[1]) {
       suggestions.push(
-        `${names[0].toLowerCase()}-${names[1].toLowerCase()}`,
-        `${names[0].toLowerCase()}-and-${names[1].toLowerCase()}`,
-        `${names[0].toLowerCase()}${names[1].toLowerCase()}`,
-        `${names[0].toLowerCase()}-${names[1].toLowerCase()}-wedding`,
-        `${names[0].toLowerCase()}-${names[1].toLowerCase()}-2024`
+        `${names[0].toLowerCase()}-${names[1].toLowerCase()}.inveet.id`,
+        `${names[0].toLowerCase()}-and-${names[1].toLowerCase()}.inveet.id`,
+        `${names[0].toLowerCase()}${names[1].toLowerCase()}.inveet.id`,
+        `${names[0].toLowerCase()}-${names[1].toLowerCase()}-wedding.inveet.id`,
+        `${names[0].toLowerCase()}-${names[1].toLowerCase()}-2024.inveet.id`
       );
     }
     return suggestions;
@@ -42,27 +41,39 @@ export default function CustomUrl() {
     }
 
     setIsChecking(true);
-    
+
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
     // Mock availability check - in real app this would call your API
     const mockUnavailable = ['sarah-michael', 'wedding', 'love', 'bride', 'groom'];
     const available = !mockUnavailable.includes(slug.toLowerCase());
-    
+
     setIsAvailable(available);
     setIsChecking(false);
   };
 
-  const handleSlugChange = (value: string) => {
-    const cleanSlug = value
-      .toLowerCase()
+  const handleUrlChange = (value: string) => {
+    // Extract slug from full subdomain format
+    let cleanUrl = value.toLowerCase();
+
+    // Remove .inveet.id if present
+    if (cleanUrl.endsWith('.inveet.id')) {
+      cleanUrl = cleanUrl.replace('.inveet.id', '');
+    }
+
+    // Clean the slug part
+    const cleanSlug = cleanUrl
       .replace(/[^a-z0-9-]/g, '') // Only allow letters, numbers, and hyphens
       .replace(/-+/g, '-') // Replace multiple hyphens with single
       .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
-    
+
+    // Create full subdomain
+    const fullSubdomain = cleanSlug ? `${cleanSlug}.inveet.id` : '';
+
     setUrlSlug(cleanSlug);
-    
+    setFullUrl(fullSubdomain);
+
     if (cleanSlug.length >= 3) {
       checkAvailability(cleanSlug);
     } else {
@@ -71,8 +82,11 @@ export default function CustomUrl() {
   };
 
   const selectSuggestion = (suggestion: string) => {
-    setUrlSlug(suggestion);
-    checkAvailability(suggestion);
+    // Extract slug from full subdomain
+    const slug = suggestion.replace('.inveet.id', '');
+    setUrlSlug(slug);
+    setFullUrl(suggestion);
+    checkAvailability(slug);
   };
 
   const getStatusIcon = () => {
@@ -112,7 +126,7 @@ export default function CustomUrl() {
             </div>
             <span className="text-2xl font-bold text-rose-gold">Inveet</span>
           </div>
-          
+
           <Link href="/onboarding">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -124,17 +138,63 @@ export default function CustomUrl() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-6 py-12">
-        {/* Page Header */}
+                {/* Page Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center space-x-2 bg-lavender/20 px-4 py-2 rounded-full mb-4">
-            <span className="text-2xl">🔗</span>
-            <span className="text-lavender font-medium">Step 3 of 5</span>
+          {/* Clickable Progress Steps */}
+          <div className="flex items-center justify-center space-x-2 mb-6">
+            {/* Step 1 - Couple Info */}
+            <a href="/onboarding/couple-info" className="flex items-center group">
+              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium transition-all duration-200 group-hover:bg-primary/20 group-hover:text-primary cursor-pointer">
+                1
+              </div>
+              <span className="ml-2 text-sm text-muted-foreground hidden sm:block group-hover:text-primary transition-colors duration-200">Info</span>
+            </a>
+
+            <div className="w-12 h-0.5 bg-primary"></div>
+
+            {/* Step 2 - Wedding Location */}
+            <a href="/onboarding/wedding-location" className="flex items-center group">
+              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium transition-all duration-200 group-hover:bg-primary/20 group-hover:text-primary cursor-pointer">
+                2
+              </div>
+              <span className="ml-2 text-sm text-muted-foreground hidden sm:block group-hover:text-primary transition-colors duration-200">Location</span>
+            </a>
+
+            <div className="w-12 h-0.5 bg-primary"></div>
+
+            {/* Step 3 - Design Selection */}
+            <a href="/onboarding/design-selection" className="flex items-center group">
+              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium transition-all duration-200 group-hover:bg-primary/20 group-hover:text-primary cursor-pointer">
+                3
+              </div>
+              <span className="ml-2 text-sm text-muted-foreground hidden sm:block group-hover:text-primary transition-colors duration-200">Design</span>
+            </a>
+
+            <div className="w-12 h-0.5 bg-primary"></div>
+
+            {/* Step 4 - Wedding URL (Current) */}
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium">
+                4
+              </div>
+              <span className="ml-2 text-sm font-medium text-foreground hidden sm:block">URL</span>
+            </div>
+
+            <div className="w-12 h-0.5 bg-muted"></div>
+
+            {/* Step 5 - Activation */}
+            <a href="/onboarding/activation" className="flex items-center group">
+              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium transition-all duration-200 group-hover:bg-primary/20 group-hover:text-primary cursor-pointer">
+                5
+              </div>
+              <span className="ml-2 text-sm text-muted-foreground hidden sm:block group-hover:text-primary transition-colors duration-200">Activate</span>
+            </a>
           </div>
-          
+
           <h1 className="text-4xl font-bold text-gray-800 mb-4">
             Choose Your Invitation URL
           </h1>
-          
+
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Pick a unique web address for your wedding invitation. This is how your guests will find your special page.
           </p>
@@ -157,22 +217,17 @@ export default function CustomUrl() {
                 <Label htmlFor="urlSlug" className="text-gray-700 font-medium">
                   Custom URL *
                 </Label>
-                <div className="flex items-center space-x-3">
-                  <div className="flex-1">
-                    <Input
-                      id="urlSlug"
-                      value={urlSlug}
-                      onChange={(e) => handleSlugChange(e.target.value)}
-                      placeholder="e.g., sarah-michael"
-                      className="border-2 border-gray-200 focus:border-rose-gold focus:ring-rose-gold/20 text-lg"
-                      maxLength={50}
-                    />
-                  </div>
-                  <div className="text-gray-500 text-lg font-mono">
-                    .inveet.id
-                  </div>
+                <div className="flex-1">
+                  <Input
+                    id="urlSlug"
+                    value={fullUrl}
+                    onChange={(e) => handleUrlChange(e.target.value)}
+                    placeholder="e.g., sarah-michael.inveet.id"
+                    className="border-2 border-gray-200 focus:border-rose-gold focus:ring-rose-gold/20 text-lg font-mono"
+                    maxLength={60}
+                  />
                 </div>
-                
+
                 {/* Status Display */}
                 {urlSlug && (
                   <div className="flex items-center space-x-2 mt-2">
@@ -185,19 +240,19 @@ export default function CustomUrl() {
 
                 {/* Character count */}
                 <div className="text-right">
-                  <span className={`text-sm ${urlSlug.length > 40 ? 'text-red-500' : 'text-gray-500'}`}>
-                    {urlSlug.length}/50 characters
+                  <span className={`text-sm ${fullUrl.length > 50 ? 'text-red-500' : 'text-gray-500'}`}>
+                    {fullUrl.length}/60 characters
                   </span>
                 </div>
               </div>
 
               {/* Preview */}
-              {urlSlug && (
+              {fullUrl && (
                 <div className="bg-gray-50 rounded-lg p-4">
                   <Label className="text-gray-700 font-medium mb-2 block">Preview:</Label>
                   <div className="bg-white border border-gray-200 rounded-lg p-3">
                     <span className="text-blue-600 font-mono">
-                      https://{urlSlug}.inveet.id
+                      https://{fullUrl}
                     </span>
                   </div>
                 </div>
@@ -226,7 +281,7 @@ export default function CustomUrl() {
                   >
                     <div>
                       <span className="font-mono text-gray-800">
-                        {suggestion}.inveet.id
+                        {suggestion}
                       </span>
                       <p className="text-sm text-gray-500 mt-1">
                         Based on your names
@@ -291,16 +346,16 @@ export default function CustomUrl() {
             <CardContent>
               <div className="grid md:grid-cols-3 gap-4">
                 {[
-                  'sarah-michael',
-                  'john-and-jane',
-                  'alex-loves-sam',
-                  'david-maria-2024',
-                  'chris-kim-wedding',
-                  'mike-sarah-forever'
+                  'sarah-michael.inveet.id',
+                  'john-and-jane.inveet.id',
+                  'alex-loves-sam.inveet.id',
+                  'david-maria-2024.inveet.id',
+                  'chris-kim-wedding.inveet.id',
+                  'mike-sarah-forever.inveet.id'
                 ].map((example, index) => (
                   <div key={index} className="text-center p-3 bg-gray-50 rounded-lg">
                     <span className="font-mono text-sm text-gray-600">
-                      {example}.inveet.id
+                      {example}
                     </span>
                   </div>
                 ))}
@@ -317,12 +372,12 @@ export default function CustomUrl() {
               Back to Wedding Details
             </Button>
           </Link>
-          
+
           <Link href="/onboarding/design-selection">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="bg-rose-gold hover:bg-rose-gold/90 text-white px-8"
-              disabled={!urlSlug || isAvailable !== true}
+              disabled={!fullUrl || isAvailable !== true}
             >
               Continue to Design Selection
               <ArrowRight className="w-4 h-4 ml-2" />

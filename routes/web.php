@@ -69,11 +69,18 @@ Route::get('/onboarding/activation', [FrontendController::class, 'activation'])-
 // Dashboard routes (accessible without auth for testing)
 Route::get('/my-weddings', [FrontendController::class, 'myWeddings'])->name('weddings.my');
 Route::get('/wedding-invitations', [FrontendController::class, 'weddingInvitations'])->name('weddings.invitations');
+Route::get('/wedding/{id}', [FrontendController::class, 'weddingDetail'])->name('wedding.detail');
 Route::get('/wedding/{id}/configuration', [FrontendController::class, 'weddingConfiguration'])->name('weddings.configuration');
 Route::get('/orders', [FrontendController::class, 'orders'])->name('orders.index');
+Route::get('/gallery', [FrontendController::class, 'gallery'])->name('gallery.index');
 Route::get('/analytics', [FrontendController::class, 'analytics'])->name('analytics.index');
 Route::get('/profile', [FrontendController::class, 'profile'])->name('profile');
 Route::get('/settings', [FrontendController::class, 'settings'])->name('settings');
+
+// Music routes
+Route::get('/music', [FrontendController::class, 'music'])->name('music.index');
+Route::get('/music/library', [FrontendController::class, 'musicLibrary'])->name('music.library');
+Route::get('/music/upload', [FrontendController::class, 'musicUpload'])->name('music.upload');
 
 // Public wedding routes
 Route::get('/preview/{slug}', [FrontendController::class, 'showWedding'])->name('wedding.preview');

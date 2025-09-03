@@ -378,6 +378,33 @@ class FrontendController extends Controller
     }
 
     /**
+     * Show gallery page
+     */
+    public function gallery(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            // Mock user data for testing without authentication
+            $user = (object) [
+                'id' => 1,
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'hasWedding' => false,
+            ];
+        }
+
+        return Inertia::render('Gallery', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'hasWedding' => $user->hasWedding ?? false,
+            ],
+        ]);
+    }
+
+    /**
      * Show analytics dashboard
      */
     public function analytics(Request $request)
@@ -525,6 +552,52 @@ class FrontendController extends Controller
     }
 
     /**
+     * Show wedding detail page
+     */
+    public function weddingDetail(Request $request, $id)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            // Mock user data for testing without authentication
+            $user = (object) [
+                'id' => 1,
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'hasWedding' => false,
+            ];
+        }
+
+        // Mock wedding data for testing
+        $wedding = (object) [
+            'id' => (int) $id,
+            'couple_name_1' => 'Rafi',
+            'couple_name_2' => 'Nuna',
+            'slug' => 'rafi-nuna-wedding',
+            'package' => (object) [
+                'id' => 1,
+                'name' => 'Paket Diamond',
+            ],
+            'is_published' => true,
+            'view_count' => 245,
+            'theme' => (object) [
+                'id' => 1,
+                'name' => 'Elegant Classic',
+            ],
+        ];
+
+        return Inertia::render('Wedding/WeddingDetail', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'hasWedding' => $user->hasWedding ?? false,
+            ],
+            'wedding' => $wedding,
+        ]);
+    }
+
+    /**
      * Show wedding invitation configuration
      */
     public function weddingConfiguration(Request $request, $id)
@@ -574,6 +647,68 @@ class FrontendController extends Controller
                 'hasWedding' => $user->hasWedding ?? false,
             ],
             'wedding' => $wedding,
+        ]);
+    }
+
+    /**
+     * Show the music library page
+     */
+    public function music(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            // Mock user data for testing without authentication
+            $user = (object) [
+                'id' => 1,
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'hasWedding' => false,
+            ];
+        }
+
+        return Inertia::render('Music/Index', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'hasWedding' => $user->hasWedding ?? false,
+            ],
+        ]);
+    }
+
+    /**
+     * Show the music library page (alias for music)
+     */
+    public function musicLibrary(Request $request)
+    {
+        return $this->music($request);
+    }
+
+    /**
+     * Show the music upload page
+     */
+    public function musicUpload(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            // Mock user data for testing without authentication
+            $user = (object) [
+                'id' => 1,
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'hasWedding' => false,
+            ];
+        }
+
+        return Inertia::render('Music/Upload', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'hasWedding' => $user->hasWedding ?? false,
+            ],
         ]);
     }
 }

@@ -1080,3 +1080,232 @@ All colors MUST be HSL for consistency and theming
   }
 }
 
+/* NEW: Profile-specific enhancements */
+.profile-hero-gradient {
+  background: linear-gradient(135deg,
+    hsl(var(--primary) / 0.1) 0%,
+    hsl(var(--primary-light) / 0.05) 50%,
+    hsl(var(--background)) 100%);
+}
+
+.profile-photo-container {
+  @apply relative;
+  @apply transition-all duration-300 ease-out;
+}
+
+.profile-photo-container:hover {
+  @apply scale-105;
+}
+
+.profile-photo-overlay {
+  @apply absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100;
+  @apply transition-opacity duration-300;
+  @apply flex items-center justify-center;
+  @apply rounded-full;
+}
+
+.profile-tab-active {
+  @apply bg-background text-foreground shadow-sm;
+  @apply border border-primary/20;
+}
+
+.profile-tab-inactive {
+  @apply text-muted-foreground hover:text-foreground;
+  @apply hover:bg-background/50;
+}
+
+.profile-form-field {
+  @apply transition-all duration-300;
+  @apply focus-within:ring-2 focus-within:ring-primary/20;
+  @apply focus-within:border-primary/50;
+}
+
+.profile-card-hover {
+  @apply transition-all duration-500 ease-out;
+  @apply hover:shadow-2xl hover:-translate-y-2;
+  @apply hover:border-primary/30;
+  will-change: transform, box-shadow, border-color;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.profile-card-hover::before {
+  content: '';
+  @apply absolute inset-0;
+  @apply bg-gradient-to-br from-primary/5 via-transparent to-primary/10;
+  @apply opacity-0 transition-opacity duration-500;
+  @apply pointer-events-none rounded-2xl;
+}
+
+.profile-card-hover:hover::before {
+  @apply opacity-100;
+}
+
+.profile-badge-verified {
+  @apply bg-green-100 text-green-800 border-green-200;
+  @apply animate-pulse-gentle;
+}
+
+.profile-badge-unverified {
+  @apply bg-yellow-100 text-yellow-800 border-yellow-200;
+  @apply animate-pulse-gentle;
+}
+
+.profile-badge-wedding {
+  @apply bg-pink-100 text-pink-800 border-pink-200;
+  @apply animate-pulse-gentle;
+}
+
+.profile-stats-card {
+  @apply transition-all duration-300 ease-out;
+  @apply hover:shadow-lg hover:scale-105;
+  @apply hover:border-primary/20;
+  will-change: transform, box-shadow, border-color;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.profile-cropper-modal {
+  @apply fixed inset-0 bg-black/50 backdrop-blur-sm;
+  @apply flex items-center justify-center z-50;
+  @apply animate-fade-in-up;
+}
+
+.profile-cropper-content {
+  @apply bg-background rounded-2xl p-6 max-w-md w-full mx-4;
+  @apply shadow-2xl border border-border/50;
+  @apply animate-scale-in;
+}
+
+.profile-password-toggle {
+  @apply absolute right-3 top-1/2 -translate-y-1/2;
+  @apply text-muted-foreground hover:text-foreground;
+  @apply transition-colors duration-200;
+}
+
+.profile-danger-zone {
+  @apply border-red-200 bg-red-50/50;
+  @apply hover:border-red-300 hover:bg-red-50/80;
+  @apply transition-all duration-300;
+}
+
+.profile-success-message {
+  @apply bg-green-50 border-green-200 text-green-800;
+  @apply animate-fade-in-up;
+}
+
+.profile-error-message {
+  @apply bg-red-50 border-red-200 text-red-800;
+  @apply animate-fade-in-up;
+}
+
+/* NEW: Profile page entrance animations */
+.profile-entrance-1 {
+  opacity: 0;
+  transform: translateY(30px) translateZ(0);
+  animation: profileEntrance1 0.8s ease-out forwards;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.profile-entrance-2 {
+  opacity: 0;
+  transform: translateY(30px) translateZ(0);
+  animation: profileEntrance2 0.8s ease-out forwards;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  animation-delay: 0.1s;
+}
+
+.profile-entrance-3 {
+  opacity: 0;
+  transform: translateY(30px) translateZ(0);
+  animation: profileEntrance3 0.8s ease-out forwards;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  animation-delay: 0.2s;
+}
+
+.profile-entrance-4 {
+  opacity: 0;
+  transform: translateY(30px) translateZ(0);
+  animation: profileEntrance4 0.8s ease-out forwards;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  animation-delay: 0.3s;
+}
+
+/* NEW: Profile-specific keyframe animations */
+@keyframes profileEntrance1 {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes profileEntrance2 {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes profileEntrance3 {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes profileEntrance4 {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* NEW: Responsive profile optimizations */
+@media (max-width: 768px) {
+  .profile-card-hover {
+    transition-duration: 0.3s; /* Faster transitions on mobile */
+  }
+
+  .profile-entrance-1,
+  .profile-entrance-2,
+  .profile-entrance-3,
+  .profile-entrance-4 {
+    animation-delay: 0s; /* Remove delays on mobile */
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-card-hover {
+    transition: none; /* Disable complex animations on very small screens */
+  }
+
+  .profile-entrance-1,
+  .profile-entrance-2,
+  .profile-entrance-3,
+  .profile-entrance-4 {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+

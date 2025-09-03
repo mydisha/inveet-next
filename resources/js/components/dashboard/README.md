@@ -1,18 +1,120 @@
-# Dashboard Components
+# Dashboard Template System
 
-This directory contains reusable dashboard components that provide a consistent and elegant design system for the application.
+A comprehensive set of reusable components for creating consistent dashboard pages throughout the application.
+
+## Overview
+
+The dashboard template system provides:
+- **Consistent styling** across all dashboard pages
+- **Reusable components** for common dashboard patterns
+- **Built-in loading states** and empty states
+- **Responsive design** that works on all screen sizes
+- **Accessibility features** built-in
+
+## Quick Start
+
+### Basic Dashboard Page
+
+```tsx
+import { DashboardPage, PageHeader, DashboardSection } from '@/components/dashboard';
+
+export default function MyDashboardPage({ user, loading }) {
+  return (
+    <DashboardPage
+      title="My Dashboard"
+      user={user}
+      currentPath="/my-dashboard"
+      loading={loading}
+    >
+      <PageHeader
+        title="Welcome to My Dashboard"
+        description="Manage your account and settings"
+      />
+
+      <DashboardSection title="Overview">
+        {/* Your content here */}
+      </DashboardSection>
+    </DashboardPage>
+  );
+}
+```
 
 ## Components
 
-### DashboardCard
-A versatile card component for displaying actions, information, or content.
+### Core Template Components
+
+#### `DashboardPage`
+Complete page wrapper with layout, loading states, and document head management.
 
 ```tsx
-import { DashboardCard } from '@/components/dashboard';
-import { Plus, Calendar } from 'lucide-react';
+<DashboardPage
+  title="Page Title"
+  user={user}
+  currentPath="/current-path"
+  loading={loading}
+  loadingComponent={<CustomLoadingComponent />}
+>
+  {/* Page content */}
+</DashboardPage>
+```
 
+#### `DashboardTemplate`
+Background wrapper with decorative elements and consistent styling.
+
+```tsx
+<DashboardTemplate>
+  {/* Content with dashboard background */}
+</DashboardTemplate>
+```
+
+### Layout Components
+
+#### `PageHeader`
+Standardized page header with title, description, and optional actions.
+
+```tsx
+<PageHeader
+  title="Page Title"
+  subtitle="Optional subtitle"
+  description="Page description"
+  actions={<Button>Action</Button>}
+/>
+```
+
+#### `ContentArea`
+Content wrapper with consistent spacing and max-width constraints.
+
+```tsx
+<ContentArea
+  padding="md"
+  maxWidth="2xl"
+  centered
+>
+  {/* Content */}
+</ContentArea>
+```
+
+#### `EmptyState`
+Reusable empty state component for when there's no content.
+
+```tsx
+<EmptyState
+  icon={Users}
+  title="No users found"
+  description="Get started by creating your first user"
+  actionText="Create User"
+  actionHref="/users/create"
+/>
+```
+
+### Card Components
+
+#### `DashboardCard`
+Feature card with icon, title, description, and action button.
+
+```tsx
 <DashboardCard
-  title="Create New Wedding"
+  title="Create Wedding"
   description="Start your wedding invitation journey"
   icon={Plus}
   iconVariant="primary"
@@ -22,153 +124,253 @@ import { Plus, Calendar } from 'lucide-react';
 />
 ```
 
-**Props:**
-- `title`: Card title
-- `description`: Card description
-- `icon`: Lucide icon component
-- `iconVariant`: Icon color variant ('primary', 'accent', 'warm', 'success', 'warning', 'info')
-- `href`: Link destination (optional)
-- `buttonText`: Button text (optional)
-- `buttonVariant`: Button style variant
-- `onClick`: Click handler (optional)
-- `loading`: Loading state
-- `disabled`: Disabled state
-- `children`: Custom content (optional)
-
-### ActivityCard
-Displays a list of activities with proper empty states.
+#### `DashboardSection`
+Section wrapper with optional title and description.
 
 ```tsx
-import { ActivityCard } from '@/components/dashboard';
-import { Heart, Users } from 'lucide-react';
+<DashboardSection
+  title="Section Title"
+  description="Section description"
+>
+  {/* Section content */}
+</DashboardSection>
+```
 
-const activities = [
-  {
-    id: '1',
-    icon: Heart,
-    title: 'Wedding invitation created',
-    description: 'Your beautiful invitation is ready to share',
-    timestamp: '2 hours ago',
-    status: 'success',
-  },
-];
+#### `DashboardGrid`
+Responsive grid layout for cards.
 
+```tsx
+<DashboardGrid columns={3} gap="md">
+  <DashboardCard {...props} />
+  <DashboardCard {...props} />
+  <DashboardCard {...props} />
+</DashboardGrid>
+```
+
+#### `ActivityCard`
+Card for displaying activity feeds.
+
+```tsx
 <ActivityCard
   title="Recent Activity"
-  description="Your latest wedding invitation activities"
+  description="Your latest activities"
   activities={activities}
-  emptyStateTitle="No weddings yet"
-  emptyStateDescription="Start creating your first wedding invitation to see your activity here."
-  emptyStateActionText="Create Your First Wedding"
+  emptyStateTitle="No activity yet"
+  emptyStateDescription="Activities will appear here"
+  emptyStateActionText="Get Started"
   emptyStateActionHref="/onboarding"
 />
 ```
 
-### StatsCard
-Displays statistics with optional trend indicators.
+#### `StatsCard`
+Card for displaying statistics and metrics.
 
 ```tsx
-import { StatsCard } from '@/components/dashboard';
-import { TrendingUp } from 'lucide-react';
-
 <StatsCard
-  title="Total Weddings"
-  value="12"
-  description="Weddings created this month"
-  icon={TrendingUp}
-  iconVariant="success"
+  title="Total Users"
+  value="1,234"
+  description="Active users this month"
+  icon={Users}
+  iconVariant="primary"
   trend={{
-    value: 15,
-    isPositive: true,
-    label: 'vs last month'
+    value: 12,
+    label: "vs last month",
+    positive: true
   }}
 />
 ```
 
-### DashboardSection
-Provides consistent section layout with titles and descriptions.
+### Loading Components
+
+#### `LoadingSkeleton`
+Complete page loading skeleton.
 
 ```tsx
-import { DashboardSection } from '@/components/dashboard';
-
-<DashboardSection
-  title="Quick Actions"
-  description="Get started with your wedding invitation journey"
-  contentClassName="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
->
-  {/* Your content here */}
-</DashboardSection>
-```
-
-### DashboardGrid
-Responsive grid layout for dashboard cards.
-
-```tsx
-import { DashboardGrid, DashboardCard } from '@/components/dashboard';
-
-<DashboardGrid columns={3} gap="md">
-  <DashboardCard title="Card 1" />
-  <DashboardCard title="Card 2" />
-  <DashboardCard title="Card 3" />
-</DashboardGrid>
-```
-
-### LoadingSkeleton
-Loading states for dashboard components.
-
-```tsx
-import { LoadingSkeleton, CardSkeleton, ActivitySkeleton } from '@/components/dashboard';
-
-// Full dashboard skeleton
 <LoadingSkeleton />
+```
 
-// Individual component skeletons
+#### Individual Skeleton Components
+```tsx
 <CardSkeleton />
+<TextSkeleton lines={3} />
 <ActivitySkeleton />
 ```
 
-## Design System
+## Usage Patterns
 
-### Icon Variants
-- `primary`: Blue gradient (default)
-- `accent`: Yellow/orange gradient
-- `warm`: Warm color gradient
-- `success`: Green gradient
-- `warning`: Orange gradient
-- `info`: Blue gradient
+### Simple Dashboard Page
+```tsx
+import { DashboardPage, PageHeader, DashboardSection, DashboardGrid, DashboardCard } from '@/components/dashboard';
+import { Plus, Settings, Users } from 'lucide-react';
 
-### Button Variants
-- `default`: Primary button with hero styling
-- `outline`: Outlined button
-- `secondary`: Secondary button
-- `ghost`: Ghost button
+export default function SimpleDashboard({ user, loading }) {
+  return (
+    <DashboardPage
+      title="Dashboard"
+      user={user}
+      currentPath="/dashboard"
+      loading={loading}
+    >
+      <PageHeader
+        title="Welcome back!"
+        description="Manage your account and settings"
+      />
 
-### Grid Options
-- `columns`: 1, 2, 3, or 4 columns
-- `gap`: 'sm', 'md', or 'lg'
+      <DashboardSection title="Quick Actions">
+        <DashboardGrid columns={3}>
+          <DashboardCard
+            title="Create New"
+            description="Start something new"
+            icon={Plus}
+            href="/create"
+            buttonText="Get Started"
+          />
+          <DashboardCard
+            title="Settings"
+            description="Manage settings"
+            icon={Settings}
+            href="/settings"
+            buttonText="Configure"
+          />
+          <DashboardCard
+            title="Users"
+            description="Manage users"
+            icon={Users}
+            href="/users"
+            buttonText="View All"
+          />
+        </DashboardGrid>
+      </DashboardSection>
+    </DashboardPage>
+  );
+}
+```
 
-## Best Practices
+### Dashboard with Statistics
+```tsx
+import { DashboardPage, PageHeader, DashboardGrid, StatsCard } from '@/components/dashboard';
+import { Users, Calendar, Heart, TrendingUp } from 'lucide-react';
 
-1. **Consistent Icons**: Use Lucide React icons for consistency
-2. **Loading States**: Always provide loading states for async operations
-3. **Empty States**: Use ActivityCard's built-in empty state handling
-4. **Responsive Design**: Use DashboardGrid for responsive layouts
-5. **Accessibility**: All components include proper ARIA labels and keyboard navigation
-6. **Performance**: Components are optimized with proper will-change and backface-visibility properties
+export default function StatsDashboard({ user, stats, loading }) {
+  return (
+    <DashboardPage
+      title="Analytics"
+      user={user}
+      currentPath="/analytics"
+      loading={loading}
+    >
+      <PageHeader
+        title="Analytics Dashboard"
+        description="Track your performance metrics"
+      />
+
+      <DashboardGrid columns={4}>
+        <StatsCard
+          title="Total Users"
+          value={stats.users}
+          icon={Users}
+          iconVariant="primary"
+          trend={{ value: 12, label: "vs last month", positive: true }}
+        />
+        <StatsCard
+          title="Events"
+          value={stats.events}
+          icon={Calendar}
+          iconVariant="accent"
+          trend={{ value: 8, label: "vs last month", positive: true }}
+        />
+        <StatsCard
+          title="Engagement"
+          value="94%"
+          icon={Heart}
+          iconVariant="warm"
+          trend={{ value: 3, label: "vs last month", positive: true }}
+        />
+        <StatsCard
+          title="Growth"
+          value="+24%"
+          icon={TrendingUp}
+          iconVariant="success"
+          trend={{ value: 24, label: "vs last month", positive: true }}
+        />
+      </DashboardGrid>
+    </DashboardPage>
+  );
+}
+```
+
+### Dashboard with Empty State
+```tsx
+import { DashboardPage, PageHeader, EmptyState } from '@/components/dashboard';
+import { Plus } from 'lucide-react';
+
+export default function EmptyDashboard({ user, loading }) {
+  return (
+    <DashboardPage
+      title="My Projects"
+      user={user}
+      currentPath="/projects"
+      loading={loading}
+    >
+      <PageHeader
+        title="My Projects"
+        description="Manage your projects and tasks"
+      />
+
+      <EmptyState
+        icon={Plus}
+        title="No projects yet"
+        description="Get started by creating your first project"
+        actionText="Create Project"
+        actionHref="/projects/create"
+      />
+    </DashboardPage>
+  );
+}
+```
 
 ## Styling
 
-The components use the existing design system with these CSS classes:
-- `card-elegant`: Base card styling
-- `icon-container`: Icon container styling
-- `btn-hero`: Primary button styling
-- `dashboard-card-hover`: Enhanced hover effects
-- `loading-shimmer`: Loading animation effects
+All components use Tailwind CSS classes and follow the design system established in the application. Key styling features:
 
-## TypeScript
+- **Consistent spacing** using the spacing scale
+- **Responsive design** with mobile-first approach
+- **Hover effects** and smooth transitions
+- **Gradient backgrounds** and modern card designs
+- **Icon variants** with different color schemes
+- **Loading states** with skeleton animations
 
-All components are fully typed with proper interfaces. Import types as needed:
+## Accessibility
+
+Components include:
+- Proper ARIA labels and roles
+- Keyboard navigation support
+- Screen reader friendly text
+- Focus management
+- Color contrast compliance
+
+## Customization
+
+All components accept `className` props for custom styling:
 
 ```tsx
-import type { DashboardCardProps, ActivityItem } from '@/components/dashboard';
+<DashboardCard
+  className="custom-card-styles"
+  title="Custom Card"
+  // ... other props
+/>
 ```
+
+Icon variants available:
+- `primary` - Blue gradient
+- `accent` - Amber/Orange gradient
+- `warm` - Rose/Pink gradient
+- `success` - Green gradient
+- `warning` - Yellow/Orange gradient
+- `info` - Cyan/Blue gradient
+
+Button variants available:
+- `default` - Primary button with gradient
+- `outline` - Outlined button
+- `secondary` - Secondary button
+- `ghost` - Ghost button

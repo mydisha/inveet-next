@@ -1,15 +1,17 @@
-import { Button } from '@/components/ui/button';
 import { Link } from '@inertiajs/react';
 import {
     BarChart3,
     FileText,
     Heart,
     Home,
+    Image as ImageIcon,
+    Music,
     Package,
     Settings,
     User,
     X,
 } from 'lucide-react';
+import { Button } from '../ui/button';
 
 interface SidebarProps {
   user: {
@@ -27,6 +29,8 @@ export default function Sidebar({ user, sidebarOpen, setSidebarOpen, currentPath
   const navigationItems = [
     { name: 'Dashboard', href: '/dashboard', icon: Home },
     { name: 'My Weddings', href: '/my-weddings', icon: Heart },
+    { name: 'Gallery', href: '/gallery', icon: ImageIcon },
+    { name: 'Music', href: '/music', icon: Music },
     { name: 'Packages', href: '/packages', icon: Package },
     { name: 'Orders', href: '/orders', icon: FileText },
     { name: 'Analytics', href: '/analytics', icon: BarChart3 },

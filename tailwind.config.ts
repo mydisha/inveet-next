@@ -163,6 +163,10 @@ export default {
 				'parallax-fast': {
 					'0%, 100%': { transform: 'translateY(0px)' },
 					'50%': { transform: 'translateY(-25px)' }
+				},
+				'shimmer': {
+					'0%': { transform: 'translateX(-100%)' },
+					'100%': { transform: 'translateX(100%)' }
 				}
 			},
 			animation: {
@@ -185,7 +189,8 @@ export default {
 				'text-reveal': 'text-reveal 1s ease-out forwards',
 				'parallax-slow': 'parallax-slow 8s ease-in-out infinite',
 				'parallax-medium': 'parallax-medium 6s ease-in-out infinite',
-				'parallax-fast': 'parallax-fast 4s ease-in-out infinite'
+				'parallax-fast': 'parallax-fast 4s ease-in-out infinite',
+				'shimmer': 'shimmer 2s ease-in-out infinite'
 			},
 			fontFamily: {
 				sans: ['Inter', 'system-ui', 'sans-serif']
