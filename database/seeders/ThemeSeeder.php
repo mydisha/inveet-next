@@ -72,6 +72,13 @@ class ThemeSeeder extends Seeder
                 'is_active' => true,
                 'user_id' => $adminUser ? $adminUser->id : 1,
             ],
+            [
+                'name' => 'Overlay Shadow 01',
+                'description' => 'Elegant wedding invitation with overlay shadow effects, inspired by Luxee design. Features beautiful gradients, modern typography, and interactive elements.',
+                'slug' => 'overlay-shadow-01',
+                'is_active' => true,
+                'user_id' => $adminUser ? $adminUser->id : 1,
+            ],
         ];
 
         foreach ($themes as $themeData) {

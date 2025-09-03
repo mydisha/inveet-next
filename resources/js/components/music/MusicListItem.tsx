@@ -55,7 +55,7 @@ export function MusicListItem({
     <div
       className={cn(
         "flex items-center space-x-4 p-4 rounded-lg border transition-all duration-200 hover:shadow-sm",
-        isSelected && "ring-2 ring-primary bg-primary/5",
+        isSelected && "ring-2 ring-primary bg-primary/5 rounded-lg",
         className
       )}
     >

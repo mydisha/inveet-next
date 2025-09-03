@@ -8,7 +8,8 @@ import {
     Edit,
     ExternalLink,
     Eye,
-    Heart
+    Heart,
+    Palette
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -44,6 +45,7 @@ interface WeddingCardProps {
   onEdit?: (wedding: any) => void;
   onView?: (wedding: any) => void;
   onDelete?: (wedding: any) => void;
+  onDesignConfig?: (wedding: any) => void;
   className?: string;
 }
 
@@ -52,6 +54,7 @@ export function WeddingCard({
   onEdit,
   onView,
   onDelete,
+  onDesignConfig,
   className
 }: WeddingCardProps) {
   const [imageError, setImageError] = useState(false);
@@ -279,6 +282,19 @@ export function WeddingCard({
             >
               <Edit className="w-4 h-4 mr-2" />
               Edit
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 group-hover:border-primary/30 group-hover:text-primary transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDesignConfig?.(wedding);
+              }}
+            >
+              <Palette className="w-4 h-4 mr-2" />
+              Design
             </Button>
           </div>
         </div>

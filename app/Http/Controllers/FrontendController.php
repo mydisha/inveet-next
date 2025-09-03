@@ -193,6 +193,115 @@ class FrontendController extends Controller
     }
 
     /**
+     * Show the design configuration page
+     */
+    public function designConfiguration(Request $request, $id)
+    {
+        $user = $request->user();
+
+        // Mock wedding data for now - in real app, fetch from database
+        $wedding = (object) [
+            'id' => $id,
+            'title' => 'Sample Wedding',
+            'slug' => 'sample-wedding',
+            'cover_image' => null,
+            'theme_id' => null,
+            'color_palette' => null,
+        ];
+
+        return Inertia::render('weddings/design-configuration', [
+            'user' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'hasWedding' => $user->hasWedding ?? false,
+            ] : null,
+            'wedding' => $wedding,
+        ]);
+    }
+
+    /**
+     * Show wedding invitation with theme
+     */
+    public function showWeddingInvitation(Request $request, $slug)
+    {
+        // Mock wedding data for now - in real app, fetch from database
+        $wedding = (object) [
+            'id' => 1,
+            'title' => 'Levi & Dio Wedding',
+            'slug' => $slug,
+            'groom_name' => 'Dio',
+            'bride_name' => 'Levi',
+            'groom_father_name' => 'Ahmad',
+            'groom_mother_name' => 'Dio',
+            'bride_father_name' => 'Lorem',
+            'bride_mother_name' => 'Ipsum',
+            'akad_date' => '2024-12-12',
+            'akad_time' => '08.00 AM',
+            'akad_location' => 'HOUSE OF THE BRIDE',
+            'reception_date' => '2024-12-13',
+            'reception_time' => '02.00 - 05.00 PM',
+            'reception_location' => 'ROOTPIXEL HALL',
+            'theme_id' => 'overlay-shadow-01',
+        ];
+
+        // Render the theme template
+        return view('themes.overlay-shadow-01.index', compact('wedding'));
+    }
+
+    /**
+     * Show the wedding couple information page
+     */
+    public function weddingCoupleInfo(Request $request, $id)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            // Mock user data for testing without authentication
+            $user = (object) [
+                'id' => 1,
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'hasWedding' => false,
+            ];
+        }
+
+        // Mock wedding data for now - in real app, fetch from database
+        $wedding = (object) [
+            'id' => $id,
+            'couple_name_1' => 'Rafi',
+            'couple_name_2' => 'Nuna',
+            'slug' => 'sample-wedding',
+            'groom_name' => 'Rafi Ahmad',
+            'groom_nickname' => 'Rafi',
+            'groom_email' => 'rafi@example.com',
+            'groom_phone' => '+62 812 3456 7890',
+            'groom_instagram' => '@rafi_ahmad',
+            'groom_father_name' => 'Ahmad Suryadi',
+            'groom_mother_name' => 'Siti Aminah',
+            'bride_name' => 'Nuna Sari',
+            'bride_nickname' => 'Nuna',
+            'bride_email' => 'nuna@example.com',
+            'bride_phone' => '+62 812 3456 7891',
+            'bride_instagram' => '@nuna_sari',
+            'bride_father_name' => 'Budi Santoso',
+            'bride_mother_name' => 'Rina Wati',
+            'groom_photo' => null,
+            'bride_photo' => null,
+        ];
+
+        return Inertia::render('Wedding/CoupleInfo', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'hasWedding' => $user->hasWedding ?? false,
+            ],
+            'wedding' => $wedding,
+        ]);
+    }
+
+    /**
      * Show the activation step
      */
     public function activation()
@@ -709,6 +818,146 @@ class FrontendController extends Controller
                 'email' => $user->email,
                 'hasWedding' => $user->hasWedding ?? false,
             ],
+        ]);
+    }
+
+    /**
+     * Show the checkout page
+     */
+    public function checkout(Request $request)
+    {
+        $user = $request->user();
+        $packages = app(\App\Services\PackageService::class)->findActivePackages();
+
+        // Calculate discounted prices for each package
+        $packagesWithDiscounts = $packages->map(function ($package) {
+            $package->discounted_price = $package->discounted_price;
+            $package->discount_amount = $package->discount_amount;
+            return $package;
+        });
+
+        return Inertia::render('Checkout', [
+            'user' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ] : null,
+            'packages' => $packagesWithDiscounts,
+        ]);
+    }
+
+    /**
+     * Show the checkout payment method selection page
+     */
+    public function checkoutPayment(Request $request)
+    {
+        $packageId = $request->query('package_id');
+        $coupon = $request->query('coupon');
+        $couponDiscount = $request->query('coupon_discount', 0);
+        $user = $request->user();
+
+        if (!$packageId) {
+            return redirect('/checkout');
+        }
+
+        $package = app(\App\Services\PackageService::class)->findById($packageId);
+
+        if (!$package) {
+            return redirect('/checkout');
+        }
+
+        // Calculate discounted prices
+        $package->discounted_price = $package->discounted_price;
+        $package->discount_amount = $package->discount_amount;
+
+        return Inertia::render('CheckoutPayment', [
+            'user' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ] : null,
+            'package' => $package,
+            'coupon' => $coupon,
+            'coupon_discount' => (float) $couponDiscount,
+        ]);
+    }
+
+    /**
+     * Show the checkout success page
+     */
+    public function checkoutSuccess(Request $request)
+    {
+        $orderId = $request->query('order_id');
+        $order = null;
+
+        if ($orderId) {
+            try {
+                $order = app(\App\Services\OrderService::class)->findById($orderId);
+                if ($order) {
+                    // Load package relationship
+                    $order->load('package');
+                }
+            } catch (\Exception $e) {
+                // Order not found or error occurred
+                $order = null;
+            }
+        }
+
+        return Inertia::render('CheckoutSuccess', [
+            'order' => $order,
+            'order_id' => $orderId,
+        ]);
+    }
+
+    /**
+     * Show the wedding venue information page
+     */
+    public function weddingVenueInfo(Request $request, $id)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            // Mock user data for testing without authentication
+            $user = (object) [
+                'id' => 1,
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'hasWedding' => false,
+            ];
+        }
+
+        // Mock wedding data for now - in real app, fetch from database with details
+        $wedding = (object) [
+            'id' => $id,
+            'couple_name_1' => 'John',
+            'couple_name_2' => 'Jane',
+            'slug' => 'sample-wedding',
+            'wedding_start' => '2024-06-15 08:00:00',
+            'wedding_end' => '2024-06-15 18:00:00',
+            'details' => [
+                (object) ['key' => 'venue_name', 'value' => 'Grand Ballroom Hotel Indonesia'],
+                (object) ['key' => 'venue_address', 'value' => 'Jl. MH Thamrin No. 1'],
+                (object) ['key' => 'venue_city', 'value' => 'Jakarta Pusat'],
+                (object) ['key' => 'venue_province', 'value' => 'DKI Jakarta'],
+                (object) ['key' => 'venue_postal_code', 'value' => '10310'],
+                (object) ['key' => 'venue_phone', 'value' => '+62 21 2358 1234'],
+                (object) ['key' => 'ceremony_time', 'value' => '08:00'],
+                (object) ['key' => 'reception_time', 'value' => '12:00'],
+                (object) ['key' => 'venue_description', 'value' => 'Elegant ballroom with modern facilities and beautiful garden view'],
+                (object) ['key' => 'venue_notes', 'value' => 'Parkir tersedia di basement. Dress code: formal'],
+                (object) ['key' => 'venue_latitude', 'value' => '-6.1944'],
+                (object) ['key' => 'venue_longitude', 'value' => '106.8229'],
+            ],
+        ];
+
+        return Inertia::render('Wedding/VenueInfo', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'hasWedding' => $user->hasWedding ?? false,
+            ],
+            'wedding' => $wedding,
         ]);
     }
 }

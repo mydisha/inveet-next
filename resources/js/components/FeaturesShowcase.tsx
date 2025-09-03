@@ -1,26 +1,21 @@
-import { 
-  Smartphone, 
-  Users, 
-  Calendar, 
-  Gift, 
-  Zap, 
-  HeartHandshake, 
-  Send, 
-  BarChart3, 
-  Music, 
-  MapPin, 
-  MessageCircle, 
-  Image,
-  Globe,
-  Shield,
-  Palette,
-  Download,
-  Share2,
-  Clock,
-  Star,
-  CheckCircle
+import {
+    BarChart3,
+    CheckCircle,
+    Clock,
+    Gift,
+    Image,
+    MapPin,
+    MessageCircle,
+    Music,
+    Palette,
+    Send,
+    Share2,
+    Shield,
+    Smartphone,
+    Star,
+    Users,
+    Zap
 } from 'lucide-react';
-import { Button } from './ui/button';
 
 interface Feature {
   icon: React.ComponentType<{ className?: string }>;
@@ -161,13 +156,13 @@ const FeaturesShowcase = () => {
           {features.map((feature, index) => {
             const IconComponent = feature.icon;
             const category = categories.find(cat => cat.key === feature.category);
-            
+
             return (
               <div
                 key={feature.title}
                 className={`stagger-animation comfort-card group relative bg-card rounded-2xl p-8 border border-border ${
-                  feature.highlight 
-                    ? 'hover:border-primary/50 ring-2 ring-primary/20' 
+                  feature.highlight
+                    ? 'hover:border-primary/50 ring-2 ring-primary/20 rounded-2xl'
                     : 'hover:border-border/80'
                 }`}
                 style={{ animationDelay: `${index * 0.1}s` }}

@@ -82,6 +82,11 @@ export default function MyWeddings({ user, weddings }: MyWeddingsProps) {
     }
   };
 
+  const handleDesignConfiguration = (wedding: Wedding) => {
+    // Navigate to design configuration page
+    window.location.href = `/weddings/${wedding.id}/design-configuration`;
+  };
+
   return (
     <>
       <Head title="My Weddings" />
@@ -177,6 +182,7 @@ export default function MyWeddings({ user, weddings }: MyWeddingsProps) {
                 onView={handleWeddingView}
                 onEdit={handleWeddingEdit}
                 onDelete={handleWeddingDelete}
+                onDesignConfig={handleDesignConfiguration}
                 className={viewMode === 'list' ? 'flex flex-row h-48' : ''}
               />
             ))}

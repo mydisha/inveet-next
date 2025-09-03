@@ -94,6 +94,17 @@ export default function DesignSelection({ user }: DesignSelectionProps) {
       preview: '/api/placeholder/400/300',
       features: ['Tropical elements', 'Vibrant colors', 'Exotic feel', 'Paradise vibes'],
       colors: ['#4CAF50', '#FF9800', '#E1F5FE']
+    },
+    {
+      id: 'overlay-shadow-01',
+      name: 'Overlay Shadow 01',
+      category: 'Elegant',
+      description: 'Elegant wedding invitation with overlay shadow effects, inspired by Luxee design',
+      preview: '/themes/overlay-shadow-01/assets/og-image.jpg',
+      features: ['Responsive design', 'Countdown timer', 'RSVP form', 'Digital envelope', 'Gallery section', 'Smooth animations'],
+      colors: ['#667eea', '#764ba2', '#ffd700', '#ff6b6b', '#ffffff'],
+      popular: true,
+      trending: true
     }
   ];
 
@@ -243,7 +254,7 @@ export default function DesignSelection({ user }: DesignSelectionProps) {
                   key={design.id}
                   className={`relative cursor-pointer transition-all duration-300 group ${
                     selectedDesign === design.id
-                      ? 'ring-2 ring-primary ring-offset-2 scale-105'
+                      ? 'ring-2 ring-primary ring-offset-2 scale-105 rounded-lg'
                       : 'hover:scale-105'
                   }`}
                   onClick={() => setSelectedDesign(design.id)}

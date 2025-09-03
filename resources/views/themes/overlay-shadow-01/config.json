@@ -1,0 +1,31 @@
+{
+  "id": "overlay-shadow-01",
+  "name": "Overlay Shadow 01",
+  "description": "Elegant wedding invitation with overlay shadow effects, inspired by Luxee design. Features beautiful gradients, modern typography, and interactive elements.",
+  "category": "Elegant",
+  "preview_image": "/themes/overlay-shadow-01/assets/og-image.jpg",
+  "view_path": "themes.overlay-shadow-01.index",
+  "features": [
+    "Responsive design",
+    "Countdown timer",
+    "RSVP form",
+    "Digital envelope",
+    "Gallery section",
+    "Social media integration",
+    "Smooth animations",
+    "Modern typography"
+  ],
+  "colors": [
+    "#667eea",
+    "#764ba2",
+    "#ffd700",
+    "#ff6b6b",
+    "#ffffff"
+  ],
+  "is_active": true,
+  "is_recommended": true,
+  "popular": true,
+  "trending": false,
+  "created_at": "2024-01-01T00:00:00Z",
+  "updated_at": "2024-01-01T00:00:00Z"
+}

@@ -3,14 +3,15 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
+import { Link } from '@inertiajs/react';
 import {
     Calendar,
     Copy,
     Edit,
+    ExternalLink,
     Eye,
     Gift,
     Heart,
-    Link,
     MessageCircle,
     Monitor,
     Music,
@@ -160,7 +161,7 @@ export default function WeddingDetail({ user, wedding }: WeddingDetailProps) {
                   </h2>
 
                   <div className="flex items-center justify-center lg:justify-start space-x-2 text-muted-foreground mb-4">
-                    <Link className="w-4 h-4" />
+                    <ExternalLink className="w-4 h-4" />
                     <span className="font-medium text-sm">{weddingUrl}</span>
                   </div>
 
@@ -256,35 +257,35 @@ export default function WeddingDetail({ user, wedding }: WeddingDetailProps) {
         {/* Menu Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {menuItems.map((item) => (
-            <Card
-              key={item.id}
-              className="group relative overflow-hidden bg-white/90 backdrop-blur-sm border border-gray-200/60 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 cursor-pointer"
-            >
-              <CardContent className="p-6">
-                <div className="text-center space-y-4">
-                  {/* Icon */}
-                  <div className="flex justify-center">
-                    <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-300">
-                      <item.icon className="w-8 h-8 text-blue-600" />
+            <Link key={item.id} href={item.href} className="block">
+              <Card className="group relative overflow-hidden bg-white/90 backdrop-blur-sm border border-gray-200/60 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 cursor-pointer h-full">
+                <CardContent className="p-6">
+                  <div className="text-center space-y-4">
+                    {/* Icon */}
+                    <div className="flex justify-center">
+                      <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-300">
+                        <item.icon className="w-8 h-8 text-blue-600" />
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Title and Badge */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-center space-x-2">
-                      <h3 className="font-semibold text-gray-900 text-sm">
-                        {item.title}
-                      </h3>
-                      {item.badge && (
-                        <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
-                          {item.badge}
-                        </Badge>
-                      )}
+                    {/* Title and Badge */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-center space-x-2">
+                        <h3 className="font-semibold text-gray-900 text-sm">
+                          {item.title}
+                        </h3>
+                        {item.badge && (
+                          <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
+                            {item.badge}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500">{item.description}</p>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>

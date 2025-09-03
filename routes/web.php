@@ -71,6 +71,9 @@ Route::get('/my-weddings', [FrontendController::class, 'myWeddings'])->name('wed
 Route::get('/wedding-invitations', [FrontendController::class, 'weddingInvitations'])->name('weddings.invitations');
 Route::get('/wedding/{id}', [FrontendController::class, 'weddingDetail'])->name('wedding.detail');
 Route::get('/wedding/{id}/configuration', [FrontendController::class, 'weddingConfiguration'])->name('weddings.configuration');
+Route::get('/weddings/{id}/design-configuration', [FrontendController::class, 'designConfiguration'])->name('weddings.design-configuration');
+Route::get('/wedding/{id}/couple', [FrontendController::class, 'weddingCoupleInfo'])->name('wedding.couple');
+Route::get('/wedding/{id}/location-time', [FrontendController::class, 'weddingVenueInfo'])->name('wedding.venue-info');
 Route::get('/orders', [FrontendController::class, 'orders'])->name('orders.index');
 Route::get('/gallery', [FrontendController::class, 'gallery'])->name('gallery.index');
 Route::get('/analytics', [FrontendController::class, 'analytics'])->name('analytics.index');
@@ -84,8 +87,14 @@ Route::get('/music/upload', [FrontendController::class, 'musicUpload'])->name('m
 
 // Public wedding routes
 Route::get('/preview/{slug}', [FrontendController::class, 'showWedding'])->name('wedding.preview');
+Route::get('/invitation/{slug}', [FrontendController::class, 'showWeddingInvitation'])->name('wedding.invitation');
 Route::get('/packages', [FrontendController::class, 'packages'])->name('packages.index');
 Route::get('/packages/{id}', [FrontendController::class, 'packageDetails'])->name('packages.show');
+
+// Checkout routes
+Route::get('/checkout', [FrontendController::class, 'checkout'])->name('checkout');
+Route::get('/checkout/payment', [FrontendController::class, 'checkoutPayment'])->name('checkout.payment');
+Route::get('/checkout/success', [FrontendController::class, 'checkoutSuccess'])->name('checkout.success');
 
 // Catch-all route for SPA (must be last)
 Route::get('/{any?}', [FrontendController::class, 'landing'])->where('any', '.*');

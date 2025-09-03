@@ -1,4 +1,4 @@
-import { Check, X, Star, Crown, Gift, Zap } from 'lucide-react';
+import { Check, Crown, Gift, Star, X, Zap } from 'lucide-react';
 import { Button } from './ui/button';
 
 interface Feature {
@@ -180,7 +180,7 @@ const ComparisonTable = () => {
               </div>
               {plans.map((plan, index) => (
                 <div key={plan.name} className={`p-6 text-center relative ${
-                  plan.popular ? 'bg-gradient-to-br from-primary/10 to-accent/10 ring-2 ring-primary/20' : ''
+                  plan.popular ? 'bg-gradient-to-br from-primary/10 to-accent/10 ring-2 ring-primary/20 rounded-lg' : ''
                 }`}>
                   {plan.popular && (
                     <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-white px-4 py-1 rounded-full text-xs font-medium">
@@ -193,10 +193,10 @@ const ComparisonTable = () => {
                   <h4 className="text-xl font-bold text-card-foreground mb-2">{plan.name}</h4>
                   <div className="text-3xl font-bold text-primary mb-2">{plan.price}</div>
                   <p className="text-sm text-muted-foreground mb-4">{plan.description}</p>
-                  <Button 
+                  <Button
                     className={`w-full ${
-                      plan.popular 
-                        ? 'bg-primary hover:bg-primary-glow text-white' 
+                      plan.popular
+                        ? 'bg-primary hover:bg-primary-glow text-white'
                         : 'bg-primary/10 text-primary hover:bg-primary/20'
                     }`}
                   >
@@ -226,7 +226,7 @@ const ComparisonTable = () => {
                     <p className="text-sm text-muted-foreground mt-1">{feature.description}</p>
                   )}
                 </div>
-                
+
                 {/* Free Plan */}
                 <div className="p-6 text-center">
                   {typeof feature.free === 'boolean' ? (

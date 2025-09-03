@@ -1,15 +1,15 @@
-import { 
-  FileText, 
-  Edit3, 
-  Share2, 
-  Smartphone, 
-  Users, 
-  Heart,
-  ArrowRight,
-  CheckCircle,
-  Zap,
-  Star,
-  Clock
+import {
+    ArrowRight,
+    CheckCircle,
+    Clock,
+    Edit3,
+    FileText,
+    Heart,
+    Share2,
+    Smartphone,
+    Star,
+    Users,
+    Zap
 } from 'lucide-react';
 import { Button } from './ui/button';
 
@@ -114,8 +114,8 @@ const HowItWorks = () => {
               <div
                 key={step.title}
                 className={`relative group ${
-                  step.highlight 
-                    ? 'lg:scale-105' 
+                  step.highlight
+                    ? 'lg:scale-105'
                     : ''
                 }`}
                 style={{ animationDelay: `${index * 0.2}s` }}
@@ -127,8 +127,8 @@ const HowItWorks = () => {
 
                 {/* Step Card */}
                 <div className={`relative bg-card rounded-2xl p-8 border border-border transition-all duration-300 hover:-translate-y-2 hover:shadow-xl ${
-                  step.highlight 
-                    ? 'ring-2 ring-primary/20 bg-gradient-to-br from-primary/5 to-primary/10' 
+                  step.highlight
+                    ? 'ring-2 ring-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl'
                     : 'hover:border-primary/30'
                 }`}>
                   {/* Icon */}

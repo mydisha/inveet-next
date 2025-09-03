@@ -67,7 +67,7 @@ export function MusicCard({
     <Card
       className={cn(
         "transition-all duration-200 hover:shadow-md",
-        isSelected && "ring-2 ring-primary",
+        isSelected && "ring-2 ring-primary rounded-lg",
         className
       )}
     >

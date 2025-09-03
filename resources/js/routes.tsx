@@ -20,7 +20,7 @@ export const routes = {
 
   // Onboarding routes
   onboarding: '/onboarding',
-  coupleInfo: '/onboarding/couple-info',
+  onboardingCoupleInfo: '/onboarding/couple-info',
   weddingDetails: '/onboarding/wedding-details',
   customUrl: '/onboarding/custom-url',
   designSelection: '/onboarding/design-selection',
@@ -33,10 +33,18 @@ export const routes = {
   viewWedding: (id: string | number) => `/weddings/${id}`,
   weddingDetail: (id: string | number) => `/wedding/${id}`,
   previewWedding: (slug: string) => `/preview/${slug}`,
+  designConfiguration: (id: string | number) => `/weddings/${id}/design-configuration`,
+  coupleInfo: (id: string | number) => `/wedding/${id}/couple`,
+  venueInfo: (id: string | number) => `/wedding/${id}/location-time`,
 
   // Package routes
   packages: '/packages',
   packageDetails: (id: string | number) => `/packages/${id}`,
+
+  // Checkout routes
+  checkout: '/checkout',
+  checkoutPayment: '/checkout/payment',
+  checkoutSuccess: '/checkout/success',
 
   // Order routes
   orders: '/orders',
