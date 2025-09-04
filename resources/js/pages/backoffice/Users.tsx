@@ -3,36 +3,37 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui/table';
-import { Head, Link } from '@inertiajs/react';
+import { apiPost } from '@/lib/api';
+import { Head, Link, router } from '@inertiajs/react';
 import {
-    Edit,
-    Eye,
-    LogIn,
-    MoreHorizontal,
-    Search,
-    UserCheck,
-    UserX
+  Edit,
+  Eye,
+  LogIn,
+  MoreHorizontal,
+  Search,
+  UserCheck,
+  UserX
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -48,65 +49,89 @@ interface User {
   orders_count: number;
 }
 
-interface UsersResponse {
-  data: {
-    data: User[];
-    current_page: number;
-    last_page: number;
-    per_page: number;
-    total: number;
+interface PaginatedUsers {
+  data: User[];
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+}
+
+interface UsersPageProps {
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    roles: Array<{
+      id: number;
+      name: string;
+    }>;
+  } | null;
+  users: PaginatedUsers;
+  filters: {
+    search?: string;
+    role?: string;
+    status?: string;
+    sort_by?: string;
+    sort_order?: string;
+    per_page?: number;
   };
 }
 
-export default function UsersPage() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [roleFilter, setRoleFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
+export default function UsersPage({ user, users: initialUsers, filters: initialFilters }: UsersPageProps) {
+  const [users, setUsers] = useState<User[]>(initialUsers.data);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState(initialFilters.search || '');
+  const [roleFilter, setRoleFilter] = useState(initialFilters.role || 'all');
+  const [statusFilter, setStatusFilter] = useState(initialFilters.status || 'all');
+  const [currentPage, setCurrentPage] = useState(initialUsers.current_page);
+  const [totalPages, setTotalPages] = useState(initialUsers.last_page);
+  const [total, setTotal] = useState(initialUsers.total);
 
-  const fetchUsers = async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({
-        page: currentPage.toString(),
-        per_page: '15',
-        ...(search && { search }),
-        ...(roleFilter && { role: roleFilter }),
-        ...(statusFilter && { status: statusFilter }),
-      });
-
-      const response = await fetch(`/backoffice/users?${params}`);
-      const data: UsersResponse = await response.json();
-
-      setUsers(data.data.data);
-      setTotalPages(data.data.last_page);
-      setTotal(data.data.total);
-    } catch (error) {
-      console.error('Failed to fetch users:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Update local state when props change
   useEffect(() => {
-    fetchUsers();
-  }, [currentPage, search, roleFilter, statusFilter]);
+    setUsers(initialUsers.data);
+    setCurrentPage(initialUsers.current_page);
+    setTotalPages(initialUsers.last_page);
+    setTotal(initialUsers.total);
+  }, [initialUsers]);
+
+  const fetchUsers = (page?: number) => {
+    setLoading(true);
+    const params: any = {
+      page: page || currentPage,
+      per_page: 15,
+    };
+
+    if (search) params.search = search;
+    if (roleFilter && roleFilter !== 'all') params.role = roleFilter;
+    if (statusFilter && statusFilter !== 'all') params.status = statusFilter;
+
+    router.get('/backoffice/users', params, {
+      preserveState: true,
+      preserveScroll: true,
+      onSuccess: () => {
+        setLoading(false);
+      },
+      onError: (errors) => {
+        console.error('Failed to fetch users:', errors);
+        setLoading(false);
+      }
+    });
+  };
 
   const handleSearch = (value: string) => {
     setSearch(value);
     setCurrentPage(1);
+    // Trigger search after a short delay to avoid too many requests
+    setTimeout(() => {
+      fetchUsers(1);
+    }, 300);
   };
 
   const handleAutoLogin = async (userId: number) => {
     try {
-      const response = await fetch(`/backoffice/users/${userId}/auto-login`, {
-        method: 'POST',
-      });
-      const data = await response.json();
+      const data = await apiPost(`/backoffice/api/users/${userId}/auto-login`);
 
       if (data.success) {
         // Open login URL in new tab
@@ -120,13 +145,8 @@ export default function UsersPage() {
   const handleToggleStatus = async (userId: number, isActive: boolean) => {
     try {
       const endpoint = isActive ? 'deactivate' : 'activate';
-      const response = await fetch(`/backoffice/users/${userId}/${endpoint}`, {
-        method: 'POST',
-      });
-
-      if (response.ok) {
-        fetchUsers(); // Refresh the list
-      }
+      await apiPost(`/backoffice/api/users/${userId}/${endpoint}`);
+      fetchUsers(); // Refresh the list
     } catch (error) {
       console.error('Failed to toggle user status:', error);
     }
@@ -150,7 +170,7 @@ export default function UsersPage() {
   return (
     <>
       <Head title="User Management - Backoffice" />
-      <BackofficeLayout title="User Management" description="Manage registered users">
+      <BackofficeLayout user={user} title="User Management" description="Manage registered users">
         <div className="space-y-6">
           {/* Filters */}
           <Card>
@@ -168,24 +188,32 @@ export default function UsersPage() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Select value={roleFilter} onValueChange={setRoleFilter}>
+                  <Select value={roleFilter} onValueChange={(value) => {
+                    setRoleFilter(value);
+                    setCurrentPage(1);
+                    fetchUsers(1);
+                  }}>
                     <SelectTrigger className="w-40">
                       <SelectValue placeholder="All Roles" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Roles</SelectItem>
+                      <SelectItem value="all">All Roles</SelectItem>
                       <SelectItem value="super-admin">Super Admin</SelectItem>
                       <SelectItem value="admin">Admin</SelectItem>
                       <SelectItem value="moderator">Moderator</SelectItem>
                       <SelectItem value="customer">Customer</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <Select value={statusFilter} onValueChange={(value) => {
+                    setStatusFilter(value);
+                    setCurrentPage(1);
+                    fetchUsers(1);
+                  }}>
                     <SelectTrigger className="w-40">
                       <SelectValue placeholder="All Status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Status</SelectItem>
+                      <SelectItem value="all">All Status</SelectItem>
                       <SelectItem value="active">Active</SelectItem>
                       <SelectItem value="inactive">Inactive</SelectItem>
                     </SelectContent>
@@ -203,7 +231,7 @@ export default function UsersPage() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center h-32">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
@@ -319,7 +347,11 @@ export default function UsersPage() {
                       variant="outline"
                       size="sm"
                       disabled={currentPage === 1}
-                      onClick={() => setCurrentPage(currentPage - 1)}
+                      onClick={() => {
+                        const newPage = currentPage - 1;
+                        setCurrentPage(newPage);
+                        fetchUsers(newPage);
+                      }}
                     >
                       Previous
                     </Button>
@@ -327,7 +359,11 @@ export default function UsersPage() {
                       variant="outline"
                       size="sm"
                       disabled={currentPage === totalPages}
-                      onClick={() => setCurrentPage(currentPage + 1)}
+                      onClick={() => {
+                        const newPage = currentPage + 1;
+                        setCurrentPage(newPage);
+                        fetchUsers(newPage);
+                      }}
                     >
                       Next
                     </Button>

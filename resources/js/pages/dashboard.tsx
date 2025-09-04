@@ -2,7 +2,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Head, Link } from '@inertiajs/react';
-import { Calendar, Heart, Plus, Sparkles, Users, Eye, Share2 } from 'lucide-react';
+import { Calendar, Eye, Heart, Plus, Share2, Sparkles, Users } from 'lucide-react';
 
 interface User {
   id: number;
@@ -83,6 +83,13 @@ export default function Dashboard({ user, loading = false }: DashboardProps) {
         icon: Plus,
         href: '/onboarding/couple-info',
         variant: 'default' as const,
+      },
+      {
+        title: 'Browse Designs',
+        description: 'Explore available theme designs',
+        icon: Sparkles,
+        href: '/design-selection',
+        variant: 'outline' as const,
       },
       {
         title: 'Manage Invitations',

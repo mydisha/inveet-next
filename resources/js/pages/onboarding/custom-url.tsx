@@ -1,9 +1,9 @@
+import OnboardingLayout from '@/components/onboarding/OnboardingLayout';
+import { ONBOARDING_STEPS } from '@/components/onboarding/OnboardingProgress';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Link } from '@inertiajs/react';
-import { ArrowLeft, ArrowRight, CheckCircle, Heart, Link as LinkIcon, Sparkles, XCircle } from 'lucide-react';
+import { CheckCircle, Link as LinkIcon, Sparkles, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function CustomUrl() {
@@ -116,103 +116,33 @@ export default function CustomUrl() {
   };
 
   return (
-    <div className="min-h-screen bg-wedding-gradient">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-rose-gold rounded-full flex items-center justify-center">
-              <Heart className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-rose-gold">Inveet</span>
-          </div>
-
-          <Link href="/onboarding">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Onboarding
-            </Button>
-          </Link>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-6 py-12">
-                {/* Page Header */}
-        <div className="text-center mb-12">
-          {/* Clickable Progress Steps */}
-          <div className="flex items-center justify-center space-x-2 mb-6">
-            {/* Step 1 - Couple Info */}
-            <a href="/onboarding/couple-info" className="flex items-center group">
-              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium transition-all duration-200 group-hover:bg-primary/20 group-hover:text-primary cursor-pointer">
-                1
-              </div>
-              <span className="ml-2 text-sm text-muted-foreground hidden sm:block group-hover:text-primary transition-colors duration-200">Info</span>
-            </a>
-
-            <div className="w-12 h-0.5 bg-primary"></div>
-
-            {/* Step 2 - Wedding Location */}
-            <a href="/onboarding/wedding-location" className="flex items-center group">
-              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium transition-all duration-200 group-hover:bg-primary/20 group-hover:text-primary cursor-pointer">
-                2
-              </div>
-              <span className="ml-2 text-sm text-muted-foreground hidden sm:block group-hover:text-primary transition-colors duration-200">Location</span>
-            </a>
-
-            <div className="w-12 h-0.5 bg-primary"></div>
-
-            {/* Step 3 - Design Selection */}
-            <a href="/onboarding/design-selection" className="flex items-center group">
-              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium transition-all duration-200 group-hover:bg-primary/20 group-hover:text-primary cursor-pointer">
-                3
-              </div>
-              <span className="ml-2 text-sm text-muted-foreground hidden sm:block group-hover:text-primary transition-colors duration-200">Design</span>
-            </a>
-
-            <div className="w-12 h-0.5 bg-primary"></div>
-
-            {/* Step 4 - Wedding URL (Current) */}
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium">
-                4
-              </div>
-              <span className="ml-2 text-sm font-medium text-foreground hidden sm:block">URL</span>
-            </div>
-
-            <div className="w-12 h-0.5 bg-muted"></div>
-
-            {/* Step 5 - Activation */}
-            <a href="/onboarding/activation" className="flex items-center group">
-              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium transition-all duration-200 group-hover:bg-primary/20 group-hover:text-primary cursor-pointer">
-                5
-              </div>
-              <span className="ml-2 text-sm text-muted-foreground hidden sm:block group-hover:text-primary transition-colors duration-200">Activate</span>
-            </a>
-          </div>
-
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            Choose Your Invitation URL
-          </h1>
-
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Pick a unique web address for your wedding invitation. This is how your guests will find your special page.
-          </p>
-        </div>
+    <OnboardingLayout
+      title="Choose Your Invitation URL"
+      description="Pick a unique web address for your wedding invitation. This is how your guests will find your special page."
+      icon={LinkIcon}
+      steps={ONBOARDING_STEPS.alternative}
+      currentStep="custom-url"
+      user={null}
+      onSubmit={() => window.location.href = '/onboarding/design-selection'}
+      submitLabel="Continue to Design Selection"
+      showBackButton={true}
+      onBackClick={() => window.location.href = '/onboarding/wedding-details'}
+      maxWidth="4xl"
+    >
 
         <div className="grid gap-8">
           {/* URL Input Section */}
-          <Card className="border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold text-gray-800 flex items-center space-x-2">
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h3 className="text-2xl font-bold text-gray-800 flex items-center space-x-2">
                 <LinkIcon className="w-6 h-6 text-rose-gold" />
                 <span>Your Invitation URL</span>
-              </CardTitle>
-              <CardDescription>
+              </h3>
+              <p className="text-gray-600">
                 Choose a memorable and easy-to-remember web address for your wedding invitation
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+              </p>
+            </div>
+            <div className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="urlSlug" className="text-gray-700 font-medium">
                   Custom URL *
@@ -257,21 +187,21 @@ export default function CustomUrl() {
                   </div>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* URL Suggestions */}
-          <Card className="border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold text-gray-800 flex items-center space-x-2">
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h3 className="text-2xl font-bold text-gray-800 flex items-center space-x-2">
                 <Sparkles className="w-6 h-6 text-rose-gold" />
                 <span>Suggested URLs</span>
-              </CardTitle>
-              <CardDescription>
+              </h3>
+              <p className="text-gray-600">
                 Here are some great options based on your names. Click any suggestion to use it.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              </p>
+            </div>
+            <div>
               <div className="grid gap-3">
                 {suggestions.map((suggestion, index) => (
                   <button
@@ -297,17 +227,17 @@ export default function CustomUrl() {
                   </button>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* URL Guidelines */}
-          <Card className="border-0 shadow-lg bg-gradient-to-r from-soft-pink/10 to-sage/10">
-            <CardHeader>
-              <CardTitle className="text-xl font-bold text-gray-800">
+          <div className="space-y-6 bg-gradient-to-r from-soft-pink/10 to-sage/10 p-6 rounded-lg">
+            <div className="space-y-2">
+              <h3 className="text-xl font-bold text-gray-800">
                 URL Guidelines
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
+            </div>
+            <div>
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <h4 className="font-semibold text-gray-800 mb-3 text-green-600">✅ Do's</h4>
@@ -330,20 +260,20 @@ export default function CustomUrl() {
                   </ul>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Popular Examples */}
-          <Card className="border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-xl font-bold text-gray-800">
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h3 className="text-xl font-bold text-gray-800">
                 Popular URL Examples
-              </CardTitle>
-              <CardDescription>
+              </h3>
+              <p className="text-gray-600">
                 See how other couples have created their invitation URLs
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              </p>
+            </div>
+            <div>
               <div className="grid md:grid-cols-3 gap-4">
                 {[
                   'sarah-michael.inveet.id',
@@ -360,31 +290,9 @@ export default function CustomUrl() {
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
-
-        {/* Navigation */}
-        <div className="flex items-center justify-between mt-12">
-          <Link href="/onboarding/wedding-details">
-            <Button variant="outline" size="lg" className="border-gray-300 text-gray-600 hover:border-rose-gold hover:text-rose-gold">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Wedding Details
-            </Button>
-          </Link>
-
-          <Link href="/onboarding/design-selection">
-            <Button
-              size="lg"
-              className="bg-rose-gold hover:bg-rose-gold/90 text-white px-8"
-              disabled={!fullUrl || isAvailable !== true}
-            >
-              Continue to Design Selection
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </Link>
-        </div>
-      </main>
-    </div>
+    </OnboardingLayout>
   );
 }

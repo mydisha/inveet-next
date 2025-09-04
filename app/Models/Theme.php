@@ -24,6 +24,12 @@ class Theme extends Model
         'preview_image',
         'user_id',
         'theme_uuid',
+        'category',
+        'colors',
+        'features',
+        'is_recommended',
+        'is_popular',
+        'is_trending',
     ];
 
     /**
@@ -34,6 +40,11 @@ class Theme extends Model
     protected $casts = [
         'is_active' => 'boolean',
         'is_public' => 'boolean',
+        'is_recommended' => 'boolean',
+        'is_popular' => 'boolean',
+        'is_trending' => 'boolean',
+        'colors' => 'array',
+        'features' => 'array',
     ];
 
     /**

@@ -8,7 +8,6 @@ export function useAuth() {
   const [isLoading, setIsLoading] = useState(false);
 
   const logout = useCallback(async (options: {
-    useApi?: boolean;
     redirectTo?: string;
     showFeedback?: boolean;
   } = {}) => {

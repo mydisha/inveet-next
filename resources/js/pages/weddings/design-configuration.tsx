@@ -533,7 +533,7 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
                   <Separator />
 
                   {/* Debug Info */}
-                  {process.env.NODE_ENV === 'development' && (
+                  {import.meta.env.DEV && (
                     <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                       <div className="text-sm text-blue-800">
                         <strong>Debug Info:</strong>
@@ -605,15 +605,15 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
                       </Button>
                     </div>
                   ) : filteredTemplates.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                       {filteredTemplates.map((template) => (
                         <div
                           key={template.id}
-                                                  className={`relative cursor-pointer transition-all duration-300 group ${
-                          selectedTemplate === template.id
-                            ? 'ring-2 ring-primary ring-offset-2 scale-105 rounded-lg'
-                            : 'hover:scale-105'
-                        }`}
+                          className={`relative cursor-pointer transition-all duration-500 group touch-manipulation ${
+                            selectedTemplate === template.id
+                              ? 'ring-2 ring-primary ring-offset-2 sm:ring-offset-4 scale-[1.02] rounded-xl shadow-2xl'
+                              : 'hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]'
+                          }`}
                           onClick={() => setSelectedTemplate(template.id)}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {

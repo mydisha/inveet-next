@@ -1,11 +1,11 @@
-import DashboardLayout from '@/components/layout/DashboardLayout';
+import OnboardingLayout from '@/components/onboarding/OnboardingLayout';
+import { ONBOARDING_STEPS } from '@/components/onboarding/OnboardingProgress';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, ArrowRight, Building, Calendar, Clock, Map, MapPin, Navigation, Phone, Search } from 'lucide-react';
+import { useForm } from '@inertiajs/react';
+import { Building, Calendar, Clock, Map, MapPin, Navigation, Phone, Search } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 interface WeddingLocationProps {
@@ -50,7 +50,7 @@ export default function WeddingLocation({ user }: WeddingLocationProps) {
       }
 
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY || 'YOUR_API_KEY'}&libraries=places`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'YOUR_API_KEY'}&libraries=places`;
       script.async = true;
       script.defer = true;
       script.onload = () => setMapLoaded(true);
@@ -150,78 +150,25 @@ export default function WeddingLocation({ user }: WeddingLocationProps) {
   };
 
   return (
-    <>
-      <Head title="Wedding Location - Onboarding" />
-
-      <DashboardLayout user={user || null} currentPath="/onboarding/wedding-location">
-        {/* Modern Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center mb-4">
-            <div className="icon-container icon-gradient-2 mr-4">
-              <MapPin className="w-8 h-8" />
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-gradient-primary">
-              Wedding Location
-            </h1>
-          </div>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Find and select your perfect wedding venue with our integrated map search
-          </p>
-        </div>
-
-        {/* Enhanced Progress Bar */}
-        <div className="mb-8">
-          <div className="flex items-center justify-center space-x-4">
-            <div className="flex items-center">
-              <div className="onboarding-progress-dot completed">
-                <span className="text-sm font-medium text-primary-foreground">1</span>
-              </div>
-              <span className="ml-2 text-sm font-medium text-foreground">Couple Info</span>
-            </div>
-            <div className="onboarding-progress-line active w-16"></div>
-            <div className="flex items-center">
-              <div className="onboarding-progress-dot active">
-                <span className="text-sm font-medium text-primary-foreground">2</span>
-              </div>
-              <span className="ml-2 text-sm font-medium text-foreground">Location</span>
-            </div>
-            <div className="onboarding-progress-line bg-muted w-16"></div>
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium">
-                3
-              </div>
-              <span className="ml-2 text-sm text-muted-foreground">Design</span>
-            </div>
-            <div className="w-16 h-1 bg-muted rounded-full"></div>
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium">
-                4
-              </div>
-              <span className="ml-2 text-sm text-muted-foreground">URL</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="max-w-6xl mx-auto">
+    <OnboardingLayout
+      title="Wedding Location"
+      description="Find and select your perfect wedding venue with our integrated map search"
+      icon={MapPin}
+      steps={ONBOARDING_STEPS.main}
+      currentStep="wedding-location"
+      user={user}
+      onSubmit={handleSubmit}
+      submitLabel="Continue to Design"
+      isSubmitting={processing}
+      showBackButton={true}
+      onBackClick={() => window.location.href = '/onboarding/couple-info'}
+      maxWidth="6xl"
+    >
+      <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Venue Search and Form */}
             <div className="space-y-6">
-              <Card className="card-elegant hover:shadow-2xl transition-all duration-300">
-                <CardHeader className="pb-6">
-                  <div className="flex items-center space-x-3">
-                    <div className="icon-container icon-gradient-2">
-                      <Search className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-xl">Find Your Venue</CardTitle>
-                      <CardDescription className="text-base">
-                        Search for your wedding venue using Google Maps
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Venue Search */}
                     <div className="space-y-4">
                       <div className="space-y-2">
@@ -462,76 +409,38 @@ export default function WeddingLocation({ user }: WeddingLocationProps) {
                       </div>
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex items-center justify-between pt-8 border-t border-border">
-                      <Link href="/onboarding/couple-info">
-                        <Button variant="outline" className="flex items-center comfort-button">
-                          <ArrowLeft className="w-4 h-4 mr-2" />
-                          Back
-                        </Button>
-                      </Link>
-
-                      <Button
-                        type="submit"
-                        disabled={processing}
-                        className="btn-hero flex items-center comfort-button"
-                      >
-                        Continue to Design
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    </div>
-                  </form>
-                </CardContent>
-              </Card>
+              </form>
             </div>
 
             {/* Map Display */}
             <div className="space-y-6">
-              <Card className="card-elegant hover:shadow-2xl transition-all duration-300">
-                <CardHeader className="pb-6">
-                  <div className="flex items-center space-x-3">
-                    <div className="icon-container icon-gradient-3">
-                      <Map className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-xl">Venue Location</CardTitle>
-                      <CardDescription className="text-base">
-                        Preview your selected venue on the map
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
+              <div className="space-y-4">
+                {selectedPlace ? (
                   <div className="space-y-4">
-                    {selectedPlace ? (
-                      <div className="space-y-4">
-                        <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
-                          <h4 className="font-semibold text-primary mb-2">Selected Venue</h4>
-                          <p className="text-sm font-medium">{selectedPlace.name}</p>
-                          <p className="text-xs text-muted-foreground">{selectedPlace.formatted_address}</p>
-                        </div>
-                        <div
-                          ref={mapRef}
-                          className="w-full h-64 rounded-lg border border-border bg-muted/20 flex items-center justify-center"
-                        >
-                          <p className="text-muted-foreground">Map will be displayed here</p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="w-full h-64 rounded-lg border border-border bg-muted/20 flex items-center justify-center">
-                        <div className="text-center">
-                          <Map className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                          <p className="text-muted-foreground">Search for a venue to see it on the map</p>
-                        </div>
-                      </div>
-                    )}
+                    <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
+                      <h4 className="font-semibold text-primary mb-2">Selected Venue</h4>
+                      <p className="text-sm font-medium">{selectedPlace.name}</p>
+                      <p className="text-xs text-muted-foreground">{selectedPlace.formatted_address}</p>
+                    </div>
+                    <div
+                      ref={mapRef}
+                      className="w-full h-64 rounded-lg border border-border bg-muted/20 flex items-center justify-center"
+                    >
+                      <p className="text-muted-foreground">Map will be displayed here</p>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
+                ) : (
+                  <div className="w-full h-64 rounded-lg border border-border bg-muted/20 flex items-center justify-center">
+                    <div className="text-center">
+                      <Map className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-muted-foreground">Search for a venue to see it on the map</p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </DashboardLayout>
-    </>
+    </OnboardingLayout>
   );
 }

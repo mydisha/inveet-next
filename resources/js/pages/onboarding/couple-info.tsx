@@ -1,12 +1,11 @@
-import StandardFormLayout from '@/components/dashboard/StandardFormLayout';
-import DashboardLayout from '@/components/layout/DashboardLayout';
+import OnboardingLayout from '@/components/onboarding/OnboardingLayout';
+import { ONBOARDING_STEPS } from '@/components/onboarding/OnboardingProgress';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Head, useForm } from '@inertiajs/react';
-import { ArrowLeft, ArrowRight, Building, Calendar, Camera, Clock, Heart, Instagram, Mail, MapPin as MapIcon, MapPin, Navigation, Phone, RotateCw, Search, User, Users, X } from 'lucide-react';
+import { useForm } from '@inertiajs/react';
+import { Building, Calendar, Camera, Clock, Heart, Instagram, Mail, MapPin as MapIcon, MapPin, Navigation, Phone, RotateCw, Search, User, Users, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Cropper from 'react-easy-crop';
 
@@ -57,7 +56,7 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
       }
 
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY || 'YOUR_API_KEY'}&libraries=places`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'YOUR_API_KEY'}&libraries=places`;
       script.async = true;
       script.defer = true;
       script.onload = () => setMapLoaded(true);
@@ -315,75 +314,28 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
   };
 
   return (
-    <>
-      <Head title="Couple Information - Onboarding" />
-
-      <DashboardLayout user={user || null} currentPath="/onboarding/couple-info">
-        <StandardFormLayout
-          title="Couple Information"
-          onSubmit={handleSubmit}
-          submitLabel={step < 3 ? "Next" : "Continue to Design"}
-          isSubmitting={processing}
-          icon={Users}
-          maxWidth="6xl"
-        >
-
-        {/* Enhanced Progress Bar */}
-        <div className="mb-8 overflow-hidden">
-          <div className="flex items-center justify-center space-x-2 sm:space-x-4 min-w-0">
-            <div className="flex items-center min-w-0">
-              <div className={`onboarding-progress-dot ${step >= 1 ? 'active' : ''}`}>
-                <span className="text-sm font-medium text-primary-foreground">1</span>
-              </div>
-              <span className="ml-1 sm:ml-2 text-xs sm:text-sm font-medium text-foreground hidden sm:inline">Couple Info</span>
-            </div>
-            <div className={`onboarding-progress-line ${step > 1 ? 'active' : 'bg-muted'} w-8 sm:w-16`}></div>
-            <div className="flex items-center min-w-0">
-              <div className={`onboarding-progress-dot ${step >= 3 ? 'active' : ''}`}>
-                <span className="text-sm font-medium text-primary-foreground">2</span>
-              </div>
-              <span className="ml-1 sm:ml-2 text-xs sm:text-sm font-medium text-foreground hidden sm:inline">Wedding & Location</span>
-            </div>
-            <div className="w-8 sm:w-16 h-1 bg-muted rounded-full"></div>
-            <div className="flex items-center min-w-0">
-              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium">
-                3
-              </div>
-              <span className="ml-1 sm:ml-2 text-xs sm:text-sm text-muted-foreground hidden sm:inline">Design</span>
-            </div>
-            <div className="w-8 sm:w-16 h-1 bg-muted rounded-full"></div>
-            <div className="flex items-center min-w-0">
-              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium">
-                4
-              </div>
-              <span className="ml-1 sm:ml-2 text-xs sm:text-sm text-muted-foreground hidden sm:inline">URL</span>
-            </div>
-          </div>
-        </div>
-
-        <Card className="card-elegant hover:shadow-2xl transition-all duration-300">
-            <CardHeader className="pb-6">
-              <div className="flex items-center space-x-3">
-                <div className="icon-container icon-gradient-1">
-                  {step === 1 ? <Users className="w-5 h-5" /> : <Heart className="w-5 h-5" />}
-                </div>
-                <div>
-                  <CardTitle className="text-xl">{getStepTitle()}</CardTitle>
-                  <CardDescription className="text-base">
-                    {getStepDescription()}
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-8">
+    <OnboardingLayout
+      title="Couple Information"
+      description={getStepDescription()}
+      icon={step === 1 ? Users : Heart}
+      steps={ONBOARDING_STEPS.main}
+      currentStep="couple-info"
+      user={user}
+      onSubmit={step < 3 ? nextStep : handleSubmit}
+      submitLabel={step < 3 ? "Next" : "Continue to Design"}
+      isSubmitting={processing}
+      showBackButton={step > 1}
+      onBackClick={step > 1 ? prevStep : undefined}
+      maxWidth="6xl"
+    >
+      <form onSubmit={handleSubmit} className="space-y-8">
                 {step === 1 && (
                   <div className="space-y-8">
-                    {/* Couple Photos Section */}
-                    <div className="flex flex-col items-center space-y-6">
-                      <div className="flex items-center justify-center space-x-8">
+                    {/* Groom Information Section */}
+                    <div className="space-y-6">
+                      <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
                         {/* Groom Photo */}
-                        <div className="text-center">
+                        <div className="text-center flex-shrink-0">
                           <Label className="text-lg font-medium mb-4 block">Groom Photo</Label>
                           <div className="relative">
                             <div className="w-32 h-32 rounded-full border-4 border-dashed border-muted-foreground/30 flex items-center justify-center overflow-hidden bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer group"
@@ -417,52 +369,6 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
                             <h4 className="font-semibold text-foreground">{data.groom_name || 'Groom Name'}</h4>
                             <p className="text-sm text-muted-foreground">Mempelai Pria</p>
                           </div>
-                        </div>
-
-                        {/* Bride Photo */}
-                        <div className="text-center">
-                          <Label className="text-lg font-medium mb-4 block">Bride Photo</Label>
-                          <div className="relative">
-                            <div className="w-32 h-32 rounded-full border-4 border-dashed border-muted-foreground/30 flex items-center justify-center overflow-hidden bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer group"
-                                 onClick={() => bridePhotoRef.current?.click()}>
-                              {bridePhotoPreview ? (
-                                <div className="relative w-full h-full">
-                                  <img src={bridePhotoPreview} alt="Bride preview" className="w-full h-full object-cover" />
-                                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                    <Camera className="w-6 h-6 text-white" />
-                                  </div>
-                                </div>
-                              ) : (
-                                <div className="text-center">
-                                  <Camera className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                                  <p className="text-xs text-muted-foreground">Upload Photo</p>
-                                </div>
-                              )}
-                            </div>
-                            <input
-                              ref={bridePhotoRef}
-                              type="file"
-                              accept="image/*"
-                              className="hidden"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) handlePhotoUpload(file, 'bride');
-                              }}
-                            />
-                          </div>
-                          <div className="mt-3">
-                            <h4 className="font-semibold text-foreground">{data.bride_name || 'Bride Name'}</h4>
-                            <p className="text-sm text-muted-foreground">Mempelai Wanita</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Groom Information Section */}
-                    <div className="space-y-6">
-                      <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
-                        <div className="text-center sm:text-left">
-                          <Label className="text-lg font-medium mb-4 block">Groom's Information</Label>
                         </div>
 
                         <div className="flex-1 w-full">
@@ -600,9 +506,42 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
 
                     {/* Bride Information Section */}
                     <div className="space-y-6">
-                      <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
-                        <div className="text-center sm:text-left">
-                          <Label className="text-lg font-medium mb-4 block">Bride's Information</Label>
+                      <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
+                        {/* Bride Photo */}
+                        <div className="text-center flex-shrink-0">
+                          <Label className="text-lg font-medium mb-4 block">Bride Photo</Label>
+                          <div className="relative">
+                            <div className="w-32 h-32 rounded-full border-4 border-dashed border-muted-foreground/30 flex items-center justify-center overflow-hidden bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer group"
+                                 onClick={() => bridePhotoRef.current?.click()}>
+                              {bridePhotoPreview ? (
+                                <div className="relative w-full h-full">
+                                  <img src={bridePhotoPreview} alt="Bride preview" className="w-full h-full object-cover" />
+                                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <Camera className="w-6 h-6 text-white" />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="text-center">
+                                  <Camera className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                                  <p className="text-xs text-muted-foreground">Upload Photo</p>
+                                </div>
+                              )}
+                            </div>
+                            <input
+                              ref={bridePhotoRef}
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) handlePhotoUpload(file, 'bride');
+                              }}
+                            />
+                          </div>
+                          <div className="mt-3">
+                            <h4 className="font-semibold text-foreground">{data.bride_name || 'Bride Name'}</h4>
+                            <p className="text-sm text-muted-foreground">Mempelai Wanita</p>
+                          </div>
                         </div>
 
                         <div className="flex-1 w-full">
@@ -1098,166 +1037,117 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
                   </div>
                 )}
 
-                {/* Navigation Buttons */}
-                <div className="flex items-center justify-between pt-8 border-t border-border">
-                  <div className="flex space-x-3">
-                    {step > 1 && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={prevStep}
-                        className="flex items-center comfort-button"
-                      >
-                        <ArrowLeft className="w-4 h-4 mr-2" />
-                        Previous
-                      </Button>
-                    )}
-                  </div>
+      </form>
 
-                  <div className="flex space-x-3">
-                    {step < 3 ? (
-                      <Button
-                        type="button"
-                        onClick={nextStep}
-                        className="flex items-center btn-hero comfort-button"
-                      >
-                        Next
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    ) : (
-                      <Button
-                        type="submit"
-                        disabled={processing}
-                        className="flex items-center btn-hero comfort-button"
-                      >
-                        {processing ? 'Saving...' : 'Continue to Design'}
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    )}
-                  </div>
+      {/* Photo Cropper Modal */}
+      {showCropper && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4">
+          <div className="bg-card rounded-2xl max-w-4xl w-full max-h-[95vh] flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-border flex-shrink-0">
+              <h3 className="text-xl font-semibold">
+                Crop {cropperType === 'groom' ? "Groom's" : "Bride's"} Photo
+              </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCropCancel}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="space-y-4">
+                <div className="relative w-full h-80 bg-muted/20 rounded-lg overflow-hidden">
+                  <Cropper
+                    image={cropperImage}
+                    crop={crop}
+                    zoom={zoom}
+                    rotation={rotation}
+                    aspect={1}
+                    onCropChange={setCrop}
+                    onCropComplete={onCropComplete}
+                    onZoomChange={setZoom}
+                    onRotationChange={setRotation}
+                    showGrid={true}
+                    style={{
+                      containerStyle: {
+                        width: '100%',
+                        height: '100%',
+                        position: 'relative',
+                      },
+                    }}
+                  />
                 </div>
-              </form>
-            </CardContent>
-          </Card>
 
-          {/* Footer */}
-          <div className="text-center mt-8">
-            <p className="text-sm text-muted-foreground">
-              Need help? Contact our support team
-            </p>
-          </div>
-
-        {/* Photo Cropper Modal */}
-        {showCropper && (
-          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4">
-            <div className="bg-card rounded-2xl max-w-4xl w-full max-h-[95vh] flex flex-col">
-              <div className="flex items-center justify-between p-6 border-b border-border flex-shrink-0">
-                <h3 className="text-xl font-semibold">
-                  Crop {cropperType === 'groom' ? "Groom's" : "Bride's"} Photo
-                </h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleCropCancel}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <X className="w-5 h-5" />
-                </Button>
-              </div>
-
-              <div className="flex-1 overflow-y-auto p-6">
                 <div className="space-y-4">
-                  <div className="relative w-full h-80 bg-muted/20 rounded-lg overflow-hidden">
-                    <Cropper
-                      image={cropperImage}
-                      crop={crop}
-                      zoom={zoom}
-                      rotation={rotation}
-                      aspect={1}
-                      onCropChange={setCrop}
-                      onCropComplete={onCropComplete}
-                      onZoomChange={setZoom}
-                      onRotationChange={setRotation}
-                      showGrid={true}
-                      style={{
-                        containerStyle: {
-                          width: '100%',
-                          height: '100%',
-                          position: 'relative',
-                        },
-                      }}
+                  <div className="flex items-center justify-center space-x-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setRotation(rotation - 90)}
+                    >
+                      <RotateCw className="w-4 h-4 mr-2" />
+                      Rotate Left
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setRotation(rotation + 90)}
+                    >
+                      <RotateCw className="w-4 h-4 mr-2" />
+                      Rotate Right
+                    </Button>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Zoom: {Math.round(zoom * 100)}%</Label>
+                    <input
+                      type="range"
+                      min={1}
+                      max={3}
+                      step={0.1}
+                      value={zoom}
+                      onChange={(e) => setZoom(Number(e.target.value))}
+                      className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
                     />
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-center space-x-4">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setRotation(rotation - 90)}
-                      >
-                        <RotateCw className="w-4 h-4 mr-2" />
-                        Rotate Left
-                      </Button>
-
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setRotation(rotation + 90)}
-                      >
-                        <RotateCw className="w-4 h-4 mr-2" />
-                        Rotate Right
-                      </Button>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Zoom: {Math.round(zoom * 100)}%</Label>
-                      <input
-                        type="range"
-                        min={1}
-                        max={3}
-                        step={0.1}
-                        value={zoom}
-                        onChange={(e) => setZoom(Number(e.target.value))}
-                        className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Rotation: {rotation}°</Label>
-                      <input
-                        type="range"
-                        min={0}
-                        max={360}
-                        step={1}
-                        value={rotation}
-                        onChange={(e) => setRotation(Number(e.target.value))}
-                        className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Rotation: {rotation}°</Label>
+                    <input
+                      type="range"
+                      min={0}
+                      max={360}
+                      step={1}
+                      value={rotation}
+                      onChange={(e) => setRotation(Number(e.target.value))}
+                      className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+                    />
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div className="flex items-center justify-end space-x-3 p-6 border-t border-border flex-shrink-0">
-                <Button
-                  variant="outline"
-                  onClick={handleCropCancel}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleCropComplete}
-                  className="btn-hero"
-                >
-                  Crop & Save
-                </Button>
-              </div>
+            <div className="flex items-center justify-end space-x-3 p-6 border-t border-border flex-shrink-0">
+              <Button
+                variant="outline"
+                onClick={handleCropCancel}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleCropComplete}
+                className="btn-hero"
+              >
+                Crop & Save
+              </Button>
             </div>
           </div>
-        )}
-        </StandardFormLayout>
-      </DashboardLayout>
-    </>
+        </div>
+      )}
+    </OnboardingLayout>
   );
 }

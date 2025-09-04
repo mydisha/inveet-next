@@ -17,7 +17,8 @@ class UserController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = User::with(['roles', 'weddings', 'orders']);
+        $query = User::with(['roles'])
+            ->withCount(['weddings', 'orders']);
 
         // Search functionality
         if ($request->has('search')) {

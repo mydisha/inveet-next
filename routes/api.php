@@ -213,7 +213,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/invitations/{uuid}/toggle-lock', [SpecialInvitationController::class, 'toggleLock']);
 
     // Logout route - API version that returns JSON
-    Route::post('/logout-api', [\App\Http\Controllers\Auth\LogoutController::class, 'apiLogout']);
 
     // Email verification routes
     Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
@@ -283,3 +282,6 @@ Route::get('/health', function () {
         'version' => '1.0.0'
     ]);
 });
+
+// Include backoffice API routes
+require __DIR__.'/backoffice.php';

@@ -10,17 +10,20 @@ import {
 import { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 
-interface HeaderProps {
+interface BackofficeHeaderProps {
   user: {
     id: number;
     name: string;
     email: string;
-    hasWedding: boolean;
+    roles: Array<{
+      id: number;
+      name: string;
+    }>;
   } | null;
   setSidebarOpen: (open: boolean) => void;
 }
 
-export default function Header({ user, setSidebarOpen }: HeaderProps) {
+export default function BackofficeHeader({ user, setSidebarOpen }: BackofficeHeaderProps) {
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const { logout, isLoading } = useAuth();
 

@@ -24,6 +24,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { getCsrfToken } from '@/lib/auth';
 import { Head, Link } from '@inertiajs/react';
 import {
     CheckCircle,
@@ -39,7 +40,7 @@ interface Order {
   invoice_number: string;
   total_price: number;
   unique_price: number;
-  payment_type: string;
+  payment_type: string | null;
   is_paid: boolean;
   is_void: boolean;
   status: string;
@@ -73,12 +74,24 @@ interface OrdersResponse {
   };
 }
 
-export default function OrdersPage() {
+interface OrdersPageProps {
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    roles: Array<{
+      id: number;
+      name: string;
+    }>;
+  } | null;
+}
+
+export default function OrdersPage({ user }: OrdersPageProps) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [paymentTypeFilter, setPaymentTypeFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [paymentTypeFilter, setPaymentTypeFilter] = useState('all');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -92,20 +105,56 @@ export default function OrdersPage() {
         page: currentPage.toString(),
         per_page: '15',
         ...(search && { search }),
-        ...(statusFilter && { status: statusFilter }),
-        ...(paymentTypeFilter && { payment_type: paymentTypeFilter }),
+        ...(statusFilter && statusFilter !== 'all' && { status: statusFilter }),
+        ...(paymentTypeFilter && paymentTypeFilter !== 'all' && { payment_type: paymentTypeFilter }),
         ...(dateFrom && { date_from: dateFrom }),
         ...(dateTo && { date_to: dateTo }),
       });
 
-      const response = await fetch(`/backoffice/orders?${params}`);
+      const csrfToken = getCsrfToken();
+      if (!csrfToken) {
+        console.error('CSRF token not available');
+        return;
+      }
+
+      const response = await fetch(`/api/backoffice/orders?${params}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+        },
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          console.error('Unauthorized: Please log in again');
+          // Redirect to login or refresh the page
+          window.location.href = '/login';
+          return;
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data: OrdersResponse = await response.json();
 
-      setOrders(data.data.data);
-      setTotalPages(data.data.last_page);
-      setTotal(data.data.total);
+      if (data && data.data && data.data.data) {
+        setOrders(data.data.data);
+        setTotalPages(data.data.last_page);
+        setTotal(data.data.total);
+      } else {
+        console.error('Invalid response format:', data);
+        setOrders([]);
+        setTotalPages(1);
+        setTotal(0);
+      }
     } catch (error) {
       console.error('Failed to fetch orders:', error);
+      setOrders([]);
+      setTotalPages(1);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
@@ -122,11 +171,21 @@ export default function OrdersPage() {
 
   const handleMarkAsPaid = async (orderId: number) => {
     try {
-      const response = await fetch(`/backoffice/orders/${orderId}/mark-paid`, {
+      const csrfToken = getCsrfToken();
+      if (!csrfToken) {
+        console.error('CSRF token not available');
+        return;
+      }
+
+      const response = await fetch(`/api/backoffice/orders/${orderId}/mark-paid`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
         },
+        credentials: 'include',
         body: JSON.stringify({
           external_transaction_id: `MANUAL_${Date.now()}`,
         }),
@@ -134,6 +193,8 @@ export default function OrdersPage() {
 
       if (response.ok) {
         fetchOrders(); // Refresh the list
+      } else {
+        console.error('Failed to mark order as paid:', response.status);
       }
     } catch (error) {
       console.error('Failed to mark order as paid:', error);
@@ -142,12 +203,27 @@ export default function OrdersPage() {
 
   const handleMarkAsVoid = async (orderId: number) => {
     try {
-      const response = await fetch(`/backoffice/orders/${orderId}/mark-void`, {
+      const csrfToken = getCsrfToken();
+      if (!csrfToken) {
+        console.error('CSRF token not available');
+        return;
+      }
+
+      const response = await fetch(`/api/backoffice/orders/${orderId}/mark-void`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        credentials: 'include',
       });
 
       if (response.ok) {
         fetchOrders(); // Refresh the list
+      } else {
+        console.error('Failed to mark order as void:', response.status);
       }
     } catch (error) {
       console.error('Failed to mark order as void:', error);
@@ -172,13 +248,22 @@ export default function OrdersPage() {
     return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>;
   };
 
-  const getPaymentTypeBadge = (paymentType: string) => {
+  const getPaymentTypeBadge = (paymentType: string | null | undefined) => {
     const colors = {
       'bank_transfer': 'bg-blue-100 text-blue-800',
       'credit_card': 'bg-purple-100 text-purple-800',
       'e_wallet': 'bg-green-100 text-green-800',
       'manual': 'bg-gray-100 text-gray-800',
     };
+
+    // Handle null/undefined paymentType
+    if (!paymentType) {
+      return (
+        <Badge className="bg-gray-100 text-gray-800">
+          UNKNOWN
+        </Badge>
+      );
+    }
 
     return (
       <Badge className={colors[paymentType as keyof typeof colors] || 'bg-gray-100 text-gray-800'}>
@@ -190,7 +275,7 @@ export default function OrdersPage() {
   return (
     <>
       <Head title="Order Management - Backoffice" />
-      <BackofficeLayout title="Order Management" description="Manage customer orders">
+      <BackofficeLayout user={user} title="Order Management" description="Manage customer orders">
         <div className="space-y-6">
           {/* Filters */}
           <Card>
@@ -212,7 +297,7 @@ export default function OrdersPage() {
                     <SelectValue placeholder="All Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Status</SelectItem>
+                    <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="paid">Paid</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="void">Void</SelectItem>
@@ -224,7 +309,7 @@ export default function OrdersPage() {
                     <SelectValue placeholder="Payment Type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Types</SelectItem>
+                    <SelectItem value="all">All Types</SelectItem>
                     <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
                     <SelectItem value="credit_card">Credit Card</SelectItem>
                     <SelectItem value="e_wallet">E-Wallet</SelectItem>
@@ -257,7 +342,7 @@ export default function OrdersPage() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center h-32">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
               ) : (
                 <div className="overflow-x-auto">

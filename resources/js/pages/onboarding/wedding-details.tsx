@@ -1,13 +1,13 @@
+import OnboardingLayout from '@/components/onboarding/OnboardingLayout';
+import { ONBOARDING_STEPS } from '@/components/onboarding/OnboardingProgress';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { DatePicker } from '@/components/ui/date-picker';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { TimePicker } from '@/components/ui/time-picker';
-import { Link } from '@inertiajs/react';
-import { ArrowLeft, ArrowRight, Calendar, Clock, Globe, Heart, MapPin, Plus, X } from 'lucide-react';
+import { Calendar, Clock, Globe, Heart, MapPin, Plus, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface Event {
@@ -112,59 +112,33 @@ export default function WeddingDetails() {
   };
 
   return (
-    <div className="min-h-screen bg-wedding-gradient">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-rose-gold rounded-full flex items-center justify-center">
-              <Heart className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-rose-gold">Inveet</span>
-          </div>
-
-          <Link href="/onboarding">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Onboarding
-            </Button>
-          </Link>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-6 py-12">
-        {/* Page Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center space-x-2 bg-sage/20 px-4 py-2 rounded-full mb-4">
-            <span className="text-2xl">🏛️</span>
-            <span className="text-sage font-medium">Step 2 of 5</span>
-          </div>
-
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            Wedding Details & Venue
-          </h1>
-
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Share the details of your special day - when and where your celebration will take place.
-          </p>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit}>
+    <OnboardingLayout
+      title="Wedding Details & Venue"
+      description="Share the details of your special day - when and where your celebration will take place."
+      icon={Heart}
+      steps={ONBOARDING_STEPS.alternative}
+      currentStep="wedding-details"
+      user={null}
+      onSubmit={handleSubmit}
+      submitLabel="Continue to Custom URL"
+      showBackButton={true}
+      onBackClick={() => window.location.href = '/onboarding/couple-info'}
+      maxWidth="4xl"
+    >
+      <form onSubmit={handleSubmit}>
           <div className="grid gap-8">
             {/* Main Wedding Date & Time */}
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold text-gray-800 flex items-center space-x-2">
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <h3 className="text-2xl font-bold text-gray-800 flex items-center space-x-2">
                   <Calendar className="w-6 h-6 text-rose-gold" />
                   <span>Main Wedding Date & Time</span>
-                </CardTitle>
-                <CardDescription>
+                </h3>
+                <p className="text-gray-600">
                   Set the primary date and time for your wedding celebration
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
+                </p>
+              </div>
+              <div className="space-y-6">
                 <div className="grid md:grid-cols-3 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="mainDate" className="text-gray-700 font-medium">
@@ -212,21 +186,21 @@ export default function WeddingDetails() {
                     </Select>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Venue Information */}
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold text-gray-800 flex items-center space-x-2">
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <h3 className="text-2xl font-bold text-gray-800 flex items-center space-x-2">
                   <MapPin className="w-6 h-6 text-rose-gold" />
                   <span>Venue & Location</span>
-                </CardTitle>
-                <CardDescription>
+                </h3>
+                <p className="text-gray-600">
                   Provide the venue details and address for your wedding
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
+                </p>
+              </div>
+              <div className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="venue" className="text-gray-700 font-medium">
                     Venue Name *
@@ -312,34 +286,32 @@ export default function WeddingDetails() {
                     className="border-2 border-gray-200 focus:border-rose-gold focus:ring-rose-gold/20 resize-none"
                   />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Events Schedule */}
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-2xl font-bold text-gray-800 flex items-center space-x-2">
-                      <Clock className="w-6 h-6 text-rose-gold" />
-                      <span>Events Schedule</span>
-                    </CardTitle>
-                    <CardDescription>
-                      Manage different events and their specific details
-                    </CardDescription>
-                  </div>
-                  <Button
-                    type="button"
-                    onClick={addEvent}
-                    variant="outline"
-                    className="border-rose-gold text-rose-gold hover:bg-rose-gold hover:text-white"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Event
-                  </Button>
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-800 flex items-center space-x-2">
+                    <Clock className="w-6 h-6 text-rose-gold" />
+                    <span>Events Schedule</span>
+                  </h3>
+                  <p className="text-gray-600">
+                    Manage different events and their specific details
+                  </p>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
+                <Button
+                  type="button"
+                  onClick={addEvent}
+                  variant="outline"
+                  className="border-rose-gold text-rose-gold hover:bg-rose-gold hover:text-white"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Event
+                </Button>
+              </div>
+              <div className="space-y-6">
                 {events.map((event, index) => (
                   <div key={event.id} className="border-2 border-gray-100 rounded-lg p-6 bg-gray-50/50">
                     <div className="flex items-center justify-between mb-4">
@@ -450,28 +422,10 @@ export default function WeddingDetails() {
                     </div>
                   </div>
                 ))}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Navigation */}
-          <div className="flex items-center justify-between mt-12">
-            <Link href="/onboarding/couple-info">
-              <Button variant="outline" size="lg" className="border-gray-300 text-gray-600 hover:border-rose-gold hover:text-rose-gold">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Couple Info
-              </Button>
-            </Link>
-
-            <Link href="/onboarding/custom-url">
-              <Button size="lg" className="bg-rose-gold hover:bg-rose-gold/90 text-white px-8">
-                Continue to Custom URL
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </Link>
+              </div>
+            </div>
           </div>
         </form>
-      </main>
-    </div>
+    </OnboardingLayout>
   );
 }

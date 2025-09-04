@@ -5,9 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Head, useForm } from '@inertiajs/react';
 import {
-  Calendar,
-  MapPin,
-  Navigation
+    Calendar,
+    MapPin,
+    Navigation
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -87,7 +87,7 @@ export default function VenueInfo({ user, wedding }: WeddingVenueProps) {
         }
 
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY || 'YOUR_API_KEY'}&libraries=places`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'YOUR_API_KEY'}&libraries=places`;
         script.async = true;
         script.defer = true;
         script.onload = () => setMapLoaded(true);

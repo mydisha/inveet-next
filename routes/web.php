@@ -51,14 +51,31 @@ Route::get('/', [FrontendController::class, 'landing'])->name('home');
 // Dashboard route (protected)
 Route::get('/dashboard', [FrontendController::class, 'dashboard'])->middleware('auth')->name('dashboard');
 
+// Design selection route (protected)
+Route::get('/design-selection', [FrontendController::class, 'designSelection'])->middleware('auth')->name('design-selection');
+
 // Backoffice routes (protected with admin access)
 Route::middleware(['auth', 'backoffice'])->prefix('backoffice')->group(function () {
     Route::get('/', [FrontendController::class, 'backofficeDashboard'])->name('backoffice.dashboard');
     Route::get('/users', [FrontendController::class, 'backofficeUsers'])->name('backoffice.users');
+    Route::get('/users/{user}', [FrontendController::class, 'backofficeUserDetail'])->name('backoffice.users.show');
+    Route::get('/users/{user}/edit', [FrontendController::class, 'backofficeUserEdit'])->name('backoffice.users.edit');
     Route::get('/orders', [FrontendController::class, 'backofficeOrders'])->name('backoffice.orders');
+    Route::get('/orders/{order}', [FrontendController::class, 'backofficeOrderDetail'])->name('backoffice.orders.show');
     Route::get('/feedbacks', [FrontendController::class, 'backofficeFeedbacks'])->name('backoffice.feedbacks');
     Route::get('/themes', [FrontendController::class, 'backofficeThemes'])->name('backoffice.themes');
     Route::get('/configurations', [FrontendController::class, 'backofficeConfigurations'])->name('backoffice.configurations');
+
+    // API routes for backoffice (using web authentication)
+    Route::prefix('api')->group(function () {
+        Route::get('/users/statistics', [FrontendController::class, 'backofficeUsersStatistics']);
+        Route::get('/orders/statistics', [FrontendController::class, 'backofficeOrdersStatistics']);
+        Route::get('/feedbacks/statistics', [FrontendController::class, 'backofficeFeedbacksStatistics']);
+        Route::get('/themes/statistics', [FrontendController::class, 'backofficeThemesStatistics']);
+        Route::post('/users/{user}/activate', [FrontendController::class, 'backofficeUserActivate']);
+        Route::post('/users/{user}/deactivate', [FrontendController::class, 'backofficeUserDeactivate']);
+        Route::post('/users/{user}/auto-login', [FrontendController::class, 'backofficeUserAutoLogin']);
+    });
 });
 
 // Simple dashboard test route
@@ -145,4 +162,3 @@ Route::get('/419', [FrontendController::class, 'pageExpired'])->name('page.expir
 Route::fallback([FrontendController::class, 'notFound']);
 
 require __DIR__.'/auth.php';
-require __DIR__.'/backoffice.php';

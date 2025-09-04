@@ -24,6 +24,8 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { apiGet } from '@/lib/api';
+import { getCsrfToken } from '@/lib/auth';
 import { Head } from '@inertiajs/react';
 import {
     Eye,
@@ -61,14 +63,26 @@ interface FeedbacksResponse {
   };
 }
 
-export default function FeedbacksPage() {
+interface FeedbacksPageProps {
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    roles: Array<{
+      id: number;
+      name: string;
+    }>;
+  } | null;
+}
+
+export default function FeedbacksPage({ user }: FeedbacksPageProps) {
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [scoreMin, setScoreMin] = useState('');
   const [scoreMax, setScoreMax] = useState('');
-  const [recommendedFilter, setRecommendedFilter] = useState('');
-  const [showOnLandingFilter, setShowOnLandingFilter] = useState('');
+  const [recommendedFilter, setRecommendedFilter] = useState('all');
+  const [showOnLandingFilter, setShowOnLandingFilter] = useState('all');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -84,14 +98,13 @@ export default function FeedbacksPage() {
         ...(search && { search }),
         ...(scoreMin && { score_min: scoreMin }),
         ...(scoreMax && { score_max: scoreMax }),
-        ...(recommendedFilter && { is_recommended: recommendedFilter }),
-        ...(showOnLandingFilter && { show_on_landing: showOnLandingFilter }),
+        ...(recommendedFilter && recommendedFilter !== 'all' && { is_recommended: recommendedFilter }),
+        ...(showOnLandingFilter && showOnLandingFilter !== 'all' && { show_on_landing: showOnLandingFilter }),
         ...(dateFrom && { date_from: dateFrom }),
         ...(dateTo && { date_to: dateTo }),
       });
 
-      const response = await fetch(`/backoffice/feedbacks?${params}`);
-      const data: FeedbacksResponse = await response.json();
+      const data: FeedbacksResponse = await apiGet(`/backoffice/api/feedbacks?${params}`);
 
       setFeedbacks(data.data.data);
       setTotalPages(data.data.last_page);
@@ -114,8 +127,21 @@ export default function FeedbacksPage() {
 
   const handleToggleRecommendation = async (feedbackId: number) => {
     try {
-      const response = await fetch(`/backoffice/feedbacks/${feedbackId}/toggle-recommendation`, {
+      const csrfToken = getCsrfToken();
+      if (!csrfToken) {
+        console.error('CSRF token not available');
+        return;
+      }
+
+      const response = await fetch(`/api/backoffice/feedbacks/${feedbackId}/toggle-recommendation`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -128,8 +154,21 @@ export default function FeedbacksPage() {
 
   const handleToggleShowOnLanding = async (feedbackId: number) => {
     try {
-      const response = await fetch(`/backoffice/feedbacks/${feedbackId}/toggle-show-landing`, {
+      const csrfToken = getCsrfToken();
+      if (!csrfToken) {
+        console.error('CSRF token not available');
+        return;
+      }
+
+      const response = await fetch(`/api/backoffice/feedbacks/${feedbackId}/toggle-show-landing`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -143,8 +182,21 @@ export default function FeedbacksPage() {
   const handleDelete = async (feedbackId: number) => {
     if (confirm('Are you sure you want to delete this feedback?')) {
       try {
-        const response = await fetch(`/backoffice/feedbacks/${feedbackId}`, {
+        const csrfToken = getCsrfToken();
+        if (!csrfToken) {
+          console.error('CSRF token not available');
+          return;
+        }
+
+        const response = await fetch(`/api/backoffice/feedbacks/${feedbackId}`, {
           method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          credentials: 'include',
         });
 
         if (response.ok) {
@@ -176,7 +228,7 @@ export default function FeedbacksPage() {
   return (
     <>
       <Head title="Feedback Management - Backoffice" />
-      <BackofficeLayout title="Feedback Management" description="Manage user feedbacks">
+      <BackofficeLayout user={user} title="Feedback Management" description="Manage user feedbacks">
         <div className="space-y-6">
           {/* Filters */}
           <Card>
@@ -216,7 +268,7 @@ export default function FeedbacksPage() {
                     <SelectValue placeholder="Recommended" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All</SelectItem>
+                    <SelectItem value="all">All</SelectItem>
                     <SelectItem value="true">Recommended</SelectItem>
                     <SelectItem value="false">Not Recommended</SelectItem>
                   </SelectContent>
@@ -226,7 +278,7 @@ export default function FeedbacksPage() {
                     <SelectValue placeholder="Show on Landing" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All</SelectItem>
+                    <SelectItem value="all">All</SelectItem>
                     <SelectItem value="true">Show on Landing</SelectItem>
                     <SelectItem value="false">Hide from Landing</SelectItem>
                   </SelectContent>
@@ -257,7 +309,7 @@ export default function FeedbacksPage() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center h-32">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
               ) : (
                 <div className="overflow-x-auto">

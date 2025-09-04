@@ -24,6 +24,8 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { apiGet } from '@/lib/api';
+import { getCsrfToken } from '@/lib/auth';
 import { Head, Link } from '@inertiajs/react';
 import {
     Edit,
@@ -59,6 +61,7 @@ interface Theme {
 }
 
 interface ThemesResponse {
+  success: boolean;
   data: {
     data: Theme[];
     current_page: number;
@@ -68,12 +71,24 @@ interface ThemesResponse {
   };
 }
 
-export default function ThemesPage() {
+interface ThemesPageProps {
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    roles: Array<{
+      id: number;
+      name: string;
+    }>;
+  } | null;
+}
+
+export default function ThemesPage({ user }: ThemesPageProps) {
   const [themes, setThemes] = useState<Theme[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [visibilityFilter, setVisibilityFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [visibilityFilter, setVisibilityFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
@@ -85,16 +100,15 @@ export default function ThemesPage() {
         page: currentPage.toString(),
         per_page: '15',
         ...(search && { search }),
-        ...(statusFilter && { status: statusFilter }),
-        ...(visibilityFilter && { visibility: visibilityFilter }),
+        ...(statusFilter && statusFilter !== 'all' && { status: statusFilter }),
+        ...(visibilityFilter && visibilityFilter !== 'all' && { visibility: visibilityFilter }),
       });
 
-      const response = await fetch(`/backoffice/themes?${params}`);
-      const data: ThemesResponse = await response.json();
+      const response: ThemesResponse = await apiGet(`/backoffice/api/themes?${params}`);
 
-      setThemes(data.data.data);
-      setTotalPages(data.data.last_page);
-      setTotal(data.data.total);
+      setThemes(response.data.data);
+      setTotalPages(response.data.last_page);
+      setTotal(response.data.total);
     } catch (error) {
       console.error('Failed to fetch themes:', error);
     } finally {
@@ -113,8 +127,21 @@ export default function ThemesPage() {
 
   const handleToggleActive = async (themeId: number) => {
     try {
-      const response = await fetch(`/backoffice/themes/${themeId}/toggle-active`, {
+      const csrfToken = getCsrfToken();
+      if (!csrfToken) {
+        console.error('CSRF token not available');
+        return;
+      }
+
+      const response = await fetch(`/api/backoffice/themes/${themeId}/toggle-active`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -127,8 +154,21 @@ export default function ThemesPage() {
 
   const handleTogglePublic = async (themeId: number) => {
     try {
-      const response = await fetch(`/backoffice/themes/${themeId}/toggle-public`, {
+      const csrfToken = getCsrfToken();
+      if (!csrfToken) {
+        console.error('CSRF token not available');
+        return;
+      }
+
+      const response = await fetch(`/api/backoffice/themes/${themeId}/toggle-public`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -142,8 +182,21 @@ export default function ThemesPage() {
   const handleDelete = async (themeId: number) => {
     if (confirm('Are you sure you want to delete this theme? This action cannot be undone.')) {
       try {
-        const response = await fetch(`/backoffice/themes/${themeId}`, {
+        const csrfToken = getCsrfToken();
+        if (!csrfToken) {
+          console.error('CSRF token not available');
+          return;
+        }
+
+        const response = await fetch(`/api/backoffice/themes/${themeId}`, {
           method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          credentials: 'include',
         });
 
         if (response.ok) {
@@ -158,7 +211,7 @@ export default function ThemesPage() {
   return (
     <>
       <Head title="Theme Management - Backoffice" />
-      <BackofficeLayout title="Theme Management" description="Manage wedding themes">
+      <BackofficeLayout user={user} title="Theme Management" description="Manage wedding themes">
         <div className="space-y-6">
           {/* Header Actions */}
           <div className="flex justify-between items-center">
@@ -195,7 +248,7 @@ export default function ThemesPage() {
                       <SelectValue placeholder="All Status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Status</SelectItem>
+                      <SelectItem value="all">All Status</SelectItem>
                       <SelectItem value="active">Active</SelectItem>
                       <SelectItem value="inactive">Inactive</SelectItem>
                     </SelectContent>
@@ -205,7 +258,7 @@ export default function ThemesPage() {
                       <SelectValue placeholder="All Visibility" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Visibility</SelectItem>
+                      <SelectItem value="all">All Visibility</SelectItem>
                       <SelectItem value="public">Public</SelectItem>
                       <SelectItem value="private">Private</SelectItem>
                     </SelectContent>
@@ -223,7 +276,7 @@ export default function ThemesPage() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center h-32">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
               ) : (
                 <div className="overflow-x-auto">

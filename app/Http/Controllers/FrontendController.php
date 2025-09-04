@@ -142,11 +142,12 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-        return Inertia::render('onboarding/design-selection', [
+        return Inertia::render('design-selection', [
             'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'hasWedding' => $user->hasWedding ?? false,
             ] : null,
         ]);
     }
@@ -1115,40 +1116,354 @@ class FrontendController extends Controller
     /**
      * Show the backoffice users page
      */
-    public function backofficeUsers()
+    public function backofficeUsers(Request $request)
     {
-        return Inertia::render('backoffice/Users');
+        $user = $request->user();
+
+        $query = \App\Models\User::with(['roles'])
+            ->withCount(['weddings', 'orders']);
+
+        // Search functionality
+        if ($request->has('search')) {
+            $search = $request->get('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone_number', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by role
+        if ($request->has('role')) {
+            $query->role($request->get('role'));
+        }
+
+        // Filter by status
+        if ($request->has('status')) {
+            $status = $request->get('status');
+            if ($status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($status === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        // Sort
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        $query->orderBy($sortBy, $sortOrder);
+
+        // Pagination
+        $perPage = $request->get('per_page', 15);
+        $users = $query->paginate($perPage);
+
+        return Inertia::render('backoffice/Users', [
+            'user' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->roles->map(function ($role) {
+                    return [
+                        'id' => $role->id,
+                        'name' => $role->name,
+                    ];
+                }),
+            ] : null,
+            'users' => $users,
+            'filters' => $request->only(['search', 'role', 'status', 'sort_by', 'sort_order', 'per_page'])
+        ]);
     }
 
     /**
      * Show the backoffice orders page
      */
-    public function backofficeOrders()
+    public function backofficeOrders(Request $request)
     {
-        return Inertia::render('backoffice/Orders');
+        $user = $request->user();
+
+        return Inertia::render('backoffice/Orders', [
+            'user' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->roles->map(function ($role) {
+                    return [
+                        'id' => $role->id,
+                        'name' => $role->name,
+                    ];
+                }),
+            ] : null,
+        ]);
+    }
+
+    /**
+     * Show the backoffice order detail page
+     */
+    public function backofficeOrderDetail(Request $request, $order)
+    {
+        $user = $request->user();
+        $orderModel = \App\Models\Order::with(['user', 'package', 'wedding.theme'])
+            ->findOrFail($order);
+
+        return Inertia::render('backoffice/OrderDetail', [
+            'user' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->roles->map(function ($role) {
+                    return [
+                        'id' => $role->id,
+                        'name' => $role->name,
+                    ];
+                }),
+            ] : null,
+            'order' => $orderModel
+        ]);
     }
 
     /**
      * Show the backoffice feedbacks page
      */
-    public function backofficeFeedbacks()
+    public function backofficeFeedbacks(Request $request)
     {
-        return Inertia::render('backoffice/Feedbacks');
+        $user = $request->user();
+
+        return Inertia::render('backoffice/Feedbacks', [
+            'user' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->roles->map(function ($role) {
+                    return [
+                        'id' => $role->id,
+                        'name' => $role->name,
+                    ];
+                }),
+            ] : null,
+        ]);
     }
 
     /**
      * Show the backoffice themes page
      */
-    public function backofficeThemes()
+    public function backofficeThemes(Request $request)
     {
-        return Inertia::render('backoffice/Themes');
+        $user = $request->user();
+
+        return Inertia::render('backoffice/Themes', [
+            'user' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->roles->map(function ($role) {
+                    return [
+                        'id' => $role->id,
+                        'name' => $role->name,
+                    ];
+                }),
+            ] : null,
+        ]);
     }
 
     /**
      * Show the backoffice configurations page
      */
-    public function backofficeConfigurations()
+    public function backofficeConfigurations(Request $request)
     {
-        return Inertia::render('backoffice/Configurations');
+        $user = $request->user();
+
+        return Inertia::render('backoffice/Configurations', [
+            'user' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->roles->map(function ($role) {
+                    return [
+                        'id' => $role->id,
+                        'name' => $role->name,
+                    ];
+                }),
+            ] : null,
+        ]);
+    }
+
+    /**
+     * Show the backoffice user detail page
+     */
+    public function backofficeUserDetail(Request $request, $user)
+    {
+        $currentUser = $request->user();
+        $userModel = \App\Models\User::with(['roles', 'weddings', 'orders', 'feedback'])
+            ->withCount(['weddings', 'orders'])
+            ->findOrFail($user);
+
+        return Inertia::render('backoffice/UserDetail', [
+            'user' => $userModel,
+            'currentUser' => $currentUser ? [
+                'id' => $currentUser->id,
+                'name' => $currentUser->name,
+                'email' => $currentUser->email,
+                'roles' => $currentUser->roles->map(function ($role) {
+                    return [
+                        'id' => $role->id,
+                        'name' => $role->name,
+                    ];
+                }),
+            ] : null,
+        ]);
+    }
+
+    /**
+     * Show the backoffice user edit page
+     */
+    public function backofficeUserEdit(Request $request, $user)
+    {
+        $currentUser = $request->user();
+        $userModel = \App\Models\User::with(['roles'])
+            ->findOrFail($user);
+
+        return Inertia::render('backoffice/UserEdit', [
+            'user' => $userModel,
+            'currentUser' => $currentUser ? [
+                'id' => $currentUser->id,
+                'name' => $currentUser->name,
+                'email' => $currentUser->email,
+                'roles' => $currentUser->roles->map(function ($role) {
+                    return [
+                        'id' => $role->id,
+                        'name' => $role->name,
+                    ];
+                }),
+            ] : null,
+        ]);
+    }
+
+    /**
+     * Get users statistics for backoffice
+     */
+    public function backofficeUsersStatistics()
+    {
+        $stats = [
+            'total_users' => \App\Models\User::count(),
+            'active_users' => \App\Models\User::where('is_active', true)->count(),
+            'inactive_users' => \App\Models\User::where('is_active', false)->count(),
+            'users_with_weddings' => \App\Models\User::has('weddings')->count(),
+            'users_with_orders' => \App\Models\User::has('orders')->count(),
+            'new_users_this_month' => \App\Models\User::whereMonth('created_at', now()->month)->count(),
+            'new_users_this_week' => \App\Models\User::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
+        ];
+
+        return response()->json([
+            'success' => true,
+            'data' => $stats
+        ]);
+    }
+
+    /**
+     * Get orders statistics for backoffice
+     */
+    public function backofficeOrdersStatistics()
+    {
+        $stats = [
+            'total_orders' => \App\Models\Order::count(),
+            'paid_orders' => \App\Models\Order::where('status', 'paid')->count(),
+            'pending_orders' => \App\Models\Order::where('status', 'pending')->count(),
+            'void_orders' => \App\Models\Order::where('status', 'void')->count(),
+            'total_revenue' => \App\Models\Order::where('status', 'paid')->sum('total_amount'),
+            'orders_this_month' => \App\Models\Order::whereMonth('created_at', now()->month)->count(),
+        ];
+
+        return response()->json([
+            'success' => true,
+            'data' => $stats
+        ]);
+    }
+
+    /**
+     * Get feedbacks statistics for backoffice
+     */
+    public function backofficeFeedbacksStatistics()
+    {
+        $stats = [
+            'total_feedbacks' => \App\Models\Feedback::count(),
+            'average_rating' => \App\Models\Feedback::avg('rating'),
+            'recommended_feedbacks' => \App\Models\Feedback::where('is_recommended', true)->count(),
+            'show_on_landing' => \App\Models\Feedback::where('show_on_landing', true)->count(),
+            'feedbacks_this_month' => \App\Models\Feedback::whereMonth('created_at', now()->month)->count(),
+        ];
+
+        return response()->json([
+            'success' => true,
+            'data' => $stats
+        ]);
+    }
+
+    /**
+     * Get themes statistics for backoffice
+     */
+    public function backofficeThemesStatistics()
+    {
+        $stats = [
+            'total_themes' => \App\Models\Theme::count(),
+            'active_themes' => \App\Models\Theme::where('is_active', true)->count(),
+            'public_themes' => \App\Models\Theme::where('is_public', true)->count(),
+            'themes_this_month' => \App\Models\Theme::whereMonth('created_at', now()->month)->count(),
+        ];
+
+        return response()->json([
+            'success' => true,
+            'data' => $stats
+        ]);
+    }
+
+    /**
+     * Activate user
+     */
+    public function backofficeUserActivate(Request $request, $user)
+    {
+        $userModel = \App\Models\User::findOrFail($user);
+        $userModel->activate();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User activated successfully',
+            'data' => $userModel
+        ]);
+    }
+
+    /**
+     * Deactivate user
+     */
+    public function backofficeUserDeactivate(Request $request, $user)
+    {
+        $userModel = \App\Models\User::findOrFail($user);
+        $userModel->deactivate();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User deactivated successfully',
+            'data' => $userModel
+        ]);
+    }
+
+    /**
+     * Auto-login user
+     */
+    public function backofficeUserAutoLogin(Request $request, $user)
+    {
+        $userModel = \App\Models\User::findOrFail($user);
+
+        // Create a temporary token for the admin to login as the user
+        $token = $userModel->createToken('admin-auto-login', ['*'], now()->addMinutes(30))->plainTextToken;
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Auto-login token generated successfully',
+            'data' => [
+                'user' => $userModel->load(['roles']),
+                'token' => $token,
+                'login_url' => route('login') . '?token=' . $token
+            ]
+        ]);
     }
 }

@@ -1,70 +1,45 @@
-import { ApiService } from '../services/api';
+import { router } from '@inertiajs/react';
 
 /**
  * Centralized authentication utilities
  */
 export class AuthUtils {
   /**
-   * Logout user with multiple fallback methods
+   * Logout user using Inertia.js
    * @param options - Logout options
    */
   static async logout(options: {
-    useApi?: boolean;
     redirectTo?: string;
     showFeedback?: boolean;
   } = {}): Promise<void> {
-    const { useApi = true, redirectTo = '/login', showFeedback = true } = options;
+    const { redirectTo = '/login', showFeedback = true } = options;
 
     try {
       console.log('🚪 Starting logout process...');
 
-      // Clear local data first to prevent any cached auth state
+      // Clear local data first
       this.clearAuthData();
 
-      if (useApi) {
-        // Try API-based logout first
-        console.log('🔄 Attempting API logout...');
-        try {
-          await ApiService.logout();
-          console.log('✅ API logout successful');
-        } catch (apiError) {
-          console.warn('⚠️ API logout failed, trying public logout...', apiError);
-          // Try public logout as fallback
-          try {
-            await fetch('/api/logout-public', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-              },
-              credentials: 'include'
-            });
-            console.log('✅ Public logout successful');
-          } catch (publicError) {
-            console.warn('⚠️ Public logout also failed:', publicError);
+      // Use Inertia.js to perform logout
+      console.log('🔄 Performing logout via Inertia.js...');
+
+      router.post('/logout', {}, {
+        onSuccess: () => {
+          console.log('✅ Logout successful');
+          if (showFeedback) {
+            console.log('✅ Logged out successfully');
           }
+        },
+        onError: (errors) => {
+          console.error('❌ Logout failed:', errors);
+          // Fallback to form-based logout
+          this.logoutViaForm();
+        },
+        onFinish: () => {
+          // Clear any remaining auth state
+          this.clearAuthData();
         }
-      } else {
-        // Use form-based logout directly
-        console.log('🔄 Using form-based logout...');
-        this.logoutViaForm();
-        return; // Form-based logout handles redirect
-      }
-
-      // Show success feedback
-      if (showFeedback) {
-        console.log('✅ Logged out successfully');
-      }
-
-      // Force redirect and clear any cached state
-      console.log('🔄 Redirecting to:', redirectTo);
-
-      // Clear any remaining auth state before redirect
-      this.clearAuthData();
-
-      // Force a hard redirect to clear all state
-      window.location.replace(redirectTo);
+      });
 
     } catch (error) {
       console.error('❌ Logout process failed:', error);
@@ -72,9 +47,8 @@ export class AuthUtils {
       // Clear local data even if everything fails
       this.clearAuthData();
 
-      // Force redirect to login page
-      console.log('🔄 Forcing redirect to login page...');
-      window.location.replace('/login');
+      // Fallback to form-based logout
+      this.logoutViaForm();
     }
   }
 
@@ -82,6 +56,8 @@ export class AuthUtils {
    * Logout using traditional form submission (fallback method)
    */
   private static logoutViaForm(): void {
+    console.log('🔄 Using form-based logout as fallback...');
+
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = '/logout';

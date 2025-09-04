@@ -25,7 +25,8 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
-import { Head } from '@inertiajs/react';
+import { getCsrfToken } from '@/lib/auth';
+import { Head, Link } from '@inertiajs/react';
 import {
     Edit,
     Eye,
@@ -70,12 +71,24 @@ const configurationGroups = [
   { key: 'maintenance', label: 'Maintenance', icon: Settings },
 ];
 
-export default function ConfigurationsPage() {
+interface ConfigurationsPageProps {
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    roles: Array<{
+      id: number;
+      name: string;
+    }>;
+  } | null;
+}
+
+export default function ConfigurationsPage({ user }: ConfigurationsPageProps) {
   const [configurations, setConfigurations] = useState<Configuration[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [groupFilter, setGroupFilter] = useState('');
-  const [typeFilter, setTypeFilter] = useState('');
+  const [groupFilter, setGroupFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
@@ -89,18 +102,53 @@ export default function ConfigurationsPage() {
         page: currentPage.toString(),
         per_page: '50',
         ...(search && { search }),
-        ...(groupFilter && { group: groupFilter }),
-        ...(typeFilter && { type: typeFilter }),
+        ...(groupFilter && groupFilter !== 'all' && { group: groupFilter }),
+        ...(typeFilter && typeFilter !== 'all' && { type: typeFilter }),
       });
 
-      const response = await fetch(`/backoffice/configurations?${params}`);
+      const csrfToken = getCsrfToken();
+      if (!csrfToken) {
+        console.error('CSRF token not available');
+        return;
+      }
+
+      const response = await fetch(`/api/backoffice/configurations?${params}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+        },
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          console.error('Unauthorized: Please log in again');
+          window.location.href = '/login';
+          return;
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data: ConfigurationsResponse = await response.json();
 
-      setConfigurations(data.data.data);
-      setTotalPages(data.data.last_page);
-      setTotal(data.data.total);
+      if (data && data.data && data.data.data) {
+        setConfigurations(data.data.data);
+        setTotalPages(data.data.last_page);
+        setTotal(data.data.total);
+      } else {
+        console.error('Invalid response format:', data);
+        setConfigurations([]);
+        setTotalPages(1);
+        setTotal(0);
+      }
     } catch (error) {
       console.error('Failed to fetch configurations:', error);
+      setConfigurations([]);
+      setTotalPages(1);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
@@ -124,11 +172,21 @@ export default function ConfigurationsPage() {
     if (!editingConfig) return;
 
     try {
-      const response = await fetch(`/backoffice/configurations/${editingConfig.id}`, {
+      const csrfToken = getCsrfToken();
+      if (!csrfToken) {
+        console.error('CSRF token not available');
+        return;
+      }
+
+      const response = await fetch(`/api/backoffice/configurations/${editingConfig.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
         },
+        credentials: 'include',
         body: JSON.stringify({
           value: editValue,
         }),
@@ -147,8 +205,21 @@ export default function ConfigurationsPage() {
   const handleDelete = async (configId: number) => {
     if (confirm('Are you sure you want to delete this configuration?')) {
       try {
-        const response = await fetch(`/backoffice/configurations/${configId}`, {
+        const csrfToken = getCsrfToken();
+        if (!csrfToken) {
+          console.error('CSRF token not available');
+          return;
+        }
+
+        const response = await fetch(`/api/backoffice/configurations/${configId}`, {
           method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          credentials: 'include',
         });
 
         if (response.ok) {
@@ -162,12 +233,27 @@ export default function ConfigurationsPage() {
 
   const handleInitializeDefaults = async () => {
     try {
-      const response = await fetch('/backoffice/configurations/initialize-defaults', {
+      const csrfToken = getCsrfToken();
+      if (!csrfToken) {
+        console.error('CSRF token not available');
+        return;
+      }
+
+      const response = await fetch('/api/backoffice/configurations/initialize-defaults', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        credentials: 'include',
       });
 
       if (response.ok) {
         fetchConfigurations(); // Refresh the list
+      } else {
+        console.error('Failed to initialize defaults:', response.status);
       }
     } catch (error) {
       console.error('Failed to initialize defaults:', error);
@@ -252,7 +338,7 @@ export default function ConfigurationsPage() {
   return (
     <>
       <Head title="Website Configuration - Backoffice" />
-      <BackofficeLayout title="Website Configuration" description="Manage website settings">
+      <BackofficeLayout user={user} title="Website Configuration" description="Manage website settings">
         <div className="space-y-6">
           {/* Header Actions */}
           <div className="flex justify-between items-center">
@@ -320,7 +406,7 @@ export default function ConfigurationsPage() {
                       <SelectValue placeholder="All Groups" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Groups</SelectItem>
+                      <SelectItem value="all">All Groups</SelectItem>
                       {configurationGroups.map((group) => (
                         <SelectItem key={group.key} value={group.key}>
                           {group.label}
@@ -333,7 +419,7 @@ export default function ConfigurationsPage() {
                       <SelectValue placeholder="All Types" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Types</SelectItem>
+                      <SelectItem value="all">All Types</SelectItem>
                       <SelectItem value="string">String</SelectItem>
                       <SelectItem value="integer">Integer</SelectItem>
                       <SelectItem value="boolean">Boolean</SelectItem>
@@ -354,7 +440,7 @@ export default function ConfigurationsPage() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center h-32">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
               ) : (
                 <div className="overflow-x-auto">

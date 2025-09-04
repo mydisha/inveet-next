@@ -1,11 +1,13 @@
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Head } from '@inertiajs/react';
+import { apiGet } from '@/lib/api';
+import { Head, Link } from '@inertiajs/react';
 import {
     DollarSign,
     MessageSquare,
     Palette,
+    Settings,
     ShoppingCart,
     TrendingUp,
     Users
@@ -39,18 +41,31 @@ interface DashboardStats {
   themes_this_month: number;
 }
 
-export default function BackofficeDashboard() {
+interface BackofficeDashboardProps {
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    roles: Array<{
+      id: number;
+      name: string;
+    }>;
+  } | null;
+}
+
+export default function BackofficeDashboard({ user }: BackofficeDashboardProps) {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
+
         const [userStats, orderStats, feedbackStats, themeStats] = await Promise.all([
-          fetch('/backoffice/users/statistics').then(res => res.json()),
-          fetch('/backoffice/orders/statistics').then(res => res.json()),
-          fetch('/backoffice/feedbacks/statistics').then(res => res.json()),
-          fetch('/backoffice/themes/statistics').then(res => res.json()),
+          apiGet('/backoffice/api/users/statistics'),
+          apiGet('/backoffice/api/orders/statistics'),
+          apiGet('/backoffice/api/feedbacks/statistics'),
+          apiGet('/backoffice/api/themes/statistics'),
         ]);
 
         setStats({
@@ -73,7 +88,7 @@ export default function BackofficeDashboard() {
     return (
       <BackofficeLayout title="Dashboard">
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
       </BackofficeLayout>
     );
@@ -88,74 +103,62 @@ export default function BackofficeDashboard() {
   };
 
   const statCards = [
+    { label: 'Total Users', value: stats?.total_users || 0, icon: Users, color: 'text-blue-500' },
+    { label: 'Active Users', value: stats?.active_users || 0, icon: TrendingUp, color: 'text-green-500' },
+    { label: 'Total Orders', value: stats?.total_orders || 0, icon: ShoppingCart, color: 'text-purple-500' },
+    { label: 'Total Revenue', value: formatCurrency((stats?.total_revenue || 0) + (stats?.unique_revenue || 0)), icon: DollarSign, color: 'text-emerald-500' },
+    { label: 'Feedbacks', value: stats?.total_feedbacks || 0, icon: MessageSquare, color: 'text-orange-500' },
+    { label: 'Themes', value: stats?.total_themes || 0, icon: Palette, color: 'text-pink-500' },
+  ];
+
+  const quickActions = [
     {
-      title: 'Total Users',
-      value: stats?.total_users || 0,
+      title: 'Manage Users',
+      description: 'View and manage user accounts',
       icon: Users,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
-      change: `+${stats?.new_users_this_week || 0} this week`,
+      href: '/backoffice/users',
+      variant: 'default' as const,
     },
     {
-      title: 'Active Users',
-      value: stats?.active_users || 0,
-      icon: TrendingUp,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
-      change: `${Math.round(((stats?.active_users || 0) / (stats?.total_users || 1)) * 100)}% of total`,
-    },
-    {
-      title: 'Total Orders',
-      value: stats?.total_orders || 0,
+      title: 'View Orders',
+      description: 'Monitor and manage orders',
       icon: ShoppingCart,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50',
-      change: `${stats?.paid_orders || 0} paid`,
+      href: '/backoffice/orders',
+      variant: 'outline' as const,
     },
     {
-      title: 'Total Revenue',
-      value: formatCurrency((stats?.total_revenue || 0) + (stats?.unique_revenue || 0)),
-      icon: DollarSign,
-      color: 'text-emerald-600',
-      bgColor: 'bg-emerald-50',
-      change: formatCurrency(stats?.revenue_this_month || 0) + ' this month',
-    },
-    {
-      title: 'Feedbacks',
-      value: stats?.total_feedbacks || 0,
-      icon: MessageSquare,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50',
-      change: `Avg: ${(stats?.average_score || 0).toFixed(1)}/5`,
-    },
-    {
-      title: 'Themes',
-      value: stats?.total_themes || 0,
+      title: 'Manage Themes',
+      description: 'Upload and manage wedding themes',
       icon: Palette,
-      color: 'text-pink-600',
-      bgColor: 'bg-pink-50',
-      change: `${stats?.active_themes || 0} active`,
+      href: '/backoffice/themes',
+      variant: 'outline' as const,
+    },
+    {
+      title: 'Website Settings',
+      description: 'Configure website settings',
+      icon: Settings,
+      href: '/backoffice/configurations',
+      variant: 'outline' as const,
     },
   ];
 
   return (
     <>
       <Head title="Backoffice Dashboard" />
-      <BackofficeLayout title="Dashboard" description="Overview of your application">
-        <div className="space-y-6">
+      <BackofficeLayout user={user}>
+        <div className="space-y-8">
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {statCards.map((stat) => (
-              <Card key={stat.title}>
+              <Card key={stat.label} className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-center">
-                    <div className={`flex-shrink-0 p-3 rounded-lg ${stat.bgColor}`}>
+                    <div className="flex-shrink-0 p-3 rounded-lg bg-gray-50">
                       <stat.icon className={`h-6 w-6 ${stat.color}`} />
                     </div>
                     <div className="ml-4 flex-1">
-                      <p className="text-sm font-medium text-gray-500">{stat.title}</p>
+                      <p className="text-sm font-medium text-gray-500">{stat.label}</p>
                       <p className="text-2xl font-semibold text-gray-900">{stat.value}</p>
-                      <p className="text-sm text-gray-500">{stat.change}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -164,28 +167,25 @@ export default function BackofficeDashboard() {
           </div>
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <Card>
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full justify-start" variant="outline">
-                  <Users className="mr-2 h-4 w-4" />
-                  Manage Users
-                </Button>
-                <Button className="w-full justify-start" variant="outline">
-                  <ShoppingCart className="mr-2 h-4 w-4" />
-                  View Orders
-                </Button>
-                <Button className="w-full justify-start" variant="outline">
-                  <Palette className="mr-2 h-4 w-4" />
-                  Manage Themes
-                </Button>
-                <Button className="w-full justify-start" variant="outline">
-                  <Settings className="mr-2 h-4 w-4" />
-                  Website Settings
-                </Button>
+                {quickActions.map((action) => (
+                  <Button
+                    key={action.title}
+                    className="w-full justify-start"
+                    variant={action.variant}
+                    asChild
+                  >
+                    <Link href={action.href}>
+                      <action.icon className="mr-2 h-4 w-4" />
+                      {action.title}
+                    </Link>
+                  </Button>
+                ))}
               </CardContent>
             </Card>
 

@@ -1,11 +1,11 @@
-import DashboardLayout from '@/components/layout/DashboardLayout';
-import { Button } from '@/components/ui/button';
+import OnboardingLayout from '@/components/onboarding/OnboardingLayout';
+import { ONBOARDING_STEPS } from '@/components/onboarding/OnboardingProgress';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Check, Globe, Link as LinkIcon, Sparkles } from 'lucide-react';
+import { useForm } from '@inertiajs/react';
+import { Check, Globe, Link as LinkIcon, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface WeddingUrlProps {
@@ -83,68 +83,35 @@ export default function WeddingUrl({ user }: WeddingUrlProps) {
   };
 
   return (
-    <>
-      <Head title="Wedding URL - Onboarding" />
-
-      <DashboardLayout user={user || null} currentPath="/onboarding/wedding-url">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Your Wedding URL 🌐
-          </h1>
-          <p className="text-muted-foreground">
-            Create your personalized wedding invitation link
-          </p>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="flex items-center justify-center space-x-4">
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium">
-                1
-              </div>
-              <span className="ml-2 text-sm text-muted-foreground">Couple Info</span>
-            </div>
-            <div className="w-16 h-0.5 bg-primary"></div>
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium">
-                2
-              </div>
-              <span className="ml-2 text-sm text-muted-foreground">Location</span>
-            </div>
-            <div className="w-16 h-0.5 bg-primary"></div>
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-muted text-muted-foreground rounded-full flex items-center justify-center text-sm font-medium">
-                3
-              </div>
-              <span className="ml-2 text-sm text-muted-foreground">Design</span>
-            </div>
-            <div className="w-16 h-0.5 bg-primary"></div>
-            <div className="flex items-center">
+    <OnboardingLayout
+      title="Your Wedding URL 🌐"
+      description="Create your personalized wedding invitation link"
+      icon={Globe}
+      steps={ONBOARDING_STEPS.main}
+      currentStep="wedding-url"
+      user={user}
+      onSubmit={handleSubmit}
+      submitLabel="Create Invitation"
+      isSubmitting={processing}
+      showBackButton={true}
+      onBackClick={() => window.location.href = '/onboarding/design-selection'}
+      maxWidth="2xl"
+    >
+      <div className="max-w-2xl mx-auto">
+        <Card className="card-elegant hover:shadow-2xl transition-all duration-300 mb-8">
+          <CardHeader className="pb-3">
+            <div className="flex items-center space-x-3">
               <div className="icon-container icon-gradient-4">
-                <span className="text-sm font-medium text-primary-foreground">4</span>
+                <Globe className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="ml-2 text-sm font-medium text-foreground">URL</span>
+              <div>
+                <CardTitle className="text-lg">Wedding URL</CardTitle>
+                <CardDescription>Create your personalized invitation link</CardDescription>
+              </div>
             </div>
-          </div>
-        </div>
-
-        <div className="max-w-2xl mx-auto">
-          <Card className="card-elegant hover:shadow-2xl transition-all duration-300 mb-8">
-            <CardHeader className="pb-3">
-              <div className="flex items-center space-x-3">
-                <div className="icon-container icon-gradient-4">
-                  <Globe className="w-5 h-5 text-primary-foreground" />
-                </div>
-                <div>
-                  <CardTitle className="text-lg">Wedding URL</CardTitle>
-                  <CardDescription>Create your personalized invitation link</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
                 {/* URL Input */}
                 <div className="space-y-4">
                   <div className="space-y-2">
@@ -221,66 +188,47 @@ export default function WeddingUrl({ user }: WeddingUrlProps) {
                   </div>
                 )}
 
-                {/* Action Buttons */}
-                <div className="flex items-center justify-between pt-6">
-                  <Link href="/onboarding/design-selection">
-                    <Button variant="outline" className="flex items-center">
-                      <ArrowLeft className="w-4 h-4 mr-2" />
-                      Back
-                    </Button>
-                  </Link>
+            </form>
+          </CardContent>
+        </Card>
 
-                  <Button
-                    type="submit"
-                    disabled={processing || !data.wedding_slug || isAvailable !== true}
-                    className="btn-hero flex items-center"
-                  >
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Create Invitation
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-
-          {/* URL Tips */}
-          <Card className="card-elegant hover:shadow-2xl transition-all duration-300">
-            <CardHeader className="pb-3">
-              <div className="flex items-center space-x-3">
-                <div className="icon-container icon-gradient-5">
-                  <Sparkles className="w-5 h-5 text-primary-foreground" />
-                </div>
-                <div>
-                  <CardTitle className="text-lg">URL Tips</CardTitle>
-                  <CardDescription>Make your URL memorable and easy to share</CardDescription>
-                </div>
+        {/* URL Tips */}
+        <Card className="card-elegant hover:shadow-2xl transition-all duration-300">
+          <CardHeader className="pb-3">
+            <div className="flex items-center space-x-3">
+              <div className="icon-container icon-gradient-5">
+                <Sparkles className="w-5 h-5 text-primary-foreground" />
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <h4 className="font-medium text-foreground">Good Examples:</h4>
-                  <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• john-and-jane</li>
-                    <li>• sarah-mike-2024</li>
-                    <li>• wedding-anna-david</li>
-                    <li>• lisa-chris-celebration</li>
-                  </ul>
-                </div>
-                <div className="space-y-2">
-                  <h4 className="font-medium text-foreground">Tips:</h4>
-                  <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• Use lowercase letters</li>
-                    <li>• Use hyphens instead of spaces</li>
-                    <li>• Keep it short and memorable</li>
-                    <li>• Avoid special characters</li>
-                  </ul>
-                </div>
+              <div>
+                <CardTitle className="text-lg">URL Tips</CardTitle>
+                <CardDescription>Make your URL memorable and easy to share</CardDescription>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      </DashboardLayout>
-    </>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <h4 className="font-medium text-foreground">Good Examples:</h4>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• john-and-jane</li>
+                  <li>• sarah-mike-2024</li>
+                  <li>• wedding-anna-david</li>
+                  <li>• lisa-chris-celebration</li>
+                </ul>
+              </div>
+              <div className="space-y-2">
+                <h4 className="font-medium text-foreground">Tips:</h4>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• Use lowercase letters</li>
+                  <li>• Use hyphens instead of spaces</li>
+                  <li>• Keep it short and memorable</li>
+                  <li>• Avoid special characters</li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </OnboardingLayout>
   );
 }

@@ -1,11 +1,13 @@
-import { useState } from 'react';
-import { Link } from '@inertiajs/react';
-import { Heart, ArrowLeft, CheckCircle, Star, Users, Globe, Search, Share2, Gift } from 'lucide-react';
+import OnboardingLayout from '@/components/onboarding/OnboardingLayout';
+import { ONBOARDING_STEPS } from '@/components/onboarding/OnboardingProgress';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
+import { Link } from '@inertiajs/react';
+import { CheckCircle, Gift, Globe, Heart, Search, Share2, Star, Users } from 'lucide-react';
+import { useState } from 'react';
 
 export default function Activation() {
   const [howDidYouHear, setHowDidYouHear] = useState('');
@@ -60,12 +62,12 @@ export default function Activation() {
 
   const handleActivation = async () => {
     if (!howDidYouHear) return;
-    
+
     setIsActivating(true);
-    
+
     // Simulate activation process
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     setIsActivating(false);
     setIsActivated(true);
   };
@@ -79,15 +81,15 @@ export default function Activation() {
               <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CheckCircle className="w-12 h-12 text-green-600" />
               </div>
-              
+
               <h1 className="text-4xl font-bold text-gray-800 mb-4">
                 🎉 Congratulations!
               </h1>
-              
+
               <p className="text-xl text-gray-600 mb-8">
                 Your wedding invitation has been successfully created and activated!
               </p>
-              
+
               <div className="bg-gradient-to-r from-rose-gold/10 to-peach/10 rounded-lg p-6 mb-8">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">
                   Your Invitation is Live!
@@ -98,28 +100,28 @@ export default function Activation() {
                   </span>
                 </div>
               </div>
-              
+
               <div className="grid md:grid-cols-2 gap-6 mb-8">
                 <div className="text-center p-4 bg-soft-pink/20 rounded-lg">
                   <Users className="w-8 h-8 text-rose-gold mx-auto mb-2" />
                   <h3 className="font-semibold text-gray-800">Share with Guests</h3>
                   <p className="text-sm text-gray-600">Send your beautiful invitation to family and friends</p>
                 </div>
-                
+
                 <div className="text-center p-4 bg-sage/20 rounded-lg">
                   <Heart className="w-8 h-8 text-sage mx-auto mb-2" />
                   <h3 className="font-semibold text-gray-800">Customize Further</h3>
                   <p className="text-sm text-gray-600">Add more photos, update details, or change design</p>
                 </div>
               </div>
-              
+
               <div className="space-y-4">
                 <Link href="/dashboard">
                   <Button size="lg" className="w-full bg-rose-gold hover:bg-rose-gold/90 text-white">
                     Go to Dashboard
                   </Button>
                 </Link>
-                
+
                 <Button variant="outline" size="lg" className="w-full border-rose-gold text-rose-gold hover:bg-rose-gold hover:text-white">
                   <Share2 className="w-4 h-4 mr-2" />
                   Share Your Invitation
@@ -133,63 +135,40 @@ export default function Activation() {
   }
 
   return (
-    <div className="min-h-screen bg-wedding-gradient">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-rose-gold rounded-full flex items-center justify-center">
-              <Heart className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-rose-gold">Inveet</span>
-          </div>
-          
-          <Link href="/onboarding">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Onboarding
-            </Button>
-          </Link>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-6 py-12">
-        {/* Page Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center space-x-2 bg-gold/20 px-4 py-2 rounded-full mb-4">
-            <span className="text-2xl">✨</span>
-            <span className="text-gold font-medium">Final Step!</span>
-          </div>
-          
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            Almost There!
-          </h1>
-          
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Just one more question to help us improve, then your beautiful wedding invitation will be ready to share with the world.
-          </p>
-        </div>
+    <OnboardingLayout
+      title="Almost There! ✨"
+      description="Just one more question to help us improve, then your beautiful wedding invitation will be ready to share with the world."
+      icon={Heart}
+      steps={ONBOARDING_STEPS.alternative}
+      currentStep="activation"
+      user={null}
+      onSubmit={handleActivation}
+      submitLabel={isActivating ? "Activating Your Invitation..." : "Activate My Wedding Invitation"}
+      isSubmitting={isActivating}
+      showBackButton={true}
+      onBackClick={() => window.location.href = '/onboarding/design-selection'}
+      maxWidth="4xl"
+    >
 
         <div className="grid gap-8">
           {/* How Did You Hear Section */}
-          <Card className="border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold text-gray-800">
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h3 className="text-2xl font-bold text-gray-800">
                 How did you hear about Inveet?
-              </CardTitle>
-              <CardDescription>
+              </h3>
+              <p className="text-gray-600">
                 Your feedback helps us reach more couples and improve our service
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+              </p>
+            </div>
+            <div className="space-y-6">
               <RadioGroup value={howDidYouHear} onValueChange={setHowDidYouHear}>
                 <div className="grid gap-4">
                   {discoverySources.map((source) => (
                     <div key={source.id} className="flex items-start space-x-3">
                       <RadioGroupItem value={source.id} id={source.id} className="mt-1" />
-                      <Label 
-                        htmlFor={source.id} 
+                      <Label
+                        htmlFor={source.id}
                         className="flex-1 cursor-pointer p-4 border-2 border-gray-200 rounded-lg hover:border-rose-gold/50 transition-colors"
                       >
                         <div className="flex items-center space-x-3">
@@ -223,20 +202,20 @@ export default function Activation() {
                   />
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Summary Section */}
-          <Card className="border-0 shadow-lg bg-gradient-to-r from-soft-pink/10 to-sage/10">
-            <CardHeader>
-              <CardTitle className="text-xl font-bold text-gray-800">
+          <div className="space-y-6 bg-gradient-to-r from-soft-pink/10 to-sage/10 p-6 rounded-lg">
+            <div className="space-y-2">
+              <h3 className="text-xl font-bold text-gray-800">
                 Your Wedding Invitation Summary
-              </CardTitle>
-              <CardDescription>
+              </h3>
+              <p className="text-gray-600">
                 Here's what you've created so far
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              </p>
+            </div>
+            <div>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
@@ -264,7 +243,7 @@ export default function Activation() {
                     <span className="text-gray-700">Design Template Selected</span>
                   </div>
                 </div>
-                
+
                 <div className="bg-white rounded-lg p-4 border border-gray-200">
                   <h4 className="font-semibold text-gray-800 mb-2">What's Next?</h4>
                   <ul className="space-y-2 text-sm text-gray-600">
@@ -275,17 +254,17 @@ export default function Activation() {
                   </ul>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Activation Benefits */}
-          <Card className="border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-xl font-bold text-gray-800">
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h3 className="text-xl font-bold text-gray-800">
                 What You'll Get
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
+            </div>
+            <div>
               <div className="grid md:grid-cols-3 gap-6">
                 <div className="text-center p-4">
                   <div className="w-16 h-16 bg-soft-pink/20 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -294,7 +273,7 @@ export default function Activation() {
                   <h3 className="font-semibold text-gray-800 mb-2">Live Website</h3>
                   <p className="text-sm text-gray-600">Your invitation goes live immediately with a beautiful, mobile-friendly design</p>
                 </div>
-                
+
                 <div className="text-center p-4">
                   <div className="w-16 h-16 bg-sage/20 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Users className="w-8 h-8 text-sage" />
@@ -302,7 +281,7 @@ export default function Activation() {
                   <h3 className="font-semibold text-gray-800 mb-2">Guest Management</h3>
                   <p className="text-sm text-gray-600">Track RSVPs, send reminders, and manage your guest list easily</p>
                 </div>
-                
+
                 <div className="text-center p-4">
                   <div className="w-16 h-16 bg-lavender/20 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Star className="w-8 h-8 text-lavender" />
@@ -311,50 +290,9 @@ export default function Activation() {
                   <p className="text-sm text-gray-600">Get help whenever you need it with our dedicated support team</p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
-
-        {/* Activation Button */}
-        <div className="text-center mt-12">
-          <Button 
-            size="lg" 
-            className="bg-rose-gold hover:bg-rose-gold/90 text-white px-12 py-6 text-xl"
-            onClick={handleActivation}
-            disabled={!howDidYouHear || (howDidYouHear === 'other' && !otherSource) || isActivating}
-          >
-            {isActivating ? (
-              <>
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-3" />
-                Activating Your Invitation...
-              </>
-            ) : (
-              <>
-                <Heart className="w-6 h-6 mr-3" />
-                Activate My Wedding Invitation
-              </>
-            )}
-          </Button>
-          
-          {!howDidYouHear && (
-            <p className="text-red-500 mt-3">Please select how you heard about us to continue</p>
-          )}
-          
-          {howDidYouHear === 'other' && !otherSource && (
-            <p className="text-red-500 mt-3">Please specify how you heard about us</p>
-          )}
-        </div>
-
-        {/* Navigation */}
-        <div className="flex justify-center mt-8">
-          <Link href="/onboarding/design-selection">
-            <Button variant="outline" size="lg" className="border-gray-300 text-gray-600 hover:border-rose-gold hover:text-rose-gold">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Design Selection
-            </Button>
-          </Link>
-        </div>
-      </main>
-    </div>
+    </OnboardingLayout>
   );
 }
