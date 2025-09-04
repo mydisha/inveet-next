@@ -4,7 +4,7 @@ import { Button } from './ui/button';
 
 const Hero = () => {
   return (
-    <section id="home" className="relative min-h-screen flex items-center overflow-hidden">
+    <section id="home" className="relative min-h-screen flex items-center overflow-hidden w-full">
       {/* Background with overlay */}
       <div className="absolute inset-0">
         <img
@@ -36,8 +36,8 @@ const Hero = () => {
         <div className="particle bottom-1/4 left-1/2" style={{ animationDelay: '1.5s' }}></div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 w-full">
+        <div className="grid lg:grid-cols-2 gap-12 items-center w-full">
           {/* Content with staggered animations */}
           <div className="space-y-8">
             {/* Badge with enhanced animation */}

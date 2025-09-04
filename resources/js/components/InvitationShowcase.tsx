@@ -70,8 +70,8 @@ const InvitationShowcase = () => {
   // Loading state
   if (loading) {
     return (
-      <section id="showcase" className="py-24 bg-gradient-to-b from-primary-light/5 to-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="showcase" className="py-24 bg-gradient-to-b from-primary-light/5 to-background w-full overflow-x-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="text-center">
             <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2">
               <span className="text-primary text-sm font-medium">Pilihan Desain</span>
@@ -92,8 +92,8 @@ const InvitationShowcase = () => {
   // Error state
   if (error) {
     return (
-      <section id="showcase" className="py-24 bg-gradient-to-b from-primary-light/5 to-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="showcase" className="py-24 bg-gradient-to-b from-primary-light/5 to-background w-full overflow-x-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="text-center">
             <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2">
               <span className="text-primary text-sm font-medium">Pilihan Desain</span>
@@ -118,8 +118,8 @@ const InvitationShowcase = () => {
   }
 
   return (
-    <section id="showcase" className="py-24 bg-gradient-to-b from-primary-light/5 to-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="showcase" className="py-24 bg-gradient-to-b from-primary-light/5 to-background w-full overflow-x-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         {/* Header */}
         <div className="text-center space-y-4 mb-16">
           <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2">
@@ -136,7 +136,7 @@ const InvitationShowcase = () => {
         </div>
 
         {/* Category Filter */}
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
+        <div className="flex flex-wrap justify-center gap-3 mb-12 w-full overflow-x-auto">
           {categories.map((category) => (
             <Button
               key={category}
@@ -150,11 +150,11 @@ const InvitationShowcase = () => {
         </div>
 
         {/* Themes Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
           {filteredThemes.map((theme, index) => (
             <div
               key={theme.id}
-              className="stagger-animation comfort-card group relative bg-card rounded-2xl overflow-hidden shadow-md"
+              className="stagger-animation comfort-card group relative bg-card rounded-2xl overflow-hidden shadow-md w-full max-w-full"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Active Badge */}
@@ -166,19 +166,19 @@ const InvitationShowcase = () => {
               )}
 
               {/* Image */}
-              <div className="relative aspect-[4/3] overflow-hidden">
-                {console.log('🏠 Landing Page: Rendering image for theme:', theme.name, 'preview_image_url:', theme.preview_image_url)}
+              <div className="relative aspect-[4/3] overflow-hidden w-full">
                 <img
                   src={theme.preview_image_url || '/api/placeholder/400/300'}
                   alt={theme.name}
                   loading="lazy"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out max-w-full"
                   onError={(e) => {
+                    const target = e.target as HTMLImageElement;
                     console.error('🏠 Landing Page: Image failed to load:', {
                       themeName: theme.name,
                       previewImageUrl: theme.preview_image_url,
                       fallbackUsed: !theme.preview_image_url,
-                      actualSrc: e.target.src
+                      actualSrc: target.src
                     });
                   }}
                   onLoad={() => {
