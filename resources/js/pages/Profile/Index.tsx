@@ -1,3 +1,4 @@
+import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -27,6 +28,10 @@ interface ProfileProps {
     hasWedding: boolean;
     email_verified_at?: string;
     created_at: string;
+    roles?: Array<{
+      id: number;
+      name: string;
+    }>;
   } | null;
 }
 
@@ -36,11 +41,19 @@ export default function Profile({ user }: ProfileProps) {
     month: 'long'
   }) : '';
 
+  // Check if user has admin roles to determine which layout to use
+  const hasAdminRole = user?.roles?.some(role =>
+    ['super-admin', 'admin', 'moderator'].includes(role.name)
+  ) || false;
+
+  // Choose the appropriate layout component
+  const LayoutComponent = hasAdminRole ? BackofficeLayout : DashboardLayout;
+
   return (
     <>
       <Head title="Profile" />
 
-      <DashboardLayout user={user} currentPath="/profile">
+      <LayoutComponent user={user} currentPath="/profile">
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Page Header */}
           <PageHeader
@@ -244,7 +257,7 @@ export default function Profile({ user }: ProfileProps) {
             </Card>
           </div>
         </div>
-      </DashboardLayout>
+      </LayoutComponent>
     </>
   );
 }

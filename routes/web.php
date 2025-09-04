@@ -75,6 +75,15 @@ Route::middleware(['auth', 'backoffice'])->prefix('backoffice')->group(function 
         Route::post('/users/{user}/activate', [FrontendController::class, 'backofficeUserActivate']);
         Route::post('/users/{user}/deactivate', [FrontendController::class, 'backofficeUserDeactivate']);
         Route::post('/users/{user}/auto-login', [FrontendController::class, 'backofficeUserAutoLogin']);
+
+        // Themes API routes
+        Route::get('/themes', [FrontendController::class, 'backofficeThemesApi']);
+        Route::post('/themes', [FrontendController::class, 'backofficeThemesStore']);
+        Route::get('/themes/{theme}', [FrontendController::class, 'backofficeThemesShow']);
+        Route::put('/themes/{theme}', [FrontendController::class, 'backofficeThemesUpdate']);
+        Route::post('/themes/{theme}/toggle-active', [FrontendController::class, 'backofficeThemesToggleActive']);
+        Route::post('/themes/{theme}/toggle-public', [FrontendController::class, 'backofficeThemesTogglePublic']);
+        Route::delete('/themes/{theme}', [FrontendController::class, 'backofficeThemesDestroy']);
     });
 });
 

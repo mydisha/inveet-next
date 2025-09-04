@@ -6,6 +6,7 @@ import {
     Settings,
     ShoppingCart,
     User,
+    UserCircle,
     Users,
     X
 } from 'lucide-react';
@@ -50,6 +51,13 @@ export default function BackofficeSidebar({ user, sidebarOpen, setSidebarOpen, c
       permissions: ['view-dashboard']
     },
     {
+      name: 'Profile',
+      href: '/profile',
+      icon: UserCircle,
+      roles: ['super-admin', 'admin', 'moderator'],
+      permissions: ['view-profile']
+    },
+    {
       name: 'Users',
       href: '/backoffice/users',
       icon: Users,
@@ -78,7 +86,14 @@ export default function BackofficeSidebar({ user, sidebarOpen, setSidebarOpen, c
       permissions: ['view-themes']
     },
     {
-      name: 'Settings',
+      name: 'User Settings',
+      href: '/settings',
+      icon: Settings,
+      roles: ['super-admin', 'admin', 'moderator'],
+      permissions: ['view-settings']
+    },
+    {
+      name: 'System Settings',
       href: '/backoffice/configurations',
       icon: Settings,
       roles: ['super-admin'],
@@ -122,7 +137,16 @@ export default function BackofficeSidebar({ user, sidebarOpen, setSidebarOpen, c
           <nav className="flex-1 px-4 py-6 space-y-2">
             {navigationItems.map((item) => {
               const Icon = item.icon;
-              const isCurrent = currentPath === item.href;
+              // Improved path matching - check if current path starts with the item href
+              // Special handling for settings page mapping
+              let isCurrent = currentPath === item.href ||
+                (item.href !== '/backoffice' && currentPath.startsWith(item.href));
+
+              // Special case: if we're on /settings and the item is /settings (User Settings)
+              if (currentPath === '/settings' && item.href === '/settings') {
+                isCurrent = true;
+              }
+
               return (
                 <Link
                   key={item.name}

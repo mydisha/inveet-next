@@ -1,3 +1,4 @@
+import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,15 +12,27 @@ interface SettingsProps {
     name: string;
     email: string;
     hasWedding: boolean;
+    roles?: Array<{
+      id: number;
+      name: string;
+    }>;
   } | null;
 }
 
 export default function Settings({ user }: SettingsProps) {
+  // Check if user has admin roles to determine which layout to use
+  const hasAdminRole = user?.roles?.some(role =>
+    ['super-admin', 'admin', 'moderator'].includes(role.name)
+  ) || false;
+
+  // Choose the appropriate layout component
+  const LayoutComponent = hasAdminRole ? BackofficeLayout : DashboardLayout;
+
   return (
     <>
       <Head title="Settings" />
 
-      <DashboardLayout user={user} currentPath="/settings">
+      <LayoutComponent user={user} currentPath="/settings">
         <PageHeader
           icon={Settings}
           title="Settings"
@@ -86,7 +99,7 @@ export default function Settings({ user }: SettingsProps) {
             </CardContent>
           </Card>
         </div>
-      </DashboardLayout>
+      </LayoutComponent>
     </>
   );
 }

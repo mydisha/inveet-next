@@ -370,6 +370,12 @@ class FrontendController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'hasWedding' => $user->hasWedding ?? false,
+                'roles' => $user->roles->map(function ($role) {
+                    return [
+                        'id' => $role->id,
+                        'name' => $role->name,
+                    ];
+                }),
             ] : null,
         ]);
     }
@@ -381,14 +387,18 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-
-
         return Inertia::render('Settings/Index', [
             'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'hasWedding' => $user->hasWedding ?? false,
+                'roles' => $user->roles->map(function ($role) {
+                    return [
+                        'id' => $role->id,
+                        'name' => $role->name,
+                    ];
+                }),
             ] : null,
         ]);
     }
@@ -1464,6 +1474,162 @@ class FrontendController extends Controller
                 'token' => $token,
                 'login_url' => route('login') . '?token=' . $token
             ]
+        ]);
+    }
+
+    /**
+     * Get themes for backoffice
+     */
+    public function backofficeThemesApi(Request $request)
+    {
+        $query = \App\Models\Theme::query();
+
+        // Search functionality
+        if ($request->has('search')) {
+            $search = $request->get('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by status
+        if ($request->has('status')) {
+            $status = $request->get('status');
+            if ($status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($status === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        // Filter by visibility
+        if ($request->has('visibility')) {
+            $visibility = $request->get('visibility');
+            if ($visibility === 'public') {
+                $query->where('is_public', true);
+            } elseif ($visibility === 'private') {
+                $query->where('is_public', false);
+            }
+        }
+
+        // Sort
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        $query->orderBy($sortBy, $sortOrder);
+
+        // Pagination
+        $perPage = $request->get('per_page', 15);
+        $themes = $query->paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'data' => $themes
+        ]);
+    }
+
+    /**
+     * Store a new theme
+     */
+    public function backofficeThemesStore(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'slug' => 'required|string|unique:themes,slug',
+            'preview_image' => 'nullable|string',
+            'is_active' => 'boolean',
+            'is_public' => 'boolean',
+        ]);
+
+        $theme = \App\Models\Theme::create($request->all());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Theme created successfully',
+            'data' => $theme
+        ]);
+    }
+
+    /**
+     * Show a specific theme
+     */
+    public function backofficeThemesShow($theme)
+    {
+        $themeModel = \App\Models\Theme::findOrFail($theme);
+
+        return response()->json([
+            'success' => true,
+            'data' => $themeModel
+        ]);
+    }
+
+    /**
+     * Update a theme
+     */
+    public function backofficeThemesUpdate(Request $request, $theme)
+    {
+        $themeModel = \App\Models\Theme::findOrFail($theme);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'slug' => 'required|string|unique:themes,slug,' . $theme,
+            'preview_image' => 'nullable|string',
+            'is_active' => 'boolean',
+            'is_public' => 'boolean',
+        ]);
+
+        $themeModel->update($request->all());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Theme updated successfully',
+            'data' => $themeModel
+        ]);
+    }
+
+    /**
+     * Toggle theme active status
+     */
+    public function backofficeThemesToggleActive($theme)
+    {
+        $themeModel = \App\Models\Theme::findOrFail($theme);
+        $themeModel->update(['is_active' => !$themeModel->is_active]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Theme status updated successfully',
+            'data' => $themeModel
+        ]);
+    }
+
+    /**
+     * Toggle theme public status
+     */
+    public function backofficeThemesTogglePublic($theme)
+    {
+        $themeModel = \App\Models\Theme::findOrFail($theme);
+        $themeModel->update(['is_public' => !$themeModel->is_public]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Theme visibility updated successfully',
+            'data' => $themeModel
+        ]);
+    }
+
+    /**
+     * Delete a theme
+     */
+    public function backofficeThemesDestroy($theme)
+    {
+        $themeModel = \App\Models\Theme::findOrFail($theme);
+        $themeModel->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Theme deleted successfully'
         ]);
     }
 }

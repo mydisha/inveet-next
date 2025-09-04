@@ -38,7 +38,7 @@ import {
     ToggleRight,
     Trash2
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface Theme {
   id: number;
@@ -93,7 +93,7 @@ export default function ThemesPage({ user }: ThemesPageProps) {
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
 
-  const fetchThemes = async () => {
+  const fetchThemes = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -114,11 +114,11 @@ export default function ThemesPage({ user }: ThemesPageProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, search, statusFilter, visibilityFilter]);
 
   useEffect(() => {
     fetchThemes();
-  }, [currentPage, search, statusFilter, visibilityFilter]);
+  }, [fetchThemes]);
 
   const handleSearch = (value: string) => {
     setSearch(value);
@@ -329,14 +329,14 @@ export default function ThemesPage({ user }: ThemesPageProps) {
                           </TableCell>
                           <TableCell>
                             <div className="flex flex-wrap gap-1">
-                              {theme.packages.slice(0, 2).map((package_) => (
+                              {(theme.packages || []).slice(0, 2).map((package_) => (
                                 <Badge key={package_.id} variant="outline" className="text-xs">
                                   {package_.name}
                                 </Badge>
                               ))}
-                              {theme.packages.length > 2 && (
+                              {(theme.packages || []).length > 2 && (
                                 <Badge variant="outline" className="text-xs">
-                                  +{theme.packages.length - 2} more
+                                  +{(theme.packages || []).length - 2} more
                                 </Badge>
                               )}
                             </div>
@@ -367,7 +367,7 @@ export default function ThemesPage({ user }: ThemesPageProps) {
                               {new Date(theme.created_at).toLocaleDateString()}
                             </div>
                             <div className="text-xs text-gray-500">
-                              by {theme.user.name}
+                              by {theme.user?.name || 'Unknown'}
                             </div>
                           </TableCell>
                           <TableCell>
