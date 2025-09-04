@@ -28,7 +28,22 @@ export class AuthUtils {
           await ApiService.logout();
           console.log('✅ API logout successful');
         } catch (apiError) {
-          console.warn('⚠️ API logout failed, but continuing with logout process:', apiError);
+          console.warn('⚠️ API logout failed, trying public logout...', apiError);
+          // Try public logout as fallback
+          try {
+            await fetch('/api/logout-public', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+              },
+              credentials: 'include'
+            });
+            console.log('✅ Public logout successful');
+          } catch (publicError) {
+            console.warn('⚠️ Public logout also failed:', publicError);
+          }
         }
       } else {
         // Use form-based logout directly

@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\ReceptionController;
@@ -106,16 +108,39 @@ Route::middleware('guest')->group(function () {
 
 // Public logout route (for expired sessions)
 Route::post('/logout-public', function (Request $request) {
+    $sessionId = null;
+
+    // Check if session exists before trying to access it
+    if ($request->hasSession()) {
+        $sessionId = $request->session()->getId();
+        \Log::info('Public logout called', ['session_id' => $sessionId]);
+    } else {
+        \Log::info('Public logout called - no session');
+    }
+
     // Try to logout if user is still authenticated
     if (Auth::check()) {
+        $userId = Auth::id();
+        \Log::info('User still authenticated, logging out', ['user_id' => $userId]);
         Auth::guard('web')->logout();
+        Auth::guard('sanctum')->logout();
     }
 
     // Only invalidate session if it exists
     if ($request->hasSession()) {
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        // Force delete session from database if we have a session ID
+        if ($sessionId) {
+            \DB::table('sessions')->where('id', $sessionId)->delete();
+        }
+
+        // Clear any cached user data
+        $request->session()->flush();
     }
+
+    \Log::info('Public logout completed', ['session_id' => $sessionId]);
 
     return response()->json([
         'message' => 'Logged out successfully',
@@ -174,19 +199,22 @@ Route::middleware('auth:sanctum')->group(function () {
     // Logout route - API version that returns JSON
     Route::post('/logout', function (Request $request) {
         $userId = Auth::id();
-        \Log::info('Logout API called', ['user_id' => $userId, 'session_id' => $request->session()->getId()]);
+        $sessionId = $request->session()->getId();
+        \Log::info('Logout API called', ['user_id' => $userId, 'session_id' => $sessionId]);
 
         // Logout from both web and sanctum guards
         Auth::guard('web')->logout();
         Auth::guard('sanctum')->logout();
 
         // Invalidate session
-        $sessionId = $request->session()->getId();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         // Force delete session from database
         \DB::table('sessions')->where('id', $sessionId)->delete();
+
+        // Clear any cached user data
+        $request->session()->flush();
 
         \Log::info('Logout completed', ['user_id' => $userId, 'session_id' => $sessionId]);
 

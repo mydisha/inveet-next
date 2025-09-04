@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import {
     Calendar,
-    Clock,
     Edit,
     ExternalLink,
     Eye,
@@ -123,15 +122,15 @@ export function WeddingCard({
   return (
     <Card className={cn(
       "group relative overflow-hidden transition-all duration-300",
-      "bg-white/90 backdrop-blur-sm border border-gray-200/60",
-      "rounded-2xl shadow-lg hover:shadow-2xl hover:scale-[1.02]",
+      "bg-white border border-gray-200/50",
+      "rounded-xl shadow-sm hover:shadow-lg hover:border-gray-300/50",
       "cursor-pointer",
       className
     )}>
       {/* Cover Image */}
       <div className={cn(
         "relative overflow-hidden",
-        isListView ? "w-full sm:w-48 h-32 sm:h-full" : "h-48"
+        isListView ? "w-full sm:w-48 h-32 sm:h-full" : "h-40"
       )}>
         {wedding.theme?.preview_image && !imageError ? (
           <img
@@ -145,16 +144,16 @@ export function WeddingCard({
             "w-full h-full flex items-center justify-center",
             getCoverImage()
           )}>
-            <Heart className="w-16 h-16 text-primary/40" />
+            <Heart className="w-12 h-12 text-primary/30" />
           </div>
         )}
 
         {/* Status Badge */}
-        <div className="absolute top-4 right-4">
+        <div className="absolute top-3 right-3">
           <Badge
             variant={getStatusVariant(wedding.status)}
             className={cn(
-              "backdrop-blur-sm border",
+              "text-xs font-medium px-2 py-1",
               getStatusColor(wedding.status)
             )}
           >
@@ -162,12 +161,12 @@ export function WeddingCard({
           </Badge>
         </div>
 
-        {/* Overlay on hover */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
       </div>
 
       <CardHeader className={cn(
-        "pb-3 pt-6 px-6",
+        "pb-4 pt-5 px-5",
         isListView && "flex-1 sm:flex-1"
       )}>
         <div className={cn(
@@ -178,20 +177,16 @@ export function WeddingCard({
           <div className={cn(
             isListView ? "text-left" : "text-center"
           )}>
-            <h3 className="font-bold text-lg sm:text-xl text-gray-900 mb-1">
+            <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2">
               {wedding.couple_name_1 && wedding.couple_name_2
                 ? `${wedding.couple_name_1} & ${wedding.couple_name_2}`
                 : wedding.title || 'Untitled Wedding'
               }
             </h3>
-            {wedding.wedding_location && (
-              <p className="text-sm text-gray-600 font-medium">
-                📍 {wedding.wedding_location}
-              </p>
-            )}
-            {wedding.wedding_venue && !wedding.wedding_location && (
-              <p className="text-sm text-gray-600 font-medium">
-                📍 {wedding.wedding_venue}
+            {(wedding.wedding_location || wedding.wedding_venue) && (
+              <p className="text-sm text-gray-500 flex items-center gap-1">
+                <span className="text-gray-400">📍</span>
+                {wedding.wedding_location || wedding.wedding_venue}
               </p>
             )}
           </div>
@@ -205,8 +200,8 @@ export function WeddingCard({
               "flex items-center space-x-2",
               isListView ? "justify-start" : "justify-center"
             )}>
-              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-              <span className="text-sm text-gray-600">
+              <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+              <span className="text-xs text-gray-500 font-medium">
                 {wedding.theme?.name || 'No theme selected'}
               </span>
             </div>
@@ -216,8 +211,8 @@ export function WeddingCard({
                 "flex items-center space-x-2",
                 isListView ? "justify-start" : "justify-center"
               )}>
-                <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                <span className="text-sm text-gray-600">
+                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+                <span className="text-xs text-gray-500 font-medium">
                   {wedding.package.name}
                 </span>
               </div>
@@ -227,73 +222,63 @@ export function WeddingCard({
       </CardHeader>
 
       <CardContent className={cn(
-        "px-6 pb-6",
+        "px-5 pb-5",
         isListView && "flex-1 flex flex-col justify-end"
       )}>
         <div className="space-y-4">
-          {/* Wedding Date */}
-          <div className="flex items-center space-x-3 text-sm text-gray-600">
-            <Calendar className="w-4 h-4 text-gray-400" />
-            <span>{formatDate(wedding.wedding_start)}</span>
-          </div>
-
-          {/* Stats */}
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center space-x-4">
-              {wedding.view_count !== undefined && (
-                <div className="flex items-center space-x-1 text-gray-600">
-                  <Eye className="w-4 h-4" />
-                  <span>{wedding.view_count} views</span>
-                </div>
-              )}
+          {/* Wedding Date and Stats */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Calendar className="w-4 h-4 text-gray-400" />
+              <span className="font-medium">{formatDate(wedding.wedding_start)}</span>
             </div>
 
-            {wedding.updated_at && (
-              <div className="flex items-center space-x-1 text-gray-500">
-                <Clock className="w-4 h-4" />
-                <span>Updated {new Date(wedding.updated_at).toLocaleDateString()}</span>
+            {wedding.view_count !== undefined && (
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <Eye className="w-4 h-4" />
+                <span>{wedding.view_count} views</span>
               </div>
             )}
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-2 pt-2">
+          <div className="flex gap-2 pt-1">
             <Button
               variant="outline"
               size="sm"
-              className="flex-1 group-hover:border-primary/30 group-hover:text-primary transition-colors"
+              className="flex-1 h-8 text-xs font-medium hover:bg-primary/5 hover:border-primary/30 hover:text-primary transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
                 onView?.(wedding);
               }}
             >
-              <ExternalLink className="w-4 h-4 mr-2" />
+              <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
               View
             </Button>
 
             <Button
               variant="outline"
               size="sm"
-              className="flex-1 group-hover:border-primary/30 group-hover:text-primary transition-colors"
+              className="flex-1 h-8 text-xs font-medium hover:bg-primary/5 hover:border-primary/30 hover:text-primary transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
                 window.location.href = `/wedding/${wedding.id}`;
               }}
             >
-              <Edit className="w-4 h-4 mr-2" />
+              <Edit className="w-3.5 h-3.5 mr-1.5" />
               Edit
             </Button>
 
             <Button
               variant="outline"
               size="sm"
-              className="flex-1 group-hover:border-primary/30 group-hover:text-primary transition-colors"
+              className="flex-1 h-8 text-xs font-medium hover:bg-primary/5 hover:border-primary/30 hover:text-primary transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
                 onDesignConfig?.(wedding);
               }}
             >
-              <Palette className="w-4 h-4 mr-2" />
+              <Palette className="w-3.5 h-3.5 mr-1.5" />
               Design
             </Button>
           </div>

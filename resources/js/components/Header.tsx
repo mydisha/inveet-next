@@ -86,9 +86,13 @@ const Header = () => {
               </a>
             ))}
             <div className="px-3 py-2 space-y-2">
-              <Button variant="ghost" className="w-full justify-start" asChild>
-                <Link href="/login">Masuk</Link>
-              </Button>
+              <a
+                href="/login"
+                className="block px-3 py-2 text-foreground/80 hover:text-primary transition-colors duration-300"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Masuk
+              </a>
               <Button className="btn-hero w-full" asChild>
                 <Link href="/register">Buat Undangan</Link>
               </Button>

@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { isAuthenticated } from '@/lib/auth';
 import { Link, useForm, usePage } from '@inertiajs/react';
 import { ArrowRight, CheckCircle, Eye, EyeOff, Lock, Mail, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -25,6 +26,15 @@ export default function Login() {
       return () => clearTimeout(timer);
     }
   }, [flash]);
+
+  // Client-side authentication check as fallback
+  useEffect(() => {
+    // Check if user is already authenticated (client-side fallback)
+    if (isAuthenticated()) {
+      console.log('🔍 Client-side auth check: User is already authenticated, redirecting to dashboard');
+      window.location.replace('/dashboard');
+    }
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

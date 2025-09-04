@@ -3,9 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link, router, useForm } from "@inertiajs/react";
-import { ArrowRight, Eye, EyeOff, Lock, Mail, Sparkles, User } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import { useEffect, useState } from "react";
-import { forceRefreshCsrfToken } from "@/lib/auth";
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
@@ -249,7 +248,6 @@ export default function Register() {
                 size="lg"
                 disabled={processing || !!successMessage}
               >
-                <Sparkles className="w-4 h-4 mr-2" />
                 {processing ? 'Creating Account...' : successMessage ? 'Redirecting...' : 'Create Account'}
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
               </Button>
