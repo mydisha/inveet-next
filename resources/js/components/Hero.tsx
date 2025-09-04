@@ -1,4 +1,4 @@
-import { ArrowRight, Heart, Play, Sparkles, Star } from 'lucide-react';
+import { ArrowRight, Heart, Sparkles, Star } from 'lucide-react';
 import heroCouple from '../assets/hero-couple.jpg';
 import { Button } from './ui/button';
 
@@ -75,13 +75,8 @@ const Hero = () => {
             {/* CTA Buttons with enhanced interactions */}
             <div className="hero-cta flex flex-col sm:flex-row gap-4">
               <Button className="btn-hero group text-lg px-8 py-4 hero-interactive">
-                <Sparkles className="mr-2 h-5 w-5 animate-pulse" />
                 Buat Undangan
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-2 transition-transform duration-300" />
-              </Button>
-              <Button variant="outline" className="btn-hero-outline hero-interactive text-lg px-8 py-4">
-                <Play className="mr-2 h-4 w-4" />
-                Lihat Demo
               </Button>
             </div>
 
@@ -108,36 +103,6 @@ const Hero = () => {
                 </div>
                 <div className="text-primary-foreground/70 text-sm">Biaya Dihemat</div>
               </div>
-            </div>
-          </div>
-
-          {/* Enhanced Phone Mockup with sophisticated animations */}
-          <div className="hero-phone relative">
-            <div className="relative">
-              {/* Enhanced Glow Effect */}
-              <div className="absolute -inset-6 bg-gradient-to-r from-primary/30 to-primary-glow/40 rounded-3xl blur-2xl animate-pulse-glow"></div>
-              <div className="absolute -inset-4 bg-gradient-to-r from-accent/20 to-warm/30 rounded-3xl blur-xl animate-pulse-glow" style={{ animationDelay: '2s' }}></div>
-
-              {/* Phone Container with enhanced styling */}
-              <div className="relative bg-gradient-to-br from-background/90 to-background/70 backdrop-blur-sm rounded-3xl p-8 border border-primary/20 shadow-2xl hero-interactive">
-                <div className="w-64 h-96 bg-gradient-to-br from-primary/10 to-primary-light/20 rounded-2xl flex items-center justify-center">
-                  <div className="text-center space-y-4">
-                    <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary-glow rounded-full flex items-center justify-center mx-auto animate-bounce">
-                      <Heart className="w-8 h-8 text-primary-foreground" />
-                    </div>
-                    <div className="space-y-2">
-                      <div className="h-3 bg-primary/20 rounded-full w-32"></div>
-                      <div className="h-3 bg-primary/20 rounded-full w-24"></div>
-                      <div className="h-3 bg-primary/20 rounded-full w-28"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Floating elements around phone */}
-              <div className="absolute -top-4 -right-4 w-8 h-8 bg-accent/30 rounded-full animate-float-1"></div>
-              <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-warm/40 rounded-full animate-float-2"></div>
-              <div className="absolute top-1/2 -right-6 w-4 h-4 bg-primary/25 rounded-full animate-float-3"></div>
             </div>
           </div>
         </div>

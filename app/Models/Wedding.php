@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Wedding extends Model
 {
@@ -25,6 +26,7 @@ class Wedding extends Model
         'is_draft',
         'is_published',
         'slug',
+        'wedding_uuid',
     ];
 
     /**
@@ -40,6 +42,20 @@ class Wedding extends Model
         'is_draft' => 'boolean',
         'is_published' => 'boolean',
     ];
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->wedding_uuid)) {
+                $model->wedding_uuid = Str::uuid();
+            }
+        });
+    }
 
     /**
      * Get the user that owns the wedding.
@@ -191,11 +207,11 @@ class Wedding extends Model
         if ($this->is_published) {
             return 'published';
         }
-        
+
         if ($this->is_draft) {
             return 'draft';
         }
-        
+
         return 'inactive';
     }
 
@@ -229,5 +245,13 @@ class Wedding extends Model
     public function scopeByUser($query, $userId)
     {
         return $query->where('user_id', $userId);
+    }
+
+    /**
+     * Find wedding by UUID.
+     */
+    public static function findByUuid(string $uuid): ?self
+    {
+        return static::where('wedding_uuid', $uuid)->first();
     }
 }

@@ -48,8 +48,8 @@ Route::middleware('guest')->group(function () {
 // Public routes (no auth required)
 Route::get('/', [FrontendController::class, 'landing'])->name('home');
 
-// Dashboard route (temporarily without auth for testing)
-Route::get('/dashboard', [FrontendController::class, 'dashboard'])->name('dashboard');
+// Dashboard route (protected)
+Route::get('/dashboard', [FrontendController::class, 'dashboard'])->middleware('auth')->name('dashboard');
 
 // Simple dashboard test route
 Route::get('/dashboard-simple', function () {
@@ -58,54 +58,57 @@ Route::get('/dashboard-simple', function () {
     ]);
 });
 
-// Onboarding routes (accessible without auth for testing)
-Route::get('/onboarding', [FrontendController::class, 'onboarding'])->name('onboarding');
-Route::get('/onboarding/couple-info', [FrontendController::class, 'coupleInfo'])->name('onboarding.couple-info');
-Route::get('/onboarding/wedding-location', [FrontendController::class, 'weddingLocation'])->name('onboarding.wedding-location');
-Route::get('/onboarding/design-selection', [FrontendController::class, 'designSelection'])->name('onboarding.design-selection');
-Route::get('/onboarding/wedding-url', [FrontendController::class, 'weddingUrl'])->name('onboarding.wedding-url');
-Route::get('/onboarding/activation', [FrontendController::class, 'activation'])->name('onboarding.activation');
+// Protected routes (require authentication)
+Route::middleware('auth')->group(function () {
+    // Onboarding routes
+    Route::get('/onboarding', [FrontendController::class, 'onboarding'])->name('onboarding');
+    Route::get('/onboarding/couple-info', [FrontendController::class, 'coupleInfo'])->name('onboarding.couple-info');
+    Route::get('/onboarding/wedding-location', [FrontendController::class, 'weddingLocation'])->name('onboarding.wedding-location');
+    Route::get('/onboarding/design-selection', [FrontendController::class, 'designSelection'])->name('onboarding.design-selection');
+    Route::get('/onboarding/wedding-url', [FrontendController::class, 'weddingUrl'])->name('onboarding.wedding-url');
+    Route::get('/onboarding/activation', [FrontendController::class, 'activation'])->name('onboarding.activation');
 
-// Dashboard routes (accessible without auth for testing)
-Route::get('/my-weddings', [FrontendController::class, 'myWeddings'])->name('weddings.my');
-Route::get('/wedding-invitations', [FrontendController::class, 'weddingInvitations'])->name('weddings.invitations');
-Route::get('/wedding/{id}', [FrontendController::class, 'weddingDetail'])->name('wedding.detail');
-Route::get('/wedding/{id}/configuration', [FrontendController::class, 'weddingConfiguration'])->name('weddings.configuration');
-Route::get('/weddings/{id}/design-configuration', [FrontendController::class, 'designConfiguration'])->name('weddings.design-configuration');
-Route::get('/wedding/{id}/couple', [FrontendController::class, 'weddingCoupleInfo'])->name('wedding.couple');
-Route::get('/wedding/{id}/location-time', [FrontendController::class, 'weddingVenueInfo'])->name('wedding.venue-info');
-Route::get('/wedding/{id}/guests', [FrontendController::class, 'guestList'])->name('wedding.guests');
-Route::get('/orders', [FrontendController::class, 'orders'])->name('orders.index');
-Route::get('/gallery', [FrontendController::class, 'gallery'])->name('gallery.index');
-Route::get('/analytics', [FrontendController::class, 'analytics'])->name('analytics.index');
-Route::get('/profile', [FrontendController::class, 'profile'])->name('profile');
-Route::get('/settings', [FrontendController::class, 'settings'])->name('settings');
-Route::get('/settings/title', [FrontendController::class, 'titleSettings'])->name('settings.title');
+    // Dashboard routes
+    Route::get('/my-weddings', [FrontendController::class, 'myWeddings'])->name('weddings.my');
+    Route::get('/wedding-invitations', [FrontendController::class, 'weddingInvitations'])->name('weddings.invitations');
+    Route::get('/wedding/{uuid}', [FrontendController::class, 'weddingDetail'])->name('wedding.detail');
+    Route::get('/wedding/{uuid}/configuration', [FrontendController::class, 'weddingConfiguration'])->name('weddings.configuration');
+    Route::get('/weddings/{uuid}/design-configuration', [FrontendController::class, 'designConfiguration'])->name('weddings.design-configuration');
+    Route::get('/wedding/{uuid}/couple', [FrontendController::class, 'weddingCoupleInfo'])->name('wedding.couple');
+    Route::get('/wedding/{uuid}/location-time', [FrontendController::class, 'weddingVenueInfo'])->name('wedding.venue-info');
+    Route::get('/wedding/{uuid}/guests', [FrontendController::class, 'guestList'])->name('wedding.guests');
+    Route::get('/orders', [FrontendController::class, 'orders'])->name('orders.index');
+    Route::get('/gallery', [FrontendController::class, 'gallery'])->name('gallery.index');
+    Route::get('/analytics', [FrontendController::class, 'analytics'])->name('analytics.index');
+    Route::get('/profile', [FrontendController::class, 'profile'])->name('profile');
+    Route::get('/settings', [FrontendController::class, 'settings'])->name('settings');
+    Route::get('/settings/title', [FrontendController::class, 'titleSettings'])->name('settings.title');
 
-// Music routes
-Route::get('/music', [FrontendController::class, 'music'])->name('music.index');
-Route::get('/music/library', [FrontendController::class, 'musicLibrary'])->name('music.library');
-Route::get('/music/upload', [FrontendController::class, 'musicUpload'])->name('music.upload');
+    // Music routes
+    Route::get('/music', [FrontendController::class, 'music'])->name('music.index');
+    Route::get('/music/library', [FrontendController::class, 'musicLibrary'])->name('music.library');
+    Route::get('/music/upload', [FrontendController::class, 'musicUpload'])->name('music.upload');
+
+    // Checkout routes
+    Route::get('/checkout', [FrontendController::class, 'checkout'])->name('checkout');
+    Route::get('/checkout/payment', [FrontendController::class, 'checkoutPayment'])->name('checkout.payment');
+    Route::get('/checkout/success', [FrontendController::class, 'checkoutSuccess'])->name('checkout.success');
+
+    // Reception QR Scanner routes
+    Route::get('/reception/scanner', [FrontendController::class, 'receptionScanner'])->name('reception.scanner');
+    Route::get('/reception/monitor', [FrontendController::class, 'monitorDisplay'])->name('reception.monitor');
+    Route::get('/reception/guest/{uuid}', [FrontendController::class, 'guestGreeting'])->name('reception.guest');
+
+    // Guestbook routes
+    Route::get('/guestbook', [FrontendController::class, 'guestbook'])->name('guestbook.index');
+    Route::get('/wedding/{uuid}/guestbook', [FrontendController::class, 'guestbook'])->name('wedding.guestbook');
+});
 
 // Public wedding routes
 Route::get('/preview/{slug}', [FrontendController::class, 'showWedding'])->name('wedding.preview');
 Route::get('/invitation/{slug}', [FrontendController::class, 'showWeddingInvitation'])->name('wedding.invitation');
 Route::get('/packages', [FrontendController::class, 'packages'])->name('packages.index');
-Route::get('/packages/{id}', [FrontendController::class, 'packageDetails'])->name('packages.show');
-
-// Checkout routes
-Route::get('/checkout', [FrontendController::class, 'checkout'])->name('checkout');
-Route::get('/checkout/payment', [FrontendController::class, 'checkoutPayment'])->name('checkout.payment');
-Route::get('/checkout/success', [FrontendController::class, 'checkoutSuccess'])->name('checkout.success');
-
-// Reception QR Scanner routes
-Route::get('/reception/scanner', [FrontendController::class, 'receptionScanner'])->name('reception.scanner');
-Route::get('/reception/monitor', [FrontendController::class, 'monitorDisplay'])->name('reception.monitor');
-Route::get('/reception/guest/{id}', [FrontendController::class, 'guestGreeting'])->name('reception.guest');
-
-// Guestbook routes
-Route::get('/guestbook', [FrontendController::class, 'guestbook'])->name('guestbook.index');
-Route::get('/wedding/{id}/guestbook', [FrontendController::class, 'guestbook'])->name('wedding.guestbook');
+    Route::get('/packages/{uuid}', [FrontendController::class, 'packageDetails'])->name('packages.show');
 
 // Test routes
 Route::get('/test/qr', function () {
@@ -119,6 +122,9 @@ Route::get('/test/404', function () {
         'message' => 'Test 404 page - Halaman yang Anda cari tidak ditemukan'
     ]);
 })->name('test.404');
+
+// Error pages
+Route::get('/419', [FrontendController::class, 'pageExpired'])->name('page.expired');
 
 // 404 Not Found route
 Route::fallback([FrontendController::class, 'notFound']);

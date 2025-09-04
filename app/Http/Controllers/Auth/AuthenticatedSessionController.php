@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Concerns\RefreshesCsrfToken;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthenticatedSessionController extends Controller
 {
+    use RefreshesCsrfToken;
     /**
      * Handle an incoming authentication request.
      */
@@ -18,6 +20,7 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+        $this->refreshCsrfToken($request); // Regenerate CSRF token after login
 
         return redirect()->intended('/dashboard')->with('success', 'Welcome back!');
     }
@@ -31,7 +34,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->invalidate();
 
-        $request->session()->regenerateToken();
+        $this->refreshCsrfToken($request);
 
         return redirect('/')->with('success', 'You have been logged out successfully.');
     }

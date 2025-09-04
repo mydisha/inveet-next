@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class SpecialInvitation extends Model
 {
@@ -23,6 +24,7 @@ class SpecialInvitation extends Model
         'is_active',
         'is_locked',
         'password',
+        'special_invitation_uuid',
     ];
 
     /**
@@ -34,6 +36,20 @@ class SpecialInvitation extends Model
         'is_active' => 'boolean',
         'is_locked' => 'boolean',
     ];
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->special_invitation_uuid)) {
+                $model->special_invitation_uuid = Str::uuid();
+            }
+        });
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -158,5 +174,13 @@ class SpecialInvitation extends Model
     public function scopeBySlug($query, $slug)
     {
         return $query->where('slug', $slug);
+    }
+
+    /**
+     * Find special invitation by UUID.
+     */
+    public static function findByUuid(string $uuid): ?self
+    {
+        return static::where('special_invitation_uuid', $uuid)->first();
     }
 }

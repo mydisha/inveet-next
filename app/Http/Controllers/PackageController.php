@@ -49,9 +49,9 @@ class PackageController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(int $id): JsonResponse
+    public function show(string $uuid): JsonResponse
     {
-        $package = $this->packageService->findById($id);
+        $package = $this->packageService->findByUuid($uuid);
 
         if (!$package) {
             return response()->json([
@@ -70,7 +70,7 @@ class PackageController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(Request $request, string $uuid): JsonResponse
     {
         $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -81,7 +81,7 @@ class PackageController extends Controller
             'is_active' => 'sometimes|boolean',
         ]);
 
-        $package = $this->packageService->update($id, $request->validated());
+        $package = $this->packageService->updateByUuid($uuid, $request->validated());
 
         if (!$package) {
             return response()->json([
@@ -100,9 +100,9 @@ class PackageController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $id): JsonResponse
+    public function destroy(string $uuid): JsonResponse
     {
-        $deleted = $this->packageService->delete($id);
+        $deleted = $this->packageService->deleteByUuid($uuid);
 
         if (!$deleted) {
             return response()->json([
@@ -184,13 +184,13 @@ class PackageController extends Controller
     /**
      * Update package discount
      */
-    public function updateDiscount(Request $request, int $id): JsonResponse
+    public function updateDiscount(Request $request, string $uuid): JsonResponse
     {
         $request->validate([
             'discount' => 'required|integer|min:0|max:100'
         ]);
 
-        $updated = $this->packageService->updateDiscount($id, $request->discount);
+        $updated = $this->packageService->updateDiscountByUuid($uuid, $request->discount);
 
         if (!$updated) {
             return response()->json([
@@ -208,9 +208,9 @@ class PackageController extends Controller
     /**
      * Toggle package recommendation
      */
-    public function toggleRecommendation(int $id): JsonResponse
+    public function toggleRecommendation(string $uuid): JsonResponse
     {
-        $toggled = $this->packageService->toggleRecommendation($id);
+        $toggled = $this->packageService->toggleRecommendationByUuid($uuid);
 
         if (!$toggled) {
             return response()->json([
@@ -229,9 +229,9 @@ class PackageController extends Controller
     /**
      * Activate package
      */
-    public function activate(int $id): JsonResponse
+    public function activate(string $uuid): JsonResponse
     {
-        $activated = $this->packageService->activatePackage($id);
+        $activated = $this->packageService->activatePackageByUuid($uuid);
 
         if (!$activated) {
             return response()->json([
@@ -249,9 +249,9 @@ class PackageController extends Controller
     /**
      * Deactivate package
      */
-    public function deactivate(int $id): JsonResponse
+    public function deactivate(string $uuid): JsonResponse
     {
-        $deactivated = $this->packageService->deactivatePackage($id);
+        $deactivated = $this->packageService->deactivatePackageByUuid($uuid);
 
         if (!$deactivated) {
             return response()->json([
@@ -269,14 +269,14 @@ class PackageController extends Controller
     /**
      * Calculate final price for a package
      */
-    public function calculatePrice(Request $request, int $id): JsonResponse
+    public function calculatePrice(Request $request, string $uuid): JsonResponse
     {
         $request->validate([
             'quantity' => 'sometimes|integer|min:1'
         ]);
 
-        $priceDetails = $this->packageService->calculateFinalPrice(
-            $id, 
+        $priceDetails = $this->packageService->calculateFinalPriceByUuid(
+            $uuid,
             $request->input('quantity', 1)
         );
 

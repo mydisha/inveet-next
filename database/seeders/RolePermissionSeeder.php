@@ -23,7 +23,7 @@ class RolePermissionSeeder extends Seeder
             'activate-users',
             'deactivate-users',
             'assign-roles',
-            
+
             // Wedding permissions
             'view-weddings',
             'create-weddings',
@@ -33,7 +33,7 @@ class RolePermissionSeeder extends Seeder
             'unpublish-weddings',
             'activate-weddings',
             'deactivate-weddings',
-            
+
             // Order permissions
             'view-orders',
             'create-orders',
@@ -43,7 +43,7 @@ class RolePermissionSeeder extends Seeder
             'cancel-orders',
             'mark-orders-paid',
             'mark-orders-void',
-            
+
             // Package permissions
             'view-packages',
             'create-packages',
@@ -53,7 +53,7 @@ class RolePermissionSeeder extends Seeder
             'deactivate-packages',
             'manage-discounts',
             'toggle-recommendations',
-            
+
             // Special Invitation permissions
             'view-invitations',
             'create-invitations',
@@ -63,7 +63,7 @@ class RolePermissionSeeder extends Seeder
             'unlock-invitations',
             'manage-passwords',
             'bulk-create-invitations',
-            
+
             // Theme permissions
             'view-themes',
             'create-themes',
@@ -71,7 +71,7 @@ class RolePermissionSeeder extends Seeder
             'delete-themes',
             'activate-themes',
             'deactivate-themes',
-            
+
             // System permissions
             'view-statistics',
             'manage-settings',
@@ -79,7 +79,7 @@ class RolePermissionSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
         // Create roles
@@ -112,8 +112,8 @@ class RolePermissionSeeder extends Seeder
         ];
 
         foreach ($roles as $roleName => $rolePermissions) {
-            $role = Role::create(['name' => $roleName]);
-            $role->givePermissionTo($rolePermissions);
+            $role = Role::firstOrCreate(['name' => $roleName]);
+            $role->syncPermissions($rolePermissions);
         }
 
         $this->command->info('Roles and permissions seeded successfully!');

@@ -25,6 +25,7 @@ import {
     X
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { logout } from '../../lib/auth';
 
 interface Wedding {
     id: number;
@@ -82,22 +83,22 @@ export default function InvitationList({ user, weddings }: InvitationListProps) 
         };
     }, [sidebarOpen]);
 
-    const handleLogout = () => {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '/logout';
-
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        if (csrfToken) {
-            const tokenInput = document.createElement('input');
-            tokenInput.type = 'hidden';
-            tokenInput.name = '_token';
-            tokenInput.value = csrfToken;
-            form.appendChild(tokenInput);
+    const handleLogout = async () => {
+        try {
+            await logout({
+                useApi: true,
+                redirectTo: '/',
+                showFeedback: true
+            });
+        } catch (error) {
+            console.error('Logout failed:', error);
+            // Fallback to form-based logout
+            await logout({
+                useApi: false,
+                redirectTo: '/',
+                showFeedback: false
+            });
         }
-
-        document.body.appendChild(form);
-        form.submit();
     };
 
     const navigationItems = [
@@ -145,11 +146,13 @@ export default function InvitationList({ user, weddings }: InvitationListProps) 
                         {/* Logo */}
                         <div className="flex items-center justify-between h-16 px-6 border-b border-primary/20">
                             <div className="flex items-center">
-                                <img
-                                    src="/inveet-logo.png"
-                                    alt="Inveet.Id"
-                                    className="h-8 w-auto"
-                                />
+                                <Link href="/dashboard">
+                                    <img
+                                        src="/inveet-logo.png"
+                                        alt="Inveet.Id"
+                                        className="h-8 w-auto hover:opacity-80 transition-opacity duration-300 cursor-pointer"
+                                    />
+                                </Link>
                             </div>
                             <Button
                                 variant="ghost"

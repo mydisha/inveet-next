@@ -101,16 +101,16 @@ export function WeddingCard({
   // Get cover image
   const getCoverImage = () => {
     if (imageError || !wedding.theme?.preview_image) {
-      // Fallback to theme-based gradient
+      // Fallback to theme-based gradient using primary color scheme
       const themeSlug = wedding.theme?.slug || 'default';
       const gradients = {
-        'classic-elegance': 'bg-gradient-to-br from-amber-100 to-yellow-200', // Rose gold theme
+        'classic-elegance': 'bg-gradient-to-br from-primary/20 to-primary-light/40',
         'modern-minimalist': 'bg-gradient-to-br from-gray-100 to-gray-200',
-        'rustic-charm': 'bg-gradient-to-br from-amber-100 to-orange-200',
+        'rustic-charm': 'bg-gradient-to-br from-primary/15 to-primary-glow/30',
         'tropical-paradise': 'bg-gradient-to-br from-green-100 to-teal-200',
         'vintage-romance': 'bg-gradient-to-br from-purple-100 to-indigo-200',
-        'bohemian-bliss': 'bg-gradient-to-br from-yellow-100 to-orange-200',
-        'default': 'bg-gradient-to-br from-amber-100 to-yellow-200' // Rose gold default
+        'bohemian-bliss': 'bg-gradient-to-br from-primary-light/30 to-primary/20',
+        'default': 'bg-gradient-to-br from-primary/20 to-primary-light/40' // Primary blue default
       };
       return gradients[themeSlug as keyof typeof gradients] || gradients.default;
     }
@@ -145,7 +145,7 @@ export function WeddingCard({
             "w-full h-full flex items-center justify-center",
             getCoverImage()
           )}>
-            <Heart className="w-16 h-16 text-white/60" />
+            <Heart className="w-16 h-16 text-primary/40" />
           </div>
         )}
 

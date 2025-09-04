@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Link, useForm, usePage } from '@inertiajs/react';
-import { ArrowRight, CheckCircle, Eye, EyeOff, Lock, Mail, Sparkles, XCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle, Eye, EyeOff, Lock, Mail, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function Login() {
@@ -28,7 +28,12 @@ export default function Login() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post('/login');
+    post('/login', {
+      onSuccess: () => {
+        // CSRF token will be refreshed automatically by the server
+        // No need to manually refresh here as the redirect will load a fresh page
+      }
+    });
   };
 
   const handleGoogleLogin = () => {
@@ -36,7 +41,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary-light/10 flex items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary-light/10 flex items-center justify-center p-6 relative overflow-hidden font-inter">
       {/* Background decorative elements matching landing page */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div className="shape-float-1 top-20 right-20 w-32 h-32" style={{ animationDelay: '0s' }}></div>
@@ -50,11 +55,13 @@ export default function Login() {
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center mb-4">
-            <img
-              src="/inveet-logo.png"
-              alt="Inveet.Id"
-              className="h-12 w-auto"
-            />
+            <Link href="/">
+              <img
+                src="/inveet-logo.png"
+                alt="Inveet.Id"
+                className="h-12 w-auto hover:opacity-80 transition-opacity duration-300 cursor-pointer"
+              />
+            </Link>
           </div>
           <p className="text-foreground/70 mt-2">Your Digital Wedding Journey</p>
         </div>
@@ -62,10 +69,10 @@ export default function Login() {
         {/* Auth Card */}
         <Card className="shadow-2xl border border-border/50 bg-card/95 backdrop-blur-sm">
           <CardHeader className="text-center pb-6">
-            <CardTitle className="text-2xl font-bold text-foreground">
+            <CardTitle className="text-2xl font-inter-semibold text-foreground">
               Welcome Back
             </CardTitle>
-            <CardDescription className="text-muted-foreground">
+            <CardDescription className="text-muted-foreground font-inter-normal">
               Sign in to continue to your dashboard
             </CardDescription>
           </CardHeader>
@@ -129,7 +136,7 @@ export default function Login() {
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-foreground font-medium">
+                <Label htmlFor="email" className="text-foreground font-inter-medium">
                   Email address
                 </Label>
                 <div className="relative">
@@ -152,7 +159,7 @@ export default function Login() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-foreground font-medium">
+                <Label htmlFor="password" className="text-foreground font-inter-medium">
                   Password
                 </Label>
                 <div className="relative">
@@ -190,13 +197,13 @@ export default function Login() {
                     checked={data.remember}
                     onChange={(e) => setData('remember', e.target.checked)}
                   />
-                  <Label htmlFor="remember" className="text-sm text-muted-foreground">
+                  <Label htmlFor="remember" className="text-sm text-muted-foreground font-inter-normal">
                     Remember me
                   </Label>
                 </div>
                 <Link
                   href="/forgot-password"
-                  className="text-sm text-primary hover:text-primary/80 transition-colors duration-300"
+                  className="text-sm text-primary hover:text-primary/80 transition-colors duration-300 font-inter-medium"
                 >
                   Forgot password?
                 </Link>
@@ -204,11 +211,10 @@ export default function Login() {
 
               <Button
                 type="submit"
-                className="w-full btn-hero group"
+                className="w-full btn-hero group font-inter-medium"
                 size="lg"
                 disabled={processing}
               >
-                <Sparkles className="w-4 h-4 mr-2 animate-pulse" />
                 {processing ? 'Signing In...' : 'Sign In'}
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
               </Button>
@@ -216,11 +222,11 @@ export default function Login() {
 
             {/* Sign Up Link */}
             <div className="text-center pt-4">
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground font-inter-normal">
                 Don't have an account?{' '}
                 <Link
                   href="/register"
-                  className="text-primary hover:text-primary/80 font-medium transition-colors duration-300"
+                  className="text-primary hover:text-primary/80 font-inter-medium transition-colors duration-300"
                 >
                   Sign up
                 </Link>
@@ -233,7 +239,7 @@ export default function Login() {
         <div className="text-center mt-6">
           <Link
             href="/"
-            className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm group inline-flex items-center"
+            className="text-muted-foreground hover:text-primary transition-colors duration-300 text-sm group inline-flex items-center font-inter-normal"
           >
             <ArrowRight className="w-4 h-4 mr-1 rotate-180 group-hover:-translate-x-1 transition-transform duration-300" />
             Back to home

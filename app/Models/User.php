@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -26,6 +27,7 @@ class User extends Authenticatable
         'socialite_avatar',
         'phone_number',
         'is_active',
+        'user_uuid',
     ];
 
     /**
@@ -48,6 +50,20 @@ class User extends Authenticatable
         'password' => 'hashed',
         'is_active' => 'boolean',
     ];
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->user_uuid)) {
+                $model->user_uuid = Str::uuid();
+            }
+        });
+    }
 
     /**
      * Get the weddings for the user.
@@ -151,5 +167,13 @@ class User extends Authenticatable
     public function hasSocialAuth(): bool
     {
         return !empty($this->socialite_id);
+    }
+
+    /**
+     * Find user by UUID.
+     */
+    public static function findByUuid(string $uuid): ?self
+    {
+        return static::where('user_uuid', $uuid)->first();
     }
 }

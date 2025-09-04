@@ -23,6 +23,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
             'role' => \App\Http\Middleware\CheckRole::class,
             'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+            'auth' => \App\Http\Middleware\Authenticate::class,
+            'spatie.role' => \App\Http\Middleware\RoleMiddleware::class,
+            'spatie.permission' => \App\Http\Middleware\PermissionMiddleware::class,
         ]);
 
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
@@ -34,5 +37,13 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Sesi Anda telah berakhir. Silakan refresh halaman.',
+                    'error' => 'CSRF token mismatch'
+                ], 419);
+            }
+            return redirect()->route('page.expired');
+        });
     })->create();

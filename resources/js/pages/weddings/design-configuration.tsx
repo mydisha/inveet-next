@@ -1,15 +1,14 @@
-import DashboardLayout from '@/components/layout/DashboardLayout';
+import DashboardPage from '@/components/dashboard/DashboardPage';
+import StandardFormLayout from '@/components/dashboard/StandardFormLayout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import PageHeader from '@/components/ui/page-header';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import {
-    ArrowLeft,
     Check,
     Eye,
     Filter,
@@ -22,7 +21,28 @@ import {
     Upload,
     X
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import ApiService from '../../services/api';
+
+interface Theme {
+  id: number;
+  name: string;
+  description: string;
+  slug: string;
+  is_active: boolean;
+  preview_image?: string;
+  preview_image_url?: string;
+  is_public?: boolean;
+  images?: Array<{
+    id: number;
+    image_path: string;
+    alt_text?: string;
+  }>;
+  packages?: Array<{
+    id: number;
+    name: string;
+  }>;
+}
 
 interface DesignTemplate {
   id: string;
@@ -69,8 +89,66 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
   const [isSaving, setIsSaving] = useState(false);
   const [showCustomPalette, setShowCustomPalette] = useState(false);
   const [customColors, setCustomColors] = useState<string[]>(['#8B4513', '#DAA520', '#F5F5DC', '#FFFFFF']);
+  const [themes, setThemes] = useState<Theme[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const designTemplates: DesignTemplate[] = [
+  // Fetch themes from API
+  useEffect(() => {
+    const fetchThemes = async () => {
+      try {
+        console.log('🎨 Design Configuration: Fetching themes from API...');
+        setLoading(true);
+        setError(null);
+
+        // Try direct fetch first to debug
+        const directResponse = await fetch('/api/themes/active?limit=12');
+        const directData = await directResponse.json();
+        console.log('🎨 Design Configuration: Direct fetch response:', directData);
+
+        if (directData.success && directData.data) {
+          console.log('🎨 Design Configuration: Themes loaded successfully:', directData.data.length, 'themes');
+          setThemes(directData.data);
+        } else {
+          console.error('🎨 Design Configuration: Direct fetch failed:', directData);
+          setError('Failed to load themes');
+        }
+      } catch (err) {
+        console.error('🎨 Design Configuration: Error fetching themes:', err);
+        setError(`Failed to load themes: ${err.message}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchThemes();
+  }, []);
+
+  // Convert themes to design templates format for compatibility
+  const designTemplates: DesignTemplate[] = themes.map(theme => {
+    console.log('🎨 Design Configuration: Converting theme:', theme);
+    return {
+      id: theme.id.toString(),
+      name: theme.name,
+      category: theme.name.split(' ')[0] || 'General',
+      description: theme.description,
+      preview: theme.preview_image_url || '/api/placeholder/400/300',
+      features: [
+        'Responsive design',
+        'Customizable colors',
+        'Modern layout',
+        'Mobile optimized'
+      ],
+      colors: ['#8B4513', '#DAA520', '#F5F5DC', '#FFFFFF'], // Default colors
+      popular: theme.is_active,
+      trending: false
+    };
+  });
+
+  console.log('🎨 Design Configuration: Converted design templates:', designTemplates);
+
+  // Fallback design templates if no themes are loaded
+  const fallbackDesignTemplates: DesignTemplate[] = [
     {
       id: 'elegant-classic',
       name: 'Elegant Classic',
@@ -169,28 +247,41 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
     }
   ];
 
+  // Use themes if available, otherwise fallback to hardcoded templates
+  // Only use fallback if we're still loading or if there's an error AND no themes
+  const templatesToUse = themes.length > 0 ? designTemplates : fallbackDesignTemplates;
+
+  // Debug logging
+  console.log('🎨 Design Configuration: State:', {
+    loading,
+    error,
+    themesCount: themes.length,
+    usingApiData: !loading && !error && themes.length > 0,
+    templatesCount: templatesToUse.length
+  });
+
   // Get unique categories
   const categories = useMemo(() => {
-    const uniqueCategories = Array.from(new Set(designTemplates.map(template => template.category)));
+    const uniqueCategories = Array.from(new Set(templatesToUse.map(template => template.category)));
     return [
-      { id: 'all', name: 'All Designs', count: designTemplates.length },
+      { id: 'all', name: 'All Designs', count: templatesToUse.length },
       ...uniqueCategories.map(category => ({
         id: category.toLowerCase(),
         name: category,
-        count: designTemplates.filter(template => template.category === category).length
+        count: templatesToUse.filter(template => template.category === category).length
       }))
     ];
-  }, [designTemplates]);
+  }, [templatesToUse]);
 
   // Filter templates based on selected category
   const filteredTemplates = useMemo(() => {
     if (selectedCategory === 'all') {
-      return designTemplates;
+      return templatesToUse;
     }
-    return designTemplates.filter(template =>
+    return templatesToUse.filter(template =>
       template.category.toLowerCase() === selectedCategory
     );
-  }, [designTemplates, selectedCategory]);
+  }, [templatesToUse, selectedCategory]);
 
   const handleCoverImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -251,26 +342,20 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
     <>
       <Head title="Design Configuration" />
 
-      <DashboardLayout user={user || null} currentPath="/weddings/design-configuration">
-        {/* Back Navigation */}
-        <div className="mb-4">
-          <Link href="/my-weddings">
-            <Button variant="outline" size="sm" className="flex items-center">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Weddings
-            </Button>
-          </Link>
-        </div>
-
-        {/* Header */}
-        <PageHeader
-          icon={Palette}
+      <DashboardPage
+        title={`${wedding?.title || 'Wedding'} - Design Configuration`}
+        user={user || null}
+        currentPath={`/weddings/${wedding?.id}/design-configuration`}
+      >
+        <StandardFormLayout
           title="Design Configuration"
-          description="Customize your wedding invitation design, cover image, and color palette"
-        />
+          backHref={`/wedding/${wedding?.id}`}
+          backLabel="Kembali ke Detail Pernikahan"
+          icon={Palette}
+          maxWidth="7xl"
+        >
 
-        <div className="max-w-7xl mx-auto">
-          <Tabs defaultValue="cover" className="space-y-6">
+        <Tabs defaultValue="cover" className="space-y-6">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="cover" className="flex items-center">
                 <ImageIcon className="w-4 h-4 mr-2" />
@@ -381,6 +466,16 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
                   </CardTitle>
                   <CardDescription>
                     Choose from our collection of beautiful wedding invitation templates.
+                    {themes.length > 0 && (
+                      <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        {themes.length} themes from database
+                      </span>
+                    )}
+                    {themes.length === 0 && !loading && (
+                      <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        Using sample templates
+                      </span>
+                    )}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -437,8 +532,79 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
 
                   <Separator />
 
+                  {/* Debug Info */}
+                  {process.env.NODE_ENV === 'development' && (
+                    <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div className="text-sm text-blue-800">
+                        <strong>Debug Info:</strong>
+                        <br />• Loading: {loading ? 'Yes' : 'No'}
+                        <br />• Error: {error || 'None'}
+                        <br />• Themes from API: {themes.length}
+                        <br />• Using API Data: {themes.length > 0 ? 'Yes' : 'No'}
+                        <br />• Total Templates: {templatesToUse.length}
+                        <br />
+                        <div className="flex gap-2 mt-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={async () => {
+                              console.log('🧪 Manual API test...');
+                              try {
+                                const response = await ApiService.getActiveThemes();
+                                console.log('🧪 Manual API response:', response);
+                              } catch (err) {
+                                console.error('🧪 Manual API error:', err);
+                              }
+                            }}
+                          >
+                            Test API Call
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={async () => {
+                              console.log('🧪 Direct fetch test...');
+                              try {
+                                        const response = await fetch('/api/themes/active?limit=12');
+        const data = await response.json();
+                                console.log('🧪 Direct fetch response:', data);
+                              } catch (err) {
+                                console.error('🧪 Direct fetch error:', err);
+                              }
+                            }}
+                          >
+                            Test Direct Fetch
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Template Grid */}
-                  {filteredTemplates.length > 0 ? (
+                  {loading ? (
+                    <div className="text-center py-12">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                      <p className="text-muted-foreground">Loading themes...</p>
+                    </div>
+                  ) : error ? (
+                    <div className="text-center py-12">
+                      <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <X className="w-8 h-8 text-red-500" />
+                      </div>
+                      <h3 className="text-lg font-medium text-foreground mb-2">Error loading themes</h3>
+                      <p className="text-muted-foreground text-sm mb-4">{error}</p>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => window.location.reload()}
+                        className="flex items-center"
+                      >
+                        <X className="w-4 h-4 mr-2" />
+                        Try Again
+                      </Button>
+                    </div>
+                  ) : filteredTemplates.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {filteredTemplates.map((template) => (
                         <div
@@ -750,7 +916,7 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
           )}
 
           {/* Save Button */}
-          <div className="flex justify-end pt-6 border-t border-border/50">
+          <div className="flex justify-end pt-6">
             <Button
               onClick={handleSave}
               disabled={isSaving}
@@ -789,8 +955,8 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
               </CardContent>
             </Card>
           )}
-        </div>
-      </DashboardLayout>
+        </StandardFormLayout>
+      </DashboardPage>
     </>
   );
 }

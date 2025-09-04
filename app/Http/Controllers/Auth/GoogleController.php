@@ -56,12 +56,16 @@ class GoogleController extends Controller
 
                 // Assign default role if needed
                 if (method_exists($user, 'assignRole')) {
-                    $user->assignRole('user');
+                    $user->assignRole('customer');
                 }
             }
 
             // Login the user
             Auth::login($user);
+
+            // Regenerate session and CSRF token after Google OAuth login
+            $request->session()->regenerate();
+            $request->session()->regenerateToken();
 
             return redirect()->intended('/dashboard')->with('success', 'Welcome to Inveet! You have been logged in successfully.');
 

@@ -30,6 +30,9 @@
         <meta property="twitter:description" content="@yield('twitter_description', 'Create beautiful digital wedding invitations and manage your special day with Inveet.')">
         <meta property="twitter:image" content="@yield('twitter_image', url('/images/twitter-image.jpg'))">
 
+        <!-- CSRF Token -->
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+
         <!-- Additional SEO Meta Tags -->
         <meta name="theme-color" content="#8B5CF6">
         <meta name="msapplication-TileColor" content="#8B5CF6">
@@ -48,7 +51,7 @@
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700" rel="stylesheet" />
 
         <!-- Vite Assets -->
         @viteReactRefresh

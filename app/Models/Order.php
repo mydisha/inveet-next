@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Order extends Model
 {
@@ -32,6 +33,7 @@ class Order extends Model
         'last_checked_at',
         'payment_url',
         'external_transaction_id',
+        'order_uuid',
     ];
 
     /**
@@ -49,6 +51,20 @@ class Order extends Model
         'void_at' => 'datetime',
         'last_checked_at' => 'datetime',
     ];
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->order_uuid)) {
+                $model->order_uuid = Str::uuid();
+            }
+        });
+    }
 
     /**
      * Get the user that owns the order.
@@ -210,5 +226,13 @@ class Order extends Model
     public function scopeByPackage($query, $packageId)
     {
         return $query->where('package_id', $packageId);
+    }
+
+    /**
+     * Find order by UUID.
+     */
+    public static function findByUuid(string $uuid): ?self
+    {
+        return static::where('order_uuid', $uuid)->first();
     }
 }

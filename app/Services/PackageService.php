@@ -35,6 +35,11 @@ class PackageService implements BaseServiceInterface
         return $this->packageRepository->find($id);
     }
 
+    public function findByUuid(string $uuid)
+    {
+        return $this->packageRepository->findByUuid($uuid);
+    }
+
     public function create(array $data)
     {
         // Set default values
@@ -51,9 +56,19 @@ class PackageService implements BaseServiceInterface
         return $this->packageRepository->update($id, $data);
     }
 
+    public function updateByUuid(string $uuid, array $data)
+    {
+        return $this->packageRepository->updateByUuid($uuid, $data);
+    }
+
     public function delete(int $id)
     {
         return $this->packageRepository->delete($id);
+    }
+
+    public function deleteByUuid(string $uuid)
+    {
+        return $this->packageRepository->deleteByUuid($uuid);
     }
 
     public function paginate(int $perPage = 15, array $filters = [])
@@ -91,9 +106,24 @@ class PackageService implements BaseServiceInterface
         return $this->packageRepository->updateDiscount($packageId, $discount);
     }
 
+    public function updateDiscountByUuid(string $uuid, int $discount)
+    {
+        // Validate discount percentage
+        if ($discount < 0 || $discount > 100) {
+            return false;
+        }
+
+        return $this->packageRepository->updateDiscountByUuid($uuid, $discount);
+    }
+
     public function toggleRecommendation(int $packageId)
     {
         return $this->packageRepository->toggleRecommendation($packageId);
+    }
+
+    public function toggleRecommendationByUuid(string $uuid)
+    {
+        return $this->packageRepository->toggleRecommendationByUuid($uuid);
     }
 
     public function activatePackage(int $packageId)
@@ -101,14 +131,46 @@ class PackageService implements BaseServiceInterface
         return $this->packageRepository->activatePackage($packageId);
     }
 
+    public function activatePackageByUuid(string $uuid)
+    {
+        return $this->packageRepository->activatePackageByUuid($uuid);
+    }
+
     public function deactivatePackage(int $packageId)
     {
         return $this->packageRepository->deactivatePackage($packageId);
     }
 
+    public function deactivatePackageByUuid(string $uuid)
+    {
+        return $this->packageRepository->deactivatePackageByUuid($uuid);
+    }
+
     public function calculateFinalPrice(int $packageId, int $quantity = 1): ?array
     {
         $package = $this->findById($packageId);
+        if (!$package || !$package->is_active) {
+            return null;
+        }
+
+        $originalPrice = $package->price;
+        $discountAmount = ($originalPrice * $package->discount) / 100;
+        $finalPrice = $originalPrice - $discountAmount;
+        $totalPrice = $finalPrice * $quantity;
+
+        return [
+            'original_price' => $originalPrice,
+            'discount_percentage' => $package->discount,
+            'discount_amount' => $discountAmount,
+            'final_price' => $finalPrice,
+            'quantity' => $quantity,
+            'total_price' => $totalPrice
+        ];
+    }
+
+    public function calculateFinalPriceByUuid(string $uuid, int $quantity = 1): ?array
+    {
+        $package = $this->findByUuid($uuid);
         if (!$package || !$package->is_active) {
             return null;
         }

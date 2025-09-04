@@ -12,11 +12,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('socialite_id')->nullable()->after('password');
-            $table->string('socialite_name')->nullable()->after('socialite_id');
-            $table->string('socialite_avatar')->nullable()->after('socialite_name');
-            $table->string('phone_number')->nullable()->after('socialite_avatar');
-            $table->boolean('is_active')->default(true)->after('phone_number');
+            if (!Schema::hasColumn('users', 'socialite_id')) {
+                $table->string('socialite_id')->nullable()->after('password');
+            }
+            if (!Schema::hasColumn('users', 'socialite_name')) {
+                $table->string('socialite_name')->nullable()->after('socialite_id');
+            }
+            if (!Schema::hasColumn('users', 'socialite_avatar')) {
+                $table->string('socialite_avatar')->nullable()->after('socialite_name');
+            }
+            if (!Schema::hasColumn('users', 'phone_number')) {
+                $table->string('phone_number')->nullable()->after('socialite_avatar');
+            }
+            if (!Schema::hasColumn('users', 'is_active')) {
+                $table->boolean('is_active')->default(true)->after('phone_number');
+            }
         });
     }
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Theme extends Model
 {
@@ -19,7 +20,10 @@ class Theme extends Model
         'description',
         'slug',
         'is_active',
+        'is_public',
+        'preview_image',
         'user_id',
+        'theme_uuid',
     ];
 
     /**
@@ -29,7 +33,22 @@ class Theme extends Model
      */
     protected $casts = [
         'is_active' => 'boolean',
+        'is_public' => 'boolean',
     ];
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->theme_uuid)) {
+                $model->theme_uuid = Str::uuid();
+            }
+        });
+    }
 
     /**
      * Get the user that owns the theme.
@@ -60,7 +79,7 @@ class Theme extends Model
      */
     public function images()
     {
-        return $this->hasMany(ThemeImage::class);
+        return $this->hasMany(ThemeImage::class, 'themes_id');
     }
 
     /**
@@ -69,6 +88,25 @@ class Theme extends Model
     public function meta()
     {
         return $this->hasMany(ThemeMeta::class);
+    }
+
+    /**
+     * Get the full URL for the preview image.
+     */
+    public function getPreviewImageUrlAttribute(): ?string
+    {
+        if (!$this->preview_image) {
+            return null;
+        }
+
+        // If it's already a full URL, return as is
+        if (filter_var($this->preview_image, FILTER_VALIDATE_URL)) {
+            return $this->preview_image;
+        }
+
+        // If it's a relative path, prepend the AWS URL
+        $awsUrl = config('filesystems.disks.s3.url') ?: env('AWS_URL');
+        return $awsUrl ? rtrim($awsUrl, '/') . '/' . ltrim($this->preview_image, '/') : $this->preview_image;
     }
 
     /**
@@ -109,5 +147,13 @@ class Theme extends Model
     public function scopeByUser($query, $userId)
     {
         return $query->where('user_id', $userId);
+    }
+
+    /**
+     * Find theme by UUID.
+     */
+    public static function findByUuid(string $uuid): ?self
+    {
+        return static::where('theme_uuid', $uuid)->first();
     }
 }

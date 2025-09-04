@@ -79,7 +79,8 @@ export const routes = {
   },
 
   // Error pages
-  notFound: '/404'
+  notFound: '/404',
+  pageExpired: '/419'
 };
 
 // API endpoints configuration
@@ -139,6 +140,14 @@ export const apiEndpoints = {
     calculatePrice: (id: string | number) => `/api/packages/${id}/calculate-price`,
     getStats: '/api/packages/stats',
     getByPriceRange: '/api/packages/price-range',
+  },
+
+  // Theme management
+  themes: {
+    index: '/api/themes',
+    show: (id: string | number) => `/api/themes/${id}`,
+    getActive: '/api/themes/active',
+    findBySlug: (slug: string) => `/api/themes/slug/${slug}`,
   },
 
   // Order management

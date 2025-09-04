@@ -1,72 +1,121 @@
 import { Eye, Heart } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from './ui/button';
+
+interface Theme {
+  id: number;
+  name: string;
+  description: string;
+  slug: string;
+  is_active: boolean;
+  preview_image?: string;
+  preview_image_url?: string;
+  is_public?: boolean;
+  images?: Array<{
+    id: number;
+    image_path: string;
+    alt_text?: string;
+  }>;
+  packages?: Array<{
+    id: number;
+    name: string;
+  }>;
+}
 
 const InvitationShowcase = () => {
   const [activeCategory, setActiveCategory] = useState('All');
+  const [themes, setThemes] = useState<Theme[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const invitationDesigns = [
-    {
-      id: 1,
-      title: 'Happy Peach',
-      category: 'Classic',
-      image: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=400&h=600&fit=crop',
-      description: 'Beautiful peach design with elegant accents',
-      popular: true,
-      colors: ['#B68973', '#EADBC8', '#F9F5F0']
-    },
-    {
-      id: 2,
-      title: 'Elegant Green',
-      category: 'Contemporary',
-      image: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=600&fit=crop',
-      description: 'Clean lines with elegant green typography',
-      popular: false,
-      colors: ['#2C3E50', '#ECF0F1', '#95A5A6']
-    },
-    {
-      id: 3,
-      title: 'Dark Flower',
-      category: 'Vintage',
-      image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=600&fit=crop',
-      description: 'Classic dark style with romantic flower elements',
-      popular: true,
-      colors: ['#8D6E63', '#D7CCC8', '#BCAAA4']
-    },
-    {
-      id: 4,
-      title: 'Pastel Floral',
-      category: 'Themed',
-      image: 'https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?w=400&h=600&fit=crop',
-      description: 'Perfect for romantic pastel weddings',
-      popular: false,
-      colors: ['#4CAF50', '#81C784', '#C8E6C9']
-    },
-    {
-      id: 5,
-      title: 'Modern Elegant',
-      category: 'Premium',
-      image: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&h=600&fit=crop',
-      description: 'Luxurious modern design with premium elements',
-      popular: true,
-      colors: ['#C9A227', '#F9E79F', '#FDEBD0']
-    },
-    {
-      id: 6,
-      title: 'Sparkling Flowers',
-      category: 'Boho',
-      image: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=400&h=600&fit=crop',
-      description: 'Free-spirited design with sparkling flower elements',
-      popular: false,
-      colors: ['#6D4C41', '#A1887F', '#D7CCC8']
-    }
-  ];
+  // Fetch themes from API
+  useEffect(() => {
+    const fetchThemes = async () => {
+      try {
+        console.log('🏠 Landing Page: Fetching themes from API...');
+        setLoading(true);
+        setError(null);
 
-  const categories = ['All', 'Classic', 'Contemporary', 'Vintage', 'Themed', 'Premium', 'Boho'];
+        const response = await fetch('/api/themes/active?limit=12');
+        const data = await response.json();
+        console.log('🏠 Landing Page: API Response:', data);
 
-  const filteredDesigns = activeCategory === 'All'
-    ? invitationDesigns
-    : invitationDesigns.filter(design => design.category === activeCategory);
+        if (data.success && data.data) {
+          console.log('🏠 Landing Page: Themes loaded successfully:', data.data.length, 'themes');
+          console.log('🏠 Landing Page: First theme data:', data.data[0]);
+          console.log('🏠 Landing Page: First theme preview_image_url:', data.data[0]?.preview_image_url);
+          setThemes(data.data);
+        } else {
+          console.error('🏠 Landing Page: API returned unsuccessful response:', data);
+          setError('Failed to load themes');
+        }
+      } catch (err) {
+        console.error('🏠 Landing Page: Error fetching themes:', err);
+        setError('Failed to load themes');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchThemes();
+  }, []);
+
+  // Get unique categories from themes
+  const categories = ['All', ...Array.from(new Set(themes.map(theme => theme.name.split(' ')[0])))];
+
+  const filteredThemes = activeCategory === 'All'
+    ? themes
+    : themes.filter(theme => theme.name.split(' ')[0] === activeCategory);
+
+  // Loading state
+  if (loading) {
+    return (
+      <section id="showcase" className="py-24 bg-gradient-to-b from-primary-light/5 to-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2">
+              <span className="text-primary text-sm font-medium">Pilihan Desain</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold mt-4">
+              Pilih tema undangan yang menarik
+            </h2>
+            <div className="mt-8">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-4 text-muted-foreground">Memuat tema...</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <section id="showcase" className="py-24 bg-gradient-to-b from-primary-light/5 to-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2">
+              <span className="text-primary text-sm font-medium">Pilihan Desain</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold mt-4">
+              Pilih tema undangan yang menarik
+            </h2>
+            <div className="mt-8">
+              <p className="text-red-500">{error}</p>
+              <Button
+                onClick={() => window.location.reload()}
+                className="mt-4"
+                variant="outline"
+              >
+                Coba Lagi
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="showcase" className="py-24 bg-gradient-to-b from-primary-light/5 to-background">
@@ -76,9 +125,14 @@ const InvitationShowcase = () => {
           <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2">
             <span className="text-primary text-sm font-medium">Pilihan Desain</span>
           </div>
-                      <h2 className="text-4xl md:text-5xl font-bold">
-              Pilih tema undangan yang menarik
-            </h2>
+                                <h2 className="text-4xl md:text-5xl font-bold">
+            Pilih tema undangan yang menarik
+          </h2>
+          {themes.length > 0 && (
+            <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+              {themes.length} tema tersedia dari database
+            </div>
+          )}
         </div>
 
         {/* Category Filter */}
@@ -95,29 +149,44 @@ const InvitationShowcase = () => {
           ))}
         </div>
 
-        {/* Designs Grid */}
+        {/* Themes Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredDesigns.map((design, index) => (
+          {filteredThemes.map((theme, index) => (
             <div
-              key={design.id}
+              key={theme.id}
               className="stagger-animation comfort-card group relative bg-card rounded-2xl overflow-hidden shadow-md"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              {/* Popular Badge */}
-              {design.popular && (
+              {/* Active Badge */}
+              {theme.is_active && (
                 <div className="absolute top-3 left-3 bg-accent text-accent-foreground px-2.5 py-1 rounded-full text-[10px] font-medium z-10 flex items-center gap-1">
                   <Heart className="w-3 h-3 fill-current" />
-                  Popular
+                  Available
                 </div>
               )}
 
               {/* Image */}
               <div className="relative aspect-[4/3] overflow-hidden">
+                {console.log('🏠 Landing Page: Rendering image for theme:', theme.name, 'preview_image_url:', theme.preview_image_url)}
                 <img
-                  src={design.image}
-                  alt={design.title}
+                  src={theme.preview_image_url || '/api/placeholder/400/300'}
+                  alt={theme.name}
                   loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
+                  onError={(e) => {
+                    console.error('🏠 Landing Page: Image failed to load:', {
+                      themeName: theme.name,
+                      previewImageUrl: theme.preview_image_url,
+                      fallbackUsed: !theme.preview_image_url,
+                      actualSrc: e.target.src
+                    });
+                  }}
+                  onLoad={() => {
+                    console.log('🏠 Landing Page: Image loaded successfully:', {
+                      themeName: theme.name,
+                      previewImageUrl: theme.preview_image_url
+                    });
+                  }}
                 />
               </div>
 
@@ -125,20 +194,22 @@ const InvitationShowcase = () => {
               <div className="p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="text-[10px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-                    {design.category}
+                    {theme.name.split(' ')[0]}
                   </div>
-                  {/* Color dots */}
-                  <div className="flex items-center gap-1">
-                    {design.colors.map((c, i) => (
-                      <span key={i} className="w-3 h-3 rounded-full border border-white" style={{ backgroundColor: c }} />
-                    ))}
-                  </div>
+                  {/* Package count indicator */}
+                  {theme.packages && theme.packages.length > 0 && (
+                    <div className="flex items-center gap-1">
+                      <span className="text-[10px] text-muted-foreground">
+                        {theme.packages.length} packages
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <h3 className="text-base font-bold text-card-foreground">
-                  {design.title}
+                  {theme.name}
                 </h3>
                 <p className="text-muted-foreground text-xs line-clamp-1">
-                  {design.description}
+                  {theme.description}
                 </p>
 
                 <div className="pt-1">

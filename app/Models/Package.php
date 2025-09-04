@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Package extends Model
 {
@@ -22,6 +23,7 @@ class Package extends Model
         'discount',
         'is_recommended',
         'is_active',
+        'package_uuid',
     ];
 
     /**
@@ -35,6 +37,20 @@ class Package extends Model
         'is_recommended' => 'boolean',
         'is_active' => 'boolean',
     ];
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->package_uuid)) {
+                $model->package_uuid = Str::uuid();
+            }
+        });
+    }
 
     /**
      * Get the orders for the package.
@@ -84,7 +100,7 @@ class Package extends Model
         if ($this->hasDiscount()) {
             return $this->price - (($this->price * $this->discount) / 100);
         }
-        
+
         return $this->price;
     }
 
@@ -96,7 +112,7 @@ class Package extends Model
         if ($this->hasDiscount()) {
             return ($this->price * $this->discount) / 100;
         }
-        
+
         return 0;
     }
 
@@ -172,5 +188,13 @@ class Package extends Model
     public function scopeByPriceRange($query, int $minPrice, int $maxPrice)
     {
         return $query->whereBetween('price', [$minPrice, $maxPrice]);
+    }
+
+    /**
+     * Find package by UUID.
+     */
+    public static function findByUuid(string $uuid): ?self
+    {
+        return static::where('package_uuid', $uuid)->first();
     }
 }

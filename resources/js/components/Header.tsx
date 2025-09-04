@@ -21,11 +21,13 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <img
-              src="/inveet-logo.png"
-              alt="Inveet.Id"
-              className="h-8 w-auto"
-            />
+            <Link href="/" className="flex items-center">
+              <img
+                src="/inveet-logo.png"
+                alt="Inveet.Id"
+                className="h-8 w-auto hover:opacity-80 transition-opacity duration-300"
+              />
+            </Link>
           </div>
 
           {/* Desktop Navigation */}

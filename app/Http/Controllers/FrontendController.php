@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\RefreshesCsrfToken;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class FrontendController extends Controller
 {
+    use RefreshesCsrfToken;
     /**
      * Show the landing page
      */
@@ -58,6 +60,9 @@ class FrontendController extends Controller
         // Get user data if authenticated
         $user = $request->user();
 
+        // Ensure CSRF token is fresh for dashboard
+        $this->refreshCsrfToken($request);
+
         return Inertia::render('DashboardFixed', [
             'user' => $user ? [
                 'id' => $user->id,
@@ -74,6 +79,9 @@ class FrontendController extends Controller
     public function onboarding(Request $request)
     {
         $user = $request->user();
+
+        // Ensure CSRF token is fresh for authenticated pages
+        $this->refreshCsrfToken($request);
 
         return Inertia::render('onboarding/index', [
             'user' => $user ? [
@@ -287,7 +295,8 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-
+        // Ensure CSRF token is fresh for authenticated pages
+        $this->refreshCsrfToken($request);
 
         // Mock weddings data for testing
         $weddings = collect([
@@ -346,7 +355,8 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-
+        // Ensure CSRF token is fresh for authenticated pages
+        $this->refreshCsrfToken($request);
 
         return Inertia::render('Profile/Index', [
             'user' => $user ? [
@@ -419,7 +429,8 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
-
+        // Ensure CSRF token is fresh for authenticated pages
+        $this->refreshCsrfToken($request);
 
         // Mock orders data for testing
         $orders = collect([
@@ -1060,6 +1071,17 @@ class FrontendController extends Controller
         return Inertia::render('NotFound', [
             'status' => 404,
             'message' => 'Halaman yang Anda cari tidak ditemukan'
+        ]);
+    }
+
+    /**
+     * Show 419 Page Expired page
+     */
+    public function pageExpired()
+    {
+        return Inertia::render('PageExpired', [
+            'status' => 419,
+            'message' => 'Sesi Anda telah berakhir'
         ]);
     }
 }

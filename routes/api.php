@@ -8,11 +8,15 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\ReceptionController;
 use App\Http\Controllers\SpecialInvitationController;
+use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WeddingController;
 use Illuminate\Support\Facades\Route;
@@ -41,24 +45,82 @@ Route::middleware('guest')->group(function () {
     Route::get('/packages/active', [PackageController::class, 'getActivePackages']);
     Route::get('/packages/recommended', [PackageController::class, 'getRecommendedPackages']);
     Route::get('/packages/discounted', [PackageController::class, 'getDiscountedPackages']);
-    Route::get('/packages/{id}', [PackageController::class, 'show']);
-    Route::get('/packages/{id}/calculate-price', [PackageController::class, 'calculatePrice']);
+    Route::get('/packages/{uuid}', [PackageController::class, 'show']);
+    Route::get('/packages/{uuid}/calculate-price', [PackageController::class, 'calculatePrice']);
     Route::get('/packages/stats', [PackageController::class, 'getStats']);
+
+    // Public theme routes
+    Route::get('/themes', [ThemeController::class, 'index']);
+    Route::get('/themes/active', [ThemeController::class, 'active']);
+    Route::get('/themes/{uuid}', [ThemeController::class, 'show']);
+    Route::get('/themes/slug/{slug}', [ThemeController::class, 'showBySlug']);
 
     // Public wedding routes
     Route::get('/weddings', [WeddingController::class, 'index']);
     Route::get('/weddings/published', [WeddingController::class, 'index']);
-    Route::get('/weddings/{id}', [WeddingController::class, 'show']);
+    Route::get('/weddings/{uuid}', [WeddingController::class, 'show']);
     Route::get('/weddings/slug/{slug}', [WeddingController::class, 'findBySlug']);
-    Route::post('/weddings/{id}/increment-view', [WeddingController::class, 'incrementViewCount']);
+    Route::post('/weddings/{uuid}/increment-view', [WeddingController::class, 'incrementViewCount']);
 
     // Public special invitation routes
-    Route::get('/invitations/{id}/validate-password', [SpecialInvitationController::class, 'validatePassword']);
+    Route::get('/invitations/{uuid}/validate-password', [SpecialInvitationController::class, 'validatePassword']);
 
     // Reception QR scanner routes (public for guest access)
     Route::post('/reception/scan', [ReceptionController::class, 'scanQrCode']);
     Route::get('/reception/stats', [ReceptionController::class, 'getStats']);
     Route::get('/reception/recent-scans', [ReceptionController::class, 'getRecentScans']);
+
+    // CSRF token refresh route (public - needed for token refresh)
+    Route::get('/csrf-token', function () {
+        // Ensure session is started
+        if (!session()->isStarted()) {
+            session()->start();
+        }
+
+        $csrfToken = csrf_token();
+
+        return response()->json([
+            'csrf_token' => $csrfToken,
+            'timestamp' => now()->toISOString(),
+            'session_id' => session()->getId(),
+            'debug' => [
+                'session_started' => session()->isStarted(),
+                'csrf_token_length' => strlen($csrfToken),
+                'session_name' => session()->getName(),
+                'csrf_token_empty' => empty($csrfToken),
+                'csrf_token_null' => is_null($csrfToken)
+            ]
+        ]);
+    });
+
+    // Test CSRF token generation
+    Route::get('/test-csrf', function () {
+        return response()->json([
+            'message' => 'CSRF test endpoint',
+            'csrf_token' => csrf_token(),
+            'session_id' => session()->getId(),
+            'session_started' => session()->isStarted()
+        ]);
+    });
+});
+
+// Public logout route (for expired sessions)
+Route::post('/logout-public', function (Request $request) {
+    // Try to logout if user is still authenticated
+    if (Auth::check()) {
+        Auth::guard('web')->logout();
+    }
+
+    // Only invalidate session if it exists
+    if ($request->hasSession()) {
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+    }
+
+    return response()->json([
+        'message' => 'Logged out successfully',
+        'success' => true
+    ]);
 });
 
 // Protected routes (require authentication)
@@ -70,47 +132,69 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Wedding management routes
     Route::post('/weddings', [WeddingController::class, 'store']);
-    Route::put('/weddings/{id}', [WeddingController::class, 'update']);
-    Route::delete('/weddings/{id}', [WeddingController::class, 'destroy']);
+    Route::put('/weddings/{uuid}', [WeddingController::class, 'update']);
+    Route::delete('/weddings/{uuid}', [WeddingController::class, 'destroy']);
     Route::get('/user/weddings', [WeddingController::class, 'findByUserId']);
     Route::get('/user/weddings/drafts', [WeddingController::class, 'getDraftWeddings']);
-    Route::post('/weddings/{id}/publish', [WeddingController::class, 'publish']);
-    Route::post('/weddings/{id}/unpublish', [WeddingController::class, 'unpublish']);
-    Route::post('/weddings/{id}/activate', [WeddingController::class, 'activate']);
-    Route::post('/weddings/{id}/deactivate', [WeddingController::class, 'deactivate']);
-    Route::post('/weddings/{id}/mark-draft', [WeddingController::class, 'markAsDraft']);
+    Route::post('/weddings/{uuid}/publish', [WeddingController::class, 'publish']);
+    Route::post('/weddings/{uuid}/unpublish', [WeddingController::class, 'unpublish']);
+    Route::post('/weddings/{uuid}/activate', [WeddingController::class, 'activate']);
+    Route::post('/weddings/{uuid}/deactivate', [WeddingController::class, 'deactivate']);
+    Route::post('/weddings/{uuid}/mark-draft', [WeddingController::class, 'markAsDraft']);
     Route::get('/weddings/theme/{themeId}', [WeddingController::class, 'findByThemeId']);
 
     // Order management routes
     Route::post('/orders', [OrderController::class, 'store']);
-    Route::put('/orders/{id}', [OrderController::class, 'update']);
-    Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
+    Route::put('/orders/{uuid}', [OrderController::class, 'update']);
+    Route::delete('/orders/{uuid}', [OrderController::class, 'destroy']);
     Route::get('/user/orders', [OrderController::class, 'findByUserId']);
-    Route::get('/weddings/{weddingId}/orders', [OrderController::class, 'findByWeddingId']);
+    Route::get('/weddings/{weddingUuid}/orders', [OrderController::class, 'findByWeddingId']);
     Route::get('/orders/invoice/{invoiceNumber}', [OrderController::class, 'findByInvoiceNumber']);
-    Route::post('/orders/{id}/mark-paid', [OrderController::class, 'markAsPaid']);
-    Route::post('/orders/{id}/mark-void', [OrderController::class, 'markAsVoid']);
-    Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus']);
-    Route::get('/packages/{packageId}/orders', [OrderController::class, 'findByPackageId']);
-    Route::post('/orders/{id}/process-payment', [OrderController::class, 'processPayment']);
-    Route::post('/orders/{id}/cancel', [OrderController::class, 'cancel']);
+    Route::post('/orders/{uuid}/mark-paid', [OrderController::class, 'markAsPaid']);
+    Route::post('/orders/{uuid}/mark-void', [OrderController::class, 'markAsVoid']);
+    Route::put('/orders/{uuid}/status', [OrderController::class, 'updateStatus']);
+    Route::get('/packages/{packageUuid}/orders', [OrderController::class, 'findByPackageId']);
+    Route::post('/orders/{uuid}/process-payment', [OrderController::class, 'processPayment']);
+    Route::post('/orders/{uuid}/cancel', [OrderController::class, 'cancel']);
 
     // Special invitation management routes
     Route::post('/invitations', [SpecialInvitationController::class, 'store']);
-    Route::put('/invitations/{id}', [SpecialInvitationController::class, 'update']);
-    Route::delete('/invitations/{id}', [SpecialInvitationController::class, 'destroy']);
-    Route::get('/weddings/{weddingId}/invitations', [SpecialInvitationController::class, 'findByWeddingId']);
+    Route::put('/invitations/{uuid}', [SpecialInvitationController::class, 'update']);
+    Route::delete('/invitations/{uuid}', [SpecialInvitationController::class, 'destroy']);
+    Route::get('/weddings/{weddingUuid}/invitations', [SpecialInvitationController::class, 'findByWeddingId']);
     Route::get('/invitations/slug/{slug}', [SpecialInvitationController::class, 'findBySlug']);
     Route::post('/invitations/bulk', [SpecialInvitationController::class, 'createBulk']);
-    Route::post('/invitations/{id}/lock', [SpecialInvitationController::class, 'lock']);
-    Route::post('/invitations/{id}/unlock', [SpecialInvitationController::class, 'unlock']);
-    Route::put('/invitations/{id}/password', [SpecialInvitationController::class, 'updatePassword']);
-    Route::delete('/invitations/{id}/password', [SpecialInvitationController::class, 'removePassword']);
-    Route::get('/weddings/{weddingId}/invitations/active', [SpecialInvitationController::class, 'getByWeddingIdAndActive']);
-    Route::post('/invitations/{id}/toggle-lock', [SpecialInvitationController::class, 'toggleLock']);
+    Route::post('/invitations/{uuid}/lock', [SpecialInvitationController::class, 'lock']);
+    Route::post('/invitations/{uuid}/unlock', [SpecialInvitationController::class, 'unlock']);
+    Route::put('/invitations/{uuid}/password', [SpecialInvitationController::class, 'updatePassword']);
+    Route::delete('/invitations/{uuid}/password', [SpecialInvitationController::class, 'removePassword']);
+    Route::get('/weddings/{weddingUuid}/invitations/active', [SpecialInvitationController::class, 'getByWeddingIdAndActive']);
+    Route::post('/invitations/{uuid}/toggle-lock', [SpecialInvitationController::class, 'toggleLock']);
 
-    // Logout route
-    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy']);
+    // Logout route - API version that returns JSON
+    Route::post('/logout', function (Request $request) {
+        $userId = Auth::id();
+        \Log::info('Logout API called', ['user_id' => $userId, 'session_id' => $request->session()->getId()]);
+
+        // Logout from both web and sanctum guards
+        Auth::guard('web')->logout();
+        Auth::guard('sanctum')->logout();
+
+        // Invalidate session
+        $sessionId = $request->session()->getId();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        // Force delete session from database
+        \DB::table('sessions')->where('id', $sessionId)->delete();
+
+        \Log::info('Logout completed', ['user_id' => $userId, 'session_id' => $sessionId]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Logged out successfully'
+        ]);
+    });
 
     // Email verification routes
     Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
@@ -132,23 +216,23 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     // User management routes
     Route::get('/admin/users', [UserController::class, 'index']);
     Route::post('/admin/users', [UserController::class, 'store']);
-    Route::get('/admin/users/{id}', [UserController::class, 'show']);
-    Route::put('/admin/users/{id}', [UserController::class, 'update']);
-    Route::delete('/admin/users/{id}', [UserController::class, 'destroy']);
-    Route::post('/admin/users/{id}/activate', [UserController::class, 'activate']);
-    Route::post('/admin/users/{id}/deactivate', [UserController::class, 'deactivate']);
-    Route::post('/admin/users/{id}/assign-role', [UserController::class, 'assignRole']);
-    Route::post('/admin/users/{id}/remove-role', [UserController::class, 'removeRole']);
-    Route::post('/admin/users/{id}/sync-roles', [UserController::class, 'syncRoles']);
+    Route::get('/admin/users/{uuid}', [UserController::class, 'show']);
+    Route::put('/admin/users/{uuid}', [UserController::class, 'update']);
+    Route::delete('/admin/users/{uuid}', [UserController::class, 'destroy']);
+    Route::post('/admin/users/{uuid}/activate', [UserController::class, 'activate']);
+    Route::post('/admin/users/{uuid}/deactivate', [UserController::class, 'deactivate']);
+    Route::post('/admin/users/{uuid}/assign-role', [UserController::class, 'assignRole']);
+    Route::post('/admin/users/{uuid}/remove-role', [UserController::class, 'removeRole']);
+    Route::post('/admin/users/{uuid}/sync-roles', [UserController::class, 'syncRoles']);
 
     // Package management routes
     Route::post('/admin/packages', [PackageController::class, 'store']);
-    Route::put('/admin/packages/{id}', [PackageController::class, 'update']);
-    Route::delete('/admin/packages/{id}', [PackageController::class, 'destroy']);
-    Route::post('/admin/packages/{id}/toggle-recommendation', [PackageController::class, 'toggleRecommendation']);
-    Route::post('/admin/packages/{id}/activate', [PackageController::class, 'activate']);
-    Route::post('/admin/packages/{id}/deactivate', [PackageController::class, 'deactivate']);
-    Route::put('/admin/packages/{id}/discount', [PackageController::class, 'updateDiscount']);
+    Route::put('/admin/packages/{uuid}', [PackageController::class, 'update']);
+    Route::delete('/admin/packages/{uuid}', [PackageController::class, 'destroy']);
+    Route::post('/admin/packages/{uuid}/toggle-recommendation', [PackageController::class, 'toggleRecommendation']);
+    Route::post('/admin/packages/{uuid}/activate', [PackageController::class, 'activate']);
+    Route::post('/admin/packages/{uuid}/deactivate', [PackageController::class, 'deactivate']);
+    Route::put('/admin/packages/{uuid}/discount', [PackageController::class, 'updateDiscount']);
 
     // Order management routes
     Route::get('/admin/orders', [OrderController::class, 'index']);

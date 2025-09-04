@@ -22,6 +22,8 @@ class OrderController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        $this->authorize('view-orders');
+
         $filters = $request->only(['paid_only', 'pending_only', 'void_only']);
         $orders = $this->orderService->getAll($filters);
 
@@ -37,6 +39,8 @@ class OrderController extends Controller
      */
     public function store(StoreOrderRequest $request): JsonResponse
     {
+        $this->authorize('create-orders');
+
         $order = $this->orderService->create($request->validated());
 
         return response()->json([
@@ -51,6 +55,8 @@ class OrderController extends Controller
      */
     public function show(int $id): JsonResponse
     {
+        $this->authorize('view-orders');
+
         $order = $this->orderService->findById($id);
 
         if (!$order) {
@@ -72,6 +78,8 @@ class OrderController extends Controller
      */
     public function update(Request $request, int $id): JsonResponse
     {
+        $this->authorize('edit-orders');
+
         $request->validate([
             'status' => 'sometimes|string|max:255',
             'payment_type' => 'sometimes|string|max:255',
@@ -99,6 +107,8 @@ class OrderController extends Controller
      */
     public function destroy(int $id): JsonResponse
     {
+        $this->authorize('delete-orders');
+
         $deleted = $this->orderService->delete($id);
 
         if (!$deleted) {
@@ -168,6 +178,8 @@ class OrderController extends Controller
      */
     public function markAsPaid(Request $request, int $id): JsonResponse
     {
+        $this->authorize('mark-orders-paid');
+
         $request->validate([
             'external_transaction_id' => 'sometimes|string|max:255'
         ]);
@@ -192,6 +204,8 @@ class OrderController extends Controller
      */
     public function markAsVoid(int $id): JsonResponse
     {
+        $this->authorize('mark-orders-void');
+
         $marked = $this->orderService->markAsVoid($id);
 
         if (!$marked) {
@@ -250,6 +264,8 @@ class OrderController extends Controller
      */
     public function processPayment(Request $request, int $id): JsonResponse
     {
+        $this->authorize('process-payments');
+
         $request->validate([
             'external_transaction_id' => 'sometimes|string|max:255',
             'payment_type' => 'sometimes|string|max:255'
@@ -277,6 +293,8 @@ class OrderController extends Controller
      */
     public function cancel(Request $request, int $id): JsonResponse
     {
+        $this->authorize('cancel-orders');
+
         $request->validate([
             'reason' => 'sometimes|string|max:500'
         ]);

@@ -8,6 +8,7 @@ import {
     User,
 } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from '../../hooks/useAuth';
 
 interface HeaderProps {
   user: {
@@ -21,24 +22,24 @@ interface HeaderProps {
 
 export default function Header({ user, setSidebarOpen }: HeaderProps) {
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const { logout, isLoading } = useAuth();
 
-  const handleLogout = () => {
-    // Inertia.js will handle the logout form submission
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '/logout';
-
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-    if (csrfToken) {
-      const tokenInput = document.createElement('input');
-      tokenInput.type = 'hidden';
-      tokenInput.name = '_token';
-      tokenInput.value = csrfToken;
-      form.appendChild(tokenInput);
+  const handleLogout = async () => {
+    try {
+      await logout({
+        useApi: true,
+        redirectTo: '/',
+        showFeedback: true
+      });
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Fallback to form-based logout
+      await logout({
+        useApi: false,
+        redirectTo: '/',
+        showFeedback: false
+      });
     }
-
-    document.body.appendChild(form);
-    form.submit();
   };
 
   return (
@@ -77,7 +78,7 @@ export default function Header({ user, setSidebarOpen }: HeaderProps) {
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                   <User className="w-4 h-4 text-primary-foreground" />
                 </div>
-                <span className="hidden sm:block text-sm font-medium text-foreground">
+                <span className="hidden sm:block text-sm font-inter-medium text-foreground">
                   {user?.name}
                 </span>
                 <ChevronDown className="h-4 w-4 text-muted-foreground" />
@@ -89,7 +90,7 @@ export default function Header({ user, setSidebarOpen }: HeaderProps) {
                   <div className="py-2">
                     <Link
                       href="/profile"
-                      className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-blue-700 transition-all duration-200 group"
+                      className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-blue-700 transition-all duration-200 group font-inter-medium"
                       onClick={() => setProfileDropdownOpen(false)}
                     >
                       <User className="mr-3 h-4 w-4 text-gray-500 group-hover:text-blue-600 transition-colors" />
@@ -100,10 +101,11 @@ export default function Header({ user, setSidebarOpen }: HeaderProps) {
                         setProfileDropdownOpen(false);
                         handleLogout();
                       }}
-                      className="flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-rose-50 hover:text-red-700 transition-all duration-200 group"
+                      disabled={isLoading}
+                      className="flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-rose-50 hover:text-red-700 transition-all duration-200 group font-inter-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <LogOut className="mr-3 h-4 w-4 text-gray-500 group-hover:text-red-600 transition-colors" />
-                      Logout
+                      {isLoading ? 'Logging out...' : 'Logout'}
                     </button>
                   </div>
                 </div>

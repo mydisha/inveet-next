@@ -23,6 +23,8 @@ class WeddingController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        $this->authorize('view-weddings');
+
         $filters = $request->only(['published_only', 'active_only']);
         $weddings = $this->weddingService->getAll($filters);
 
@@ -38,6 +40,8 @@ class WeddingController extends Controller
      */
     public function store(StoreWeddingRequest $request): JsonResponse
     {
+        $this->authorize('create-weddings');
+
         $wedding = $this->weddingService->create($request->validated());
 
         return response()->json([
@@ -52,6 +56,8 @@ class WeddingController extends Controller
      */
     public function show(int $id): JsonResponse
     {
+        $this->authorize('view-weddings');
+
         $wedding = $this->weddingService->findById($id);
 
         if (!$wedding) {
@@ -73,6 +79,8 @@ class WeddingController extends Controller
      */
     public function update(UpdateWeddingRequest $request, int $id): JsonResponse
     {
+        $this->authorize('edit-weddings');
+
         $wedding = $this->weddingService->update($id, $request->validated());
 
         if (!$wedding) {
@@ -94,6 +102,8 @@ class WeddingController extends Controller
      */
     public function destroy(int $id): JsonResponse
     {
+        $this->authorize('delete-weddings');
+
         $deleted = $this->weddingService->delete($id);
 
         if (!$deleted) {
@@ -163,6 +173,8 @@ class WeddingController extends Controller
      */
     public function publish(int $id): JsonResponse
     {
+        $this->authorize('publish-weddings');
+
         $published = $this->weddingService->publishWedding($id);
 
         if (!$published) {
@@ -183,6 +195,8 @@ class WeddingController extends Controller
      */
     public function unpublish(int $id): JsonResponse
     {
+        $this->authorize('unpublish-weddings');
+
         $unpublished = $this->weddingService->unpublishWedding($id);
 
         if (!$unpublished) {
@@ -238,6 +252,8 @@ class WeddingController extends Controller
      */
     public function activate(int $id): JsonResponse
     {
+        $this->authorize('activate-weddings');
+
         $activated = $this->weddingService->activateWedding($id);
 
         if (!$activated) {
@@ -258,6 +274,8 @@ class WeddingController extends Controller
      */
     public function deactivate(int $id): JsonResponse
     {
+        $this->authorize('deactivate-weddings');
+
         $deactivated = $this->weddingService->deactivateWedding($id);
 
         if (!$deactivated) {

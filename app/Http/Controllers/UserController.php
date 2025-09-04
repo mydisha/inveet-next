@@ -23,6 +23,8 @@ class UserController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        $this->authorize('view-users');
+
         $filters = $request->only(['active_only']);
         $users = $this->userService->getAll($filters);
 
@@ -38,6 +40,8 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request): JsonResponse
     {
+        $this->authorize('create-users');
+
         $user = $this->userService->create($request->validated());
 
         return response()->json([
@@ -52,6 +56,8 @@ class UserController extends Controller
      */
     public function show(int $id): JsonResponse
     {
+        $this->authorize('view-users');
+
         $user = $this->userService->findById($id);
 
         if (!$user) {
@@ -73,6 +79,8 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, int $id): JsonResponse
     {
+        $this->authorize('edit-users');
+
         $user = $this->userService->update($id, $request->validated());
 
         if (!$user) {
@@ -94,6 +102,8 @@ class UserController extends Controller
      */
     public function destroy(int $id): JsonResponse
     {
+        $this->authorize('delete-users');
+
         $deleted = $this->userService->delete($id);
 
         if (!$deleted) {
@@ -156,6 +166,8 @@ class UserController extends Controller
      */
     public function deactivate(int $id): JsonResponse
     {
+        $this->authorize('deactivate-users');
+
         $deactivated = $this->userService->deactivateUser($id);
 
         if (!$deactivated) {
@@ -176,6 +188,8 @@ class UserController extends Controller
      */
     public function activate(int $id): JsonResponse
     {
+        $this->authorize('activate-users');
+
         $activated = $this->userService->activateUser($id);
 
         if (!$activated) {
@@ -196,6 +210,8 @@ class UserController extends Controller
      */
     public function assignRole(Request $request, int $id): JsonResponse
     {
+        $this->authorize('assign-roles');
+
         $request->validate([
             'role' => 'required|string|exists:roles,name'
         ]);
@@ -220,6 +236,8 @@ class UserController extends Controller
      */
     public function removeRole(Request $request, int $id): JsonResponse
     {
+        $this->authorize('assign-roles');
+
         $request->validate([
             'role' => 'required|string|exists:roles,name'
         ]);
@@ -244,6 +262,8 @@ class UserController extends Controller
      */
     public function syncRoles(Request $request, int $id): JsonResponse
     {
+        $this->authorize('assign-roles');
+
         $request->validate([
             'roles' => 'required|array',
             'roles.*' => 'string|exists:roles,name'

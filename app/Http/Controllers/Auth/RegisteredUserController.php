@@ -36,13 +36,28 @@ class RegisteredUserController extends Controller
 
         // Assign default role if needed
         if (method_exists($user, 'assignRole')) {
-            $user->assignRole('user');
+            $user->assignRole('customer');
         }
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect('/dashboard')->with('success', 'Welcome to Inveet! Your account has been created successfully.');
+        // Regenerate session and CSRF token after registration
+        $request->session()->regenerate();
+        $request->session()->regenerateToken();
+
+        // Check if this is an AJAX request (from Inertia.js)
+        if (request()->header('X-Inertia')) {
+            return redirect('/dashboard')->with('success', 'Welcome to Inveet! Your account has been created successfully.');
+        }
+
+        // For API requests, return JSON response
+        return response()->json([
+            'success' => true,
+            'message' => 'Welcome to Inveet! Your account has been created successfully.',
+            'user' => $user,
+            'redirect' => '/dashboard'
+        ], 201);
     }
 }
