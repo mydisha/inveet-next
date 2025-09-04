@@ -1,8 +1,6 @@
-import DebugCsrf from '@/components/DebugCsrf';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { forceRefreshCsrfToken } from '@/lib/auth';
 import { Head, Link } from '@inertiajs/react';
 import {
   Calendar,
@@ -12,7 +10,6 @@ import {
   Sparkles,
   Users,
 } from 'lucide-react';
-import { useEffect } from 'react';
 
 interface DashboardFixedProps {
   user: {
@@ -24,17 +21,9 @@ interface DashboardFixedProps {
 }
 
 export default function DashboardFixed({ user }: DashboardFixedProps) {
-  // Force refresh CSRF token immediately on dashboard load to ensure it's current after login
-  // This prevents CSRF token mismatch when user tries to logout immediately after login
-  useEffect(() => {
-    // Refresh CSRF token immediately to sync with server
-    forceRefreshCsrfToken();
-  }, []);
-
   return (
     <>
       <Head title="Dashboard" />
-      <DebugCsrf />
 
       <DashboardLayout user={user} currentPath="/dashboard">
         {/* Welcome Section */}

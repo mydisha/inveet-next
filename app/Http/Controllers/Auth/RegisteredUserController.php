@@ -47,17 +47,23 @@ class RegisteredUserController extends Controller
         $request->session()->regenerate();
         $request->session()->regenerateToken();
 
+        // Check if user has admin or super-admin role
+        $redirectUrl = $user->hasAnyRole(['admin', 'super-admin']) ? '/backoffice' : '/dashboard';
+        $successMessage = $user->hasAnyRole(['admin', 'super-admin'])
+            ? 'Welcome to the backoffice! Your account has been created successfully.'
+            : 'Welcome to Inveet! Your account has been created successfully.';
+
         // Check if this is an AJAX request (from Inertia.js)
         if (request()->header('X-Inertia')) {
-            return redirect('/dashboard')->with('success', 'Welcome to Inveet! Your account has been created successfully.');
+            return redirect($redirectUrl)->with('success', $successMessage);
         }
 
         // For API requests, return JSON response
         return response()->json([
             'success' => true,
-            'message' => 'Welcome to Inveet! Your account has been created successfully.',
+            'message' => $successMessage,
             'user' => $user,
-            'redirect' => '/dashboard'
+            'redirect' => $redirectUrl
         ], 201);
     }
 }

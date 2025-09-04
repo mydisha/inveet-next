@@ -87,7 +87,7 @@ export default function InvitationList({ user, weddings }: InvitationListProps) 
         try {
             await logout({
                 useApi: true,
-                redirectTo: '/',
+                redirectTo: '/login',
                 showFeedback: true
             });
         } catch (error) {
@@ -95,7 +95,7 @@ export default function InvitationList({ user, weddings }: InvitationListProps) 
             // Fallback to form-based logout
             await logout({
                 useApi: false,
-                redirectTo: '/',
+                redirectTo: '/login',
                 showFeedback: false
             });
         }

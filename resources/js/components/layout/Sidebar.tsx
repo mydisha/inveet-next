@@ -1,16 +1,11 @@
 import { Link } from '@inertiajs/react';
 import {
-    BarChart3,
-    BookOpen,
     FileText,
     Heart,
     Home,
-    Image as ImageIcon,
-    Music,
     Package,
-    Settings,
     User,
-    X,
+    X
 } from 'lucide-react';
 import { Button } from '../ui/button';
 
@@ -27,16 +22,22 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ user, sidebarOpen, setSidebarOpen, currentPath = '/dashboard' }: SidebarProps) {
+  // Base navigation items that are always visible
+  const baseNavigationItems = [
+    { name: 'Dashboard', href: '/dashboard', icon: Home, requiresWedding: false },
+  ];
+
+  // Navigation items that require a wedding
+  const weddingNavigationItems = [
+    { name: 'My Weddings', href: '/my-weddings', icon: Heart, requiresWedding: true },
+    { name: 'Packages', href: '/packages', icon: Package, requiresWedding: true },
+    { name: 'Orders', href: '/orders', icon: FileText, requiresWedding: true },
+  ];
+
+  // Filter navigation items based on user's wedding status
   const navigationItems = [
-    { name: 'Dashboard', href: '/dashboard', icon: Home },
-    { name: 'My Weddings', href: '/my-weddings', icon: Heart },
-    { name: 'Guestbook', href: '/guestbook', icon: BookOpen },
-    { name: 'Gallery', href: '/gallery', icon: ImageIcon },
-    { name: 'Music', href: '/music', icon: Music },
-    { name: 'Packages', href: '/packages', icon: Package },
-    { name: 'Orders', href: '/orders', icon: FileText },
-    { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-    { name: 'Settings', href: '/settings', icon: Settings },
+    ...baseNavigationItems,
+    ...(user?.hasWedding ? weddingNavigationItems : [])
   ];
 
   return (

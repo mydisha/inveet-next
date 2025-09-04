@@ -18,6 +18,25 @@ export const routes = {
   // Dashboard routes
   dashboard: '/dashboard',
 
+  // Backoffice routes
+  backoffice: {
+    dashboard: '/backoffice',
+    users: '/backoffice/users',
+    userDetail: (id: string | number) => `/backoffice/users/${id}`,
+    userEdit: (id: string | number) => `/backoffice/users/${id}/edit`,
+    orders: '/backoffice/orders',
+    orderDetail: (id: string | number) => `/backoffice/orders/${id}`,
+    feedbacks: '/backoffice/feedbacks',
+    feedbackDetail: (id: string | number) => `/backoffice/feedbacks/${id}`,
+    themes: '/backoffice/themes',
+    themeDetail: (id: string | number) => `/backoffice/themes/${id}`,
+    themeCreate: '/backoffice/themes/create',
+    themeEdit: (id: string | number) => `/backoffice/themes/${id}/edit`,
+    configurations: '/backoffice/configurations',
+    configurationDetail: (id: string | number) => `/backoffice/configurations/${id}`,
+    configurationCreate: '/backoffice/configurations/create',
+  },
+
   // Onboarding routes
   onboarding: '/onboarding',
   onboardingCoupleInfo: '/onboarding/couple-info',
@@ -89,7 +108,7 @@ export const apiEndpoints = {
   auth: {
     login: '/api/login',
     register: '/api/register',
-    logout: '/api/logout',
+    logout: '/api/logout-api',
     forgotPassword: '/api/forgot-password',
     resetPassword: '/api/reset-password',
     verifyEmail: '/api/verify-email',
@@ -254,6 +273,58 @@ export const apiEndpoints = {
       index: '/api/admin/invitations',
       getActive: '/api/admin/invitations/active',
       getLocked: '/api/admin/invitations/locked',
+    },
+  },
+
+  // Backoffice API routes
+  backoffice: {
+    users: {
+      index: '/backoffice/users',
+      show: (id: string | number) => `/backoffice/users/${id}`,
+      update: (id: string | number) => `/backoffice/users/${id}`,
+      autoLogin: (id: string | number) => `/backoffice/users/${id}/auto-login`,
+      activate: (id: string | number) => `/backoffice/users/${id}/activate`,
+      deactivate: (id: string | number) => `/backoffice/users/${id}/deactivate`,
+      statistics: '/backoffice/users/statistics',
+    },
+    orders: {
+      index: '/backoffice/orders',
+      show: (id: string | number) => `/backoffice/orders/${id}`,
+      update: (id: string | number) => `/backoffice/orders/${id}`,
+      markPaid: (id: string | number) => `/backoffice/orders/${id}/mark-paid`,
+      markVoid: (id: string | number) => `/backoffice/orders/${id}/mark-void`,
+      statistics: '/backoffice/orders/statistics',
+    },
+    feedbacks: {
+      index: '/backoffice/feedbacks',
+      show: (id: string | number) => `/backoffice/feedbacks/${id}`,
+      update: (id: string | number) => `/backoffice/feedbacks/${id}`,
+      toggleRecommendation: (id: string | number) => `/backoffice/feedbacks/${id}/toggle-recommendation`,
+      toggleShowLanding: (id: string | number) => `/backoffice/feedbacks/${id}/toggle-show-landing`,
+      destroy: (id: string | number) => `/backoffice/feedbacks/${id}`,
+      statistics: '/backoffice/feedbacks/statistics',
+    },
+    themes: {
+      index: '/backoffice/themes',
+      store: '/backoffice/themes',
+      show: (id: string | number) => `/backoffice/themes/${id}`,
+      update: (id: string | number) => `/backoffice/themes/${id}`,
+      toggleActive: (id: string | number) => `/backoffice/themes/${id}/toggle-active`,
+      togglePublic: (id: string | number) => `/backoffice/themes/${id}/toggle-public`,
+      destroy: (id: string | number) => `/backoffice/themes/${id}`,
+      statistics: '/backoffice/themes/statistics',
+    },
+    configurations: {
+      index: '/backoffice/configurations',
+      store: '/backoffice/configurations',
+      show: (id: string | number) => `/backoffice/configurations/${id}`,
+      update: (id: string | number) => `/backoffice/configurations/${id}`,
+      updateMultiple: '/backoffice/configurations/update-multiple',
+      destroy: (id: string | number) => `/backoffice/configurations/${id}`,
+      getGroups: '/backoffice/configurations/groups',
+      getByGroup: (group: string) => `/backoffice/configurations/group/${group}`,
+      getWebsiteSettings: '/backoffice/configurations/website-settings',
+      initializeDefaults: '/backoffice/configurations/initialize-defaults',
     },
   },
 

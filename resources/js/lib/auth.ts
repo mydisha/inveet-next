@@ -13,7 +13,7 @@ export class AuthUtils {
     redirectTo?: string;
     showFeedback?: boolean;
   } = {}): Promise<void> {
-    const { useApi = true, redirectTo = '/', showFeedback = true } = options;
+    const { useApi = true, redirectTo = '/login', showFeedback = true } = options;
 
     try {
       console.log('🚪 Starting logout process...');
@@ -60,7 +60,7 @@ export class AuthUtils {
       // Force redirect and clear any cached state
       console.log('🔄 Redirecting to:', redirectTo);
 
-      // Clear any remaining auth state
+      // Clear any remaining auth state before redirect
       this.clearAuthData();
 
       // Force a hard redirect to clear all state
@@ -72,9 +72,9 @@ export class AuthUtils {
       // Clear local data even if everything fails
       this.clearAuthData();
 
-      // Force redirect to home page
-      console.log('🔄 Forcing redirect to home page...');
-      window.location.replace('/');
+      // Force redirect to login page
+      console.log('🔄 Forcing redirect to login page...');
+      window.location.replace('/login');
     }
   }
 
@@ -129,13 +129,57 @@ export class AuthUtils {
 
   /**
    * Check if user is authenticated
+   * This is a client-side check only - server-side validation should be used for security
    */
   static isAuthenticated(): boolean {
     const token = localStorage.getItem('auth_token');
     const user = localStorage.getItem('user');
     const isAuth = !!(token && user);
-    console.log('🔍 Auth check:', { token: !!token, user: !!user, isAuth });
+    console.log('🔍 Client-side auth check:', { token: !!token, user: !!user, isAuth });
     return isAuth;
+  }
+
+  /**
+   * Server-side authentication check
+   * This should be used for critical authentication decisions
+   */
+  static async checkServerAuth(): Promise<boolean> {
+    try {
+      console.log('🔍 Checking server authentication...');
+
+      const response = await fetch('/api/user/profile', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        }
+      });
+
+      console.log('📡 Server response status:', response.status);
+
+      if (response.ok) {
+        console.log('✅ Server auth check: User is authenticated');
+        return true;
+      } else if (response.status === 401) {
+        console.log('❌ Server auth check: User is not authenticated (401)');
+        // Clear local data if server says we're not authenticated
+        this.clearAuthData();
+        return false;
+      } else if (response.status === 419) {
+        console.log('❌ Server auth check: CSRF token mismatch (419)');
+        // Clear local data and try to refresh CSRF token
+        this.clearAuthData();
+        return false;
+      } else {
+        console.warn('⚠️ Server auth check: Unexpected response', response.status);
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ Server auth check failed:', error);
+      // If network error, assume not authenticated for security
+      return false;
+    }
   }
 
   /**

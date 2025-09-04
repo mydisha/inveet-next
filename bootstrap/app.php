@@ -26,6 +26,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth' => \App\Http\Middleware\Authenticate::class,
             'spatie.role' => \App\Http\Middleware\RoleMiddleware::class,
             'spatie.permission' => \App\Http\Middleware\PermissionMiddleware::class,
+            'wedding.access' => \App\Http\Middleware\CheckWeddingAccess::class,
+            'backoffice' => \App\Http\Middleware\BackofficeAccess::class,
         ]);
 
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);

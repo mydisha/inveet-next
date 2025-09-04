@@ -150,6 +150,22 @@ Route::post('/logout-public', function (Request $request) {
 
 // Protected routes (require authentication)
 Route::middleware('auth:sanctum')->group(function () {
+    // Current user route
+    Route::get('/user', function (Request $request) {
+        $user = $request->user();
+        return response()->json([
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'roles' => $user->roles->map(function ($role) {
+                return [
+                    'id' => $role->id,
+                    'name' => $role->name,
+                ];
+            }),
+        ]);
+    });
+
     // User profile routes
     Route::get('/user/profile', [UserController::class, 'show']);
     Route::put('/user/profile', [UserController::class, 'updateProfile']);
@@ -197,32 +213,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/invitations/{uuid}/toggle-lock', [SpecialInvitationController::class, 'toggleLock']);
 
     // Logout route - API version that returns JSON
-    Route::post('/logout', function (Request $request) {
-        $userId = Auth::id();
-        $sessionId = $request->session()->getId();
-        \Log::info('Logout API called', ['user_id' => $userId, 'session_id' => $sessionId]);
-
-        // Logout from both web and sanctum guards
-        Auth::guard('web')->logout();
-        Auth::guard('sanctum')->logout();
-
-        // Invalidate session
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        // Force delete session from database
-        \DB::table('sessions')->where('id', $sessionId)->delete();
-
-        // Clear any cached user data
-        $request->session()->flush();
-
-        \Log::info('Logout completed', ['user_id' => $userId, 'session_id' => $sessionId]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Logged out successfully'
-        ]);
-    });
+    Route::post('/logout-api', [\App\Http\Controllers\Auth\LogoutController::class, 'apiLogout']);
 
     // Email verification routes
     Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])

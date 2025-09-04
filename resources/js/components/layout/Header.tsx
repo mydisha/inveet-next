@@ -28,15 +28,14 @@ export default function Header({ user, setSidebarOpen }: HeaderProps) {
     try {
       await logout({
         useApi: true,
-        redirectTo: '/',
+        redirectTo: '/login',
         showFeedback: true
       });
     } catch (error) {
-      console.error('Logout failed:', error);
       // Fallback to form-based logout
       await logout({
         useApi: false,
-        redirectTo: '/',
+        redirectTo: '/login',
         showFeedback: false
       });
     }

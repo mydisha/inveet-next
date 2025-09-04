@@ -105,51 +105,68 @@ export default function MyWeddings({ user, weddings }: MyWeddingsProps) {
         </PageHeader>
 
         {/* Search and Filter Bar */}
-        <div className="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-xl p-6 shadow-sm">
+        <div className="bg-gradient-to-r from-white to-gray-50/50 border border-gray-200/60 rounded-2xl p-6 shadow-sm">
           <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
             {/* Search Bar */}
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <div className="relative flex-1 max-w-lg">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search by couple names, location, or theme..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white text-sm transition-colors"
+                className="w-full pl-12 pr-4 py-3 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white/80 text-sm transition-all duration-200 placeholder:text-gray-400"
               />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  ✕
+                </button>
+              )}
             </div>
 
             {/* Controls */}
             <div className="flex items-center gap-3">
               {/* Status Filter */}
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white text-sm transition-colors min-w-[120px]"
-              >
-                <option value="all">All Status</option>
-                <option value="published">Published</option>
-                <option value="draft">Draft</option>
-                <option value="inactive">Inactive</option>
-              </select>
+              <div className="relative">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="appearance-none px-4 py-3 pr-8 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white/80 text-sm transition-all duration-200 min-w-[140px] cursor-pointer"
+                >
+                  <option value="all">All Status</option>
+                  <option value="published">Published</option>
+                  <option value="draft">Draft</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
 
               {/* View Mode Toggle */}
-              <div className="flex items-center border border-gray-200 rounded-lg p-1 bg-gray-50">
+              <div className="flex items-center bg-white/80 border border-gray-200/60 rounded-xl p-1">
                 <Button
                   variant={viewMode === 'grid' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('grid')}
-                  className="h-8 px-3 text-xs"
+                  className="h-8 px-3 text-xs font-medium transition-all duration-200"
                 >
-                  <Grid className="w-4 h-4" />
+                  <Grid className="w-4 h-4 mr-1.5" />
+                  Grid
                 </Button>
                 <Button
                   variant={viewMode === 'list' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('list')}
-                  className="h-8 px-3 text-xs"
+                  className="h-8 px-3 text-xs font-medium transition-all duration-200"
                 >
-                  <List className="w-4 h-4" />
+                  <List className="w-4 h-4 mr-1.5" />
+                  List
                 </Button>
               </div>
             </div>
@@ -158,25 +175,25 @@ export default function MyWeddings({ user, weddings }: MyWeddingsProps) {
 
         {/* Results Summary */}
         <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <h2 className="text-lg font-semibold text-gray-900">
               {filteredWeddings.length} Wedding{filteredWeddings.length !== 1 ? 's' : ''}
             </h2>
             {weddings.length !== filteredWeddings.length && (
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
                 of {weddings.length} total
               </span>
             )}
           </div>
           {(searchTerm || statusFilter !== 'all') && (
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={() => {
                 setSearchTerm('');
                 setStatusFilter('all');
               }}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-gray-600 hover:text-gray-800 hover:bg-gray-50 text-sm font-medium"
             >
               Clear filters
             </Button>
@@ -188,7 +205,7 @@ export default function MyWeddings({ user, weddings }: MyWeddingsProps) {
           <div className={
             viewMode === 'grid'
               ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-              : "space-y-3"
+              : "space-y-4"
           }>
             {filteredWeddings.map((wedding: Wedding) => (
               <WeddingCard

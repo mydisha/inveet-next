@@ -17,10 +17,8 @@ import {
     Music,
     Palette,
     RotateCcw,
-    Shield,
     Type,
-    Users,
-    Video
+    Users
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -63,13 +61,12 @@ export default function WeddingDetail({ user, wedding }: WeddingDetailProps) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy link:', err);
+      // Handle copy error silently
     }
   };
 
   const handleResetVisitors = () => {
     // TODO: Implement reset visitors functionality
-    console.log('Reset visitors');
   };
 
   const menuItems = [
@@ -109,32 +106,32 @@ export default function WeddingDetail({ user, wedding }: WeddingDetailProps) {
       id: 'music',
       title: 'Musik',
       icon: Music,
-      description: 'Music',
-      href: `/wedding/${wedding.id}/music`,
+      description: 'Music Library & Configuration',
+      href: `/music`,
       badge: null
     },
     {
-      id: 'protocols',
-      title: 'Prokes',
-      icon: Shield,
-      description: 'Health Protocols',
-      href: `/wedding/${wedding.id}/protocols`,
-      badge: null
-    },
-    {
-      id: 'quotes',
-      title: 'Quotes',
+      id: 'gallery',
+      title: 'Galeri',
       icon: Palette,
-      description: 'Quotes',
-      href: `/wedding/${wedding.id}/quotes`,
+      description: 'Photo Gallery',
+      href: `/gallery`,
       badge: null
     },
     {
-      id: 'streaming',
-      title: 'Live Streaming',
-      icon: Video,
-      description: 'Live Streaming',
-      href: `/wedding/${wedding.id}/streaming`,
+      id: 'guests',
+      title: 'Tamu',
+      icon: Users,
+      description: 'Guest List',
+      href: `/wedding/${wedding.id}/guests`,
+      badge: null
+    },
+    {
+      id: 'guestbook',
+      title: 'Buku Tamu',
+      icon: MessageCircle,
+      description: 'Guest Book',
+      href: `/wedding/${wedding.id}/guestbook`,
       badge: null
     }
   ];

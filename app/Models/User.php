@@ -176,4 +176,12 @@ class User extends Authenticatable
     {
         return static::where('user_uuid', $uuid)->first();
     }
+
+    /**
+     * Check if the user has any weddings.
+     */
+    public function getHasWeddingAttribute(): bool
+    {
+        return $this->weddings()->exists();
+    }
 }

@@ -67,6 +67,11 @@ class GoogleController extends Controller
             $request->session()->regenerate();
             $request->session()->regenerateToken();
 
+            // Check if user has admin or super-admin role
+            if ($user->hasAnyRole(['admin', 'super-admin'])) {
+                return redirect()->intended('/backoffice')->with('success', 'Welcome to the backoffice!');
+            }
+
             return redirect()->intended('/dashboard')->with('success', 'Welcome to Inveet! You have been logged in successfully.');
 
         } catch (\Exception $e) {

@@ -124,7 +124,7 @@ export function WeddingCard({
       "group relative overflow-hidden transition-all duration-300",
       "bg-white border border-gray-200/50",
       "rounded-xl shadow-sm hover:shadow-lg hover:border-gray-300/50",
-      "cursor-pointer",
+      "cursor-pointer h-full",
       className
     )}>
       {/* Cover Image */}
@@ -166,7 +166,7 @@ export function WeddingCard({
       </div>
 
       <CardHeader className={cn(
-        "pb-4 pt-5 px-5",
+        "pb-3 pt-5 px-5",
         isListView && "flex-1 sm:flex-1"
       )}>
         <div className={cn(
@@ -186,7 +186,7 @@ export function WeddingCard({
             {(wedding.wedding_location || wedding.wedding_venue) && (
               <p className="text-sm text-gray-500 flex items-center gap-1">
                 <span className="text-gray-400">📍</span>
-                {wedding.wedding_location || wedding.wedding_venue}
+                <span className="truncate">{wedding.wedding_location || wedding.wedding_venue}</span>
               </p>
             )}
           </div>
@@ -200,8 +200,8 @@ export function WeddingCard({
               "flex items-center space-x-2",
               isListView ? "justify-start" : "justify-center"
             )}>
-              <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-              <span className="text-xs text-gray-500 font-medium">
+              <div className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0"></div>
+              <span className="text-sm text-gray-500 font-medium truncate">
                 {wedding.theme?.name || 'No theme selected'}
               </span>
             </div>
@@ -211,8 +211,8 @@ export function WeddingCard({
                 "flex items-center space-x-2",
                 isListView ? "justify-start" : "justify-center"
               )}>
-                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
-                <span className="text-xs text-gray-500 font-medium">
+                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full flex-shrink-0"></div>
+                <span className="text-sm text-gray-500 font-medium truncate">
                   {wedding.package.name}
                 </span>
               </div>

@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { isAuthenticated } from '@/lib/auth';
+import { AuthUtils, isAuthenticated } from '@/lib/auth';
 import { Link, useForm, usePage } from '@inertiajs/react';
 import { ArrowRight, CheckCircle, Eye, EyeOff, Lock, Mail, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -27,13 +27,67 @@ export default function Login() {
     }
   }, [flash]);
 
-  // Client-side authentication check as fallback
+  // Server-side authentication check
   useEffect(() => {
-    // Check if user is already authenticated (client-side fallback)
-    if (isAuthenticated()) {
-      console.log('🔍 Client-side auth check: User is already authenticated, redirecting to dashboard');
-      window.location.replace('/dashboard');
-    }
+    const checkAuth = async () => {
+      try {
+        // Add a small delay to ensure logout process is complete
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // First check client-side for quick response
+        if (isAuthenticated()) {
+          console.log('🔍 Client-side auth check: User appears authenticated, verifying with server...');
+
+          // Verify with server to ensure session is still valid
+          const isServerAuth = await AuthUtils.checkServerAuth();
+          if (isServerAuth) {
+            console.log('✅ Server verification: User is authenticated, checking role for redirection');
+
+            // Check user role to determine redirect destination
+            try {
+              const userResponse = await fetch('/api/user', {
+                credentials: 'include',
+                headers: {
+                  'Accept': 'application/json',
+                  'X-Requested-With': 'XMLHttpRequest',
+                }
+              });
+
+              if (userResponse.ok) {
+                const userData = await userResponse.json();
+                const userRoles = userData.roles || [];
+
+                // Check if user has admin or super-admin role
+                if (userRoles.some((role: any) => ['admin', 'super-admin'].includes(role.name))) {
+                  console.log('🔑 User has admin role, redirecting to backoffice');
+                  window.location.replace('/backoffice');
+                } else {
+                  console.log('👤 User has regular role, redirecting to dashboard');
+                  window.location.replace('/dashboard');
+                }
+              } else {
+                // Fallback to dashboard if role check fails
+                console.log('⚠️ Role check failed, redirecting to dashboard');
+                window.location.replace('/dashboard');
+              }
+            } catch (error) {
+              console.error('❌ Role check failed:', error);
+              // Fallback to dashboard if role check fails
+              window.location.replace('/dashboard');
+            }
+          } else {
+            console.log('❌ Server verification: User is not authenticated, staying on login page');
+          }
+        } else {
+          console.log('🔍 Client-side auth check: User is not authenticated locally');
+        }
+      } catch (error) {
+        console.error('❌ Authentication check failed:', error);
+        // If check fails, stay on login page
+      }
+    };
+
+    checkAuth();
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {

@@ -23,6 +23,12 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
         $this->refreshCsrfToken($request); // Regenerate CSRF token after login
 
+        // Check if user has admin or super-admin role
+        $user = $request->user();
+        if ($user && $user->hasAnyRole(['admin', 'super-admin'])) {
+            return redirect()->intended('/backoffice')->with('success', 'Welcome back to the backoffice!');
+        }
+
         return redirect()->intended('/dashboard')->with('success', 'Welcome back!');
     }
 

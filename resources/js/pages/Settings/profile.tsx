@@ -22,8 +22,10 @@ import {
     User,
     X
 } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
-import Cropper from 'react-easy-crop';
+import { useCallback, useRef, useState, useMemo, lazy, Suspense } from 'react';
+
+// Lazy load the cropper to prevent performance issues
+const Cropper = lazy(() => import('react-easy-crop'));
 
 interface ProfileProps {
   mustVerifyEmail: boolean;
@@ -128,11 +130,11 @@ export default function Profile({ mustVerifyEmail, status, user }: ProfileProps)
     updatePreferences(route('preferences.update'));
   };
 
-  const tabs = [
+  const tabs = useMemo(() => [
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'security', label: 'Security', icon: Shield },
     { id: 'preferences', label: 'Preferences', icon: Bell },
-  ];
+  ], []);
 
   return (
     <>
@@ -536,16 +538,28 @@ export default function Profile({ mustVerifyEmail, status, user }: ProfileProps)
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Crop Profile Photo</h3>
                 <div className="relative h-64 bg-muted rounded-lg overflow-hidden">
-                  <Cropper
-                    image={photoPreview}
-                    crop={crop}
-                    zoom={zoom}
-                    aspect={1}
-                    onCropChange={setCrop}
-                    onZoomChange={setZoom}
-                    onCropComplete={onCropComplete}
-                    showGrid={true}
-                  />
+                  <Suspense fallback={
+                    <div className="flex items-center justify-center h-full">
+                      <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  }>
+                    <Cropper
+                      image={photoPreview}
+                      crop={crop}
+                      zoom={zoom}
+                      aspect={1}
+                      onCropChange={setCrop}
+                      onZoomChange={setZoom}
+                      onCropComplete={onCropComplete}
+                      showGrid={false}
+                      restrictPosition={false}
+                      style={{
+                        containerStyle: {
+                          background: '#f3f4f6'
+                        }
+                      }}
+                    />
+                  </Suspense>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="zoom">Zoom</Label>

@@ -60,10 +60,15 @@ class FrontendController extends Controller
         // Get user data if authenticated
         $user = $request->user();
 
+        // Check if user has admin or super-admin role and redirect to backoffice
+        if ($user && $user->hasAnyRole(['admin', 'super-admin'])) {
+            return redirect('/backoffice');
+        }
+
         // Ensure CSRF token is fresh for dashboard
         $this->refreshCsrfToken($request);
 
-        return Inertia::render('DashboardFixed', [
+        return Inertia::render('Dashboard', [
             'user' => $user ? [
                 'id' => $user->id,
                 'name' => $user->name,
@@ -1083,5 +1088,67 @@ class FrontendController extends Controller
             'status' => 419,
             'message' => 'Sesi Anda telah berakhir'
         ]);
+    }
+
+    /**
+     * Show the backoffice dashboard
+     */
+    public function backofficeDashboard(Request $request)
+    {
+        $user = $request->user();
+
+        return Inertia::render('backoffice/Dashboard', [
+            'user' => $user ? [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->roles->map(function ($role) {
+                    return [
+                        'id' => $role->id,
+                        'name' => $role->name,
+                    ];
+                }),
+            ] : null,
+        ]);
+    }
+
+    /**
+     * Show the backoffice users page
+     */
+    public function backofficeUsers()
+    {
+        return Inertia::render('backoffice/Users');
+    }
+
+    /**
+     * Show the backoffice orders page
+     */
+    public function backofficeOrders()
+    {
+        return Inertia::render('backoffice/Orders');
+    }
+
+    /**
+     * Show the backoffice feedbacks page
+     */
+    public function backofficeFeedbacks()
+    {
+        return Inertia::render('backoffice/Feedbacks');
+    }
+
+    /**
+     * Show the backoffice themes page
+     */
+    public function backofficeThemes()
+    {
+        return Inertia::render('backoffice/Themes');
+    }
+
+    /**
+     * Show the backoffice configurations page
+     */
+    public function backofficeConfigurations()
+    {
+        return Inertia::render('backoffice/Configurations');
     }
 }
