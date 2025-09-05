@@ -8,6 +8,7 @@ import PageHeader from '@/components/ui/page-header';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Eye, EyeOff, Key, User } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface EditProfileProps {
   user: {
@@ -45,20 +46,29 @@ export default function EditProfile({ user }: EditProfileProps) {
     password_confirmation: '',
   });
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleProfileSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Update profile first
     updateProfile(route('profile.update'), {
       onSuccess: () => {
-        // If password fields have values, update password
-        if (passwordData.current_password || passwordData.password || passwordData.password_confirmation) {
-          updatePassword(route('password.update'), {
-            onSuccess: () => {
-              resetPassword();
-            },
-          });
-        }
+        toast.success('Profile updated successfully!');
+      },
+      onError: (errors) => {
+        console.error('Profile update errors:', errors);
+        toast.error('Failed to update profile. Please check the errors and try again.');
+      },
+    });
+  };
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updatePassword(route('password.update'), {
+      onSuccess: () => {
+        resetPassword();
+        toast.success('Password updated successfully!');
+      },
+      onError: (errors) => {
+        console.error('Password update errors:', errors);
+        toast.error('Failed to update password. Please check the errors and try again.');
       },
     });
   };
@@ -94,9 +104,9 @@ export default function EditProfile({ user }: EditProfileProps) {
           <StandardFormLayout
             title="Edit Profile"
             description="Update your personal information and security settings"
-            onSubmit={handleFormSubmit}
-            submitLabel="Save Changes"
-            isSubmitting={profileProcessing || passwordProcessing}
+            onSubmit={handleProfileSubmit}
+            submitLabel="Save Profile"
+            isSubmitting={profileProcessing}
             icon={User}
             maxWidth="4xl"
           >
@@ -138,101 +148,106 @@ export default function EditProfile({ user }: EditProfileProps) {
                 </div>
               </StandardFormSection>
 
-              {/* Change Password Section */}
-              <StandardFormSection
-                title="Change Password"
-                description="Update your account password"
-                icon={Key}
-              >
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="current_password">Current Password</Label>
-                    <div className="relative">
-                      <Input
-                        id="current_password"
-                        type={showCurrentPassword ? 'text' : 'password'}
-                        value={passwordData.current_password}
-                        onChange={(e) => setPasswordData('current_password', e.target.value)}
-                        className={passwordErrors.current_password ? 'border-red-500' : ''}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                      >
-                        {showCurrentPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
-                    {passwordErrors.current_password && (
-                      <p className="text-sm text-red-500">{passwordErrors.current_password}</p>
-                    )}
-                  </div>
+            </div>
+          </StandardFormLayout>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="password">New Password</Label>
-                    <div className="relative">
-                      <Input
-                        id="password"
-                        type={showNewPassword ? 'text' : 'password'}
-                        value={passwordData.password}
-                        onChange={(e) => setPasswordData('password', e.target.value)}
-                        className={passwordErrors.password ? 'border-red-500' : ''}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() => setShowNewPassword(!showNewPassword)}
-                      >
-                        {showNewPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
-                    {passwordErrors.password && (
-                      <p className="text-sm text-red-500">{passwordErrors.password}</p>
+          {/* Password Change Form */}
+          <StandardFormLayout
+            title="Change Password"
+            description="Update your account password"
+            onSubmit={handlePasswordSubmit}
+            submitLabel="Update Password"
+            isSubmitting={passwordProcessing}
+            icon={Key}
+            maxWidth="4xl"
+          >
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="current_password">Current Password</Label>
+                <div className="relative">
+                  <Input
+                    id="current_password"
+                    type={showCurrentPassword ? 'text' : 'password'}
+                    value={passwordData.current_password}
+                    onChange={(e) => setPasswordData('current_password', e.target.value)}
+                    className={passwordErrors.current_password ? 'border-red-500' : ''}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  >
+                    {showCurrentPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
                     )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="password_confirmation">Confirm New Password</Label>
-                    <div className="relative">
-                      <Input
-                        id="password_confirmation"
-                        type={showPasswordConfirmation ? 'text' : 'password'}
-                        value={passwordData.password_confirmation}
-                        onChange={(e) => setPasswordData('password_confirmation', e.target.value)}
-                        className={passwordErrors.password_confirmation ? 'border-red-500' : ''}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() => setShowPasswordConfirmation(!showPasswordConfirmation)}
-                      >
-                        {showPasswordConfirmation ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
-                    {passwordErrors.password_confirmation && (
-                      <p className="text-sm text-red-500">{passwordErrors.password_confirmation}</p>
-                    )}
-                  </div>
+                  </Button>
                 </div>
-              </StandardFormSection>
+                {passwordErrors.current_password && (
+                  <p className="text-sm text-red-500">{passwordErrors.current_password}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password">New Password</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showNewPassword ? 'text' : 'password'}
+                    value={passwordData.password}
+                    onChange={(e) => setPasswordData('password', e.target.value)}
+                    className={passwordErrors.password ? 'border-red-500' : ''}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                  >
+                    {showNewPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+                {passwordErrors.password && (
+                  <p className="text-sm text-red-500">{passwordErrors.password}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password_confirmation">Confirm New Password</Label>
+                <div className="relative">
+                  <Input
+                    id="password_confirmation"
+                    type={showPasswordConfirmation ? 'text' : 'password'}
+                    value={passwordData.password_confirmation}
+                    onChange={(e) => setPasswordData('password_confirmation', e.target.value)}
+                    className={passwordErrors.password_confirmation ? 'border-red-500' : ''}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowPasswordConfirmation(!showPasswordConfirmation)}
+                  >
+                    {showPasswordConfirmation ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+                {passwordErrors.password_confirmation && (
+                  <p className="text-sm text-red-500">{passwordErrors.password_confirmation}</p>
+                )}
+              </div>
             </div>
           </StandardFormLayout>
         </div>

@@ -113,6 +113,7 @@ Route::middleware(['auth', 'backoffice'])->prefix('backoffice')->group(function 
         Route::delete('/coupons/{coupon}', [FrontendController::class, 'backofficeCouponsDestroy']);
         Route::get('/coupons/{coupon}/usage-stats', [FrontendController::class, 'backofficeCouponsUsageStats']);
         Route::get('/coupons/{coupon}/usages', [FrontendController::class, 'backofficeCouponsUsages']);
+        Route::get('/users/search', [FrontendController::class, 'backofficeUsersSearch']);
     });
 });
 
@@ -127,6 +128,8 @@ Route::get('/dashboard-simple', function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [FrontendController::class, 'profile'])->name('profile');
     Route::get('/profile/edit', [App\Http\Controllers\Profile\EditProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [App\Http\Controllers\Settings\ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/password', [App\Http\Controllers\Settings\PasswordController::class, 'update'])->name('password.update');
     Route::get('/profile/preferences', [App\Http\Controllers\Profile\PreferencesController::class, 'edit'])->name('profile.preferences');
     Route::patch('/profile/preferences', [App\Http\Controllers\Profile\PreferencesController::class, 'update'])->name('profile.preferences.update');
 });

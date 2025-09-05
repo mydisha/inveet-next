@@ -24,8 +24,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { apiDelete, apiGet, apiPost } from '@/lib/api';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import {
     Calendar,
     Edit,
@@ -63,6 +62,15 @@ interface Coupon {
 }
 
 interface CouponsPageProps {
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    roles: Array<{
+      id: number;
+      name: string;
+    }>;
+  } | null;
   coupons: {
     data: Coupon[];
     current_page: number;
@@ -77,66 +85,58 @@ interface CouponsPageProps {
   };
 }
 
-export default function Coupons({ coupons: initialCoupons, filters: initialFilters }: CouponsPageProps) {
-  const [coupons, setCoupons] = useState(initialCoupons);
-  const [filters, setFilters] = useState(initialFilters);
-  const [loading, setLoading] = useState(false);
+export default function Coupons({ user, coupons, filters: initialFilters }: CouponsPageProps) {
   const [searchTerm, setSearchTerm] = useState(initialFilters.search || '');
+  const [statusFilter, setStatusFilter] = useState(initialFilters.status || '');
+  const [typeFilter, setTypeFilter] = useState(initialFilters.type || '');
 
-  const fetchCoupons = async (newFilters = filters) => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (newFilters.status) params.append('status', newFilters.status);
-      if (newFilters.type) params.append('type', newFilters.type);
-      if (newFilters.search) params.append('search', newFilters.search);
 
-      const response = await apiGet(`/backoffice/coupons?${params.toString()}`);
-      setCoupons(response.data);
-    } catch (error) {
-      toast.error('Failed to fetch coupons');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handleSearchSubmit = () => {
+    const params = new URLSearchParams();
+    if (searchTerm) params.append('search', searchTerm);
+    if (statusFilter) params.append('status', statusFilter);
+    if (typeFilter) params.append('type', typeFilter);
 
-  const handleSearch = (value: string) => {
-    setSearchTerm(value);
-    const newFilters = { ...filters, search: value };
-    setFilters(newFilters);
-    fetchCoupons(newFilters);
+    router.get(`/backoffice/coupons?${params.toString()}`, {}, {
+      preserveState: true,
+      preserveScroll: true,
+    });
   };
 
   const handleFilterChange = (key: string, value: string) => {
-    const newFilters = { ...filters, [key]: value || undefined };
-    setFilters(newFilters);
-    fetchCoupons(newFilters);
-  };
-
-  const handleToggleActive = async (couponId: number) => {
-    try {
-      const response = await apiPost(`/backoffice/coupons/${couponId}/toggle-active`, {});
-      if (response.success) {
-        toast.success(response.message);
-        fetchCoupons();
-      }
-    } catch (error) {
-      toast.error('Failed to toggle coupon status');
+    if (key === 'status') {
+      setStatusFilter(value);
+    } else if (key === 'type') {
+      setTypeFilter(value);
     }
+    // Trigger search when filter changes
+    setTimeout(() => handleSearchSubmit(), 100);
   };
 
-  const handleDelete = async (couponId: number) => {
+  const handleToggleActive = (couponId: number) => {
+    router.post(`/backoffice/api/coupons/${couponId}/toggle-active`, {}, {
+      onSuccess: () => {
+        toast.success('Coupon status updated successfully');
+        router.reload();
+      },
+      onError: () => {
+        toast.error('Failed to toggle coupon status');
+      }
+    });
+  };
+
+  const handleDelete = (couponId: number) => {
     if (!confirm('Are you sure you want to delete this coupon?')) return;
 
-    try {
-      const response = await apiDelete(`/backoffice/coupons/${couponId}`);
-      if (response.success) {
-        toast.success(response.message);
-        fetchCoupons();
+    router.delete(`/backoffice/api/coupons/${couponId}`, {
+      onSuccess: () => {
+        toast.success('Coupon deleted successfully');
+        router.reload();
+      },
+      onError: () => {
+        toast.error('Failed to delete coupon');
       }
-    } catch (error) {
-      toast.error('Failed to delete coupon');
-    }
+    });
   };
 
   const getStatusBadge = (coupon: Coupon) => {
@@ -172,7 +172,7 @@ export default function Coupons({ coupons: initialCoupons, filters: initialFilte
   };
 
   return (
-    <BackofficeLayout>
+    <BackofficeLayout user={user}>
       <Head title="Coupons Management" />
 
       <div className="space-y-6">
@@ -203,12 +203,16 @@ export default function Coupons({ coupons: initialCoupons, filters: initialFilte
                   <Input
                     placeholder="Search coupons..."
                     value={searchTerm}
-                    onChange={(e) => handleSearch(e.target.value)}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleSearchSubmit()}
                     className="pl-10"
                   />
+                  <Button onClick={handleSearchSubmit} size="sm" className="ml-2">
+                    Search
+                  </Button>
                 </div>
               </div>
-              <Select value={filters.status || 'all'} onValueChange={(value) => handleFilterChange('status', value === 'all' ? undefined : value)}>
+              <Select value={statusFilter || 'all'} onValueChange={(value) => handleFilterChange('status', value === 'all' ? '' : value)}>
                 <SelectTrigger className="w-full sm:w-48">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
@@ -219,7 +223,7 @@ export default function Coupons({ coupons: initialCoupons, filters: initialFilte
                   <SelectItem value="expired">Expired</SelectItem>
                 </SelectContent>
               </Select>
-              <Select value={filters.type || 'all'} onValueChange={(value) => handleFilterChange('type', value === 'all' ? undefined : value)}>
+              <Select value={typeFilter || 'all'} onValueChange={(value) => handleFilterChange('type', value === 'all' ? '' : value)}>
                 <SelectTrigger className="w-full sm:w-48">
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>

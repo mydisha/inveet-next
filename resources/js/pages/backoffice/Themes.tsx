@@ -3,42 +3,43 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui/table';
-import { apiGet } from '@/lib/api';
-import { getCsrfToken } from '@/lib/auth';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import {
-    Edit,
-    Eye,
-    MoreHorizontal,
-    Palette,
-    Plus,
-    Search,
-    ToggleLeft,
-    ToggleRight,
-    Trash2
+  Edit,
+  Eye,
+  Lock,
+  MoreHorizontal,
+  Palette,
+  Plus,
+  Search,
+  ToggleLeft,
+  ToggleRight,
+  Trash2,
+  Users
 } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface Theme {
   id: number;
@@ -48,6 +49,7 @@ interface Theme {
   is_active: boolean;
   is_public: boolean;
   preview_image?: string;
+  preview_image_url?: string;
   created_at: string;
   user: {
     id: number;
@@ -81,130 +83,82 @@ interface ThemesPageProps {
       name: string;
     }>;
   } | null;
+  themes: {
+    data: Theme[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+  };
+  filters: {
+    search?: string;
+    status?: string;
+    visibility?: string;
+  };
 }
 
-export default function ThemesPage({ user }: ThemesPageProps) {
-  const [themes, setThemes] = useState<Theme[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [visibilityFilter, setVisibilityFilter] = useState('all');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
+export default function ThemesPage({ user, themes, filters: initialFilters }: ThemesPageProps) {
+  const [search, setSearch] = useState(initialFilters.search || '');
+  const [statusFilter, setStatusFilter] = useState(initialFilters.status || 'all');
+  const [visibilityFilter, setVisibilityFilter] = useState(initialFilters.visibility || 'all');
 
-  const fetchThemes = useCallback(async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({
-        page: currentPage.toString(),
-        per_page: '15',
-        ...(search && { search }),
-        ...(statusFilter && statusFilter !== 'all' && { status: statusFilter }),
-        ...(visibilityFilter && visibilityFilter !== 'all' && { visibility: visibilityFilter }),
-      });
+  const handleSearchSubmit = () => {
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    if (statusFilter && statusFilter !== 'all') params.append('status', statusFilter);
+    if (visibilityFilter && visibilityFilter !== 'all') params.append('visibility', visibilityFilter);
 
-      const response: ThemesResponse = await apiGet(`/backoffice/api/themes?${params}`);
-
-      setThemes(response.data.data);
-      setTotalPages(response.data.last_page);
-      setTotal(response.data.total);
-    } catch (error) {
-
-    } finally {
-      setLoading(false);
-    }
-  }, [currentPage, search, statusFilter, visibilityFilter]);
-
-  useEffect(() => {
-    fetchThemes();
-  }, [fetchThemes]);
-
-  const handleSearch = (value: string) => {
-    setSearch(value);
-    setCurrentPage(1);
+    router.get(`/backoffice/themes?${params.toString()}`, {}, {
+      preserveState: true,
+      preserveScroll: true,
+    });
   };
 
-  const handleToggleActive = async (themeId: number) => {
-    try {
-      const csrfToken = getCsrfToken();
-      if (!csrfToken) {
-
-        return;
-      }
-
-      const response = await fetch(`/api/backoffice/themes/${themeId}/toggle-active`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': csrfToken,
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-        },
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        fetchThemes(); // Refresh the list
-      }
-    } catch (error) {
-
+  const handleFilterChange = (filterType: string, value: string) => {
+    if (filterType === 'status') {
+      setStatusFilter(value);
+    } else if (filterType === 'visibility') {
+      setVisibilityFilter(value);
     }
+    // Trigger search when filter changes
+    setTimeout(() => handleSearchSubmit(), 100);
   };
 
-  const handleTogglePublic = async (themeId: number) => {
-    try {
-      const csrfToken = getCsrfToken();
-      if (!csrfToken) {
-
-        return;
+  const handleToggleActive = (themeId: number) => {
+    router.post(`/backoffice/api/themes/${themeId}/toggle-active`, {}, {
+      onSuccess: () => {
+        toast.success('Theme status updated successfully');
+        router.reload();
+      },
+      onError: () => {
+        toast.error('Failed to update theme status');
       }
-
-      const response = await fetch(`/api/backoffice/themes/${themeId}/toggle-public`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': csrfToken,
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-        },
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        fetchThemes(); // Refresh the list
-      }
-    } catch (error) {
-
-    }
+    });
   };
 
-  const handleDelete = async (themeId: number) => {
+  const handleTogglePublic = (themeId: number) => {
+    router.post(`/backoffice/api/themes/${themeId}/toggle-public`, {}, {
+      onSuccess: () => {
+        toast.success('Theme visibility updated successfully');
+        router.reload();
+      },
+      onError: () => {
+        toast.error('Failed to update theme visibility');
+      }
+    });
+  };
+
+  const handleDelete = (themeId: number) => {
     if (confirm('Are you sure you want to delete this theme? This action cannot be undone.')) {
-      try {
-        const csrfToken = getCsrfToken();
-        if (!csrfToken) {
-
-          return;
+      router.delete(`/backoffice/api/themes/${themeId}`, {
+        onSuccess: () => {
+          toast.success('Theme deleted successfully');
+          router.reload();
+        },
+        onError: () => {
+          toast.error('Failed to delete theme');
         }
-
-        const response = await fetch(`/api/backoffice/themes/${themeId}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken,
-            'Accept': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-          },
-          credentials: 'include',
-        });
-
-        if (response.ok) {
-          fetchThemes(); // Refresh the list
-        }
-      } catch (error) {
-
-      }
+      });
     }
   };
 
@@ -237,13 +191,17 @@ export default function ThemesPage({ user }: ThemesPageProps) {
                     <Input
                       placeholder="Search themes..."
                       value={search}
-                      onChange={(e) => handleSearch(e.target.value)}
+                      onChange={(e) => setSearch(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleSearchSubmit()}
                       className="pl-10"
                     />
+                    <Button onClick={handleSearchSubmit} size="sm" className="ml-2">
+                      Search
+                    </Button>
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <Select value={statusFilter} onValueChange={(value) => handleFilterChange('status', value)}>
                     <SelectTrigger className="w-40">
                       <SelectValue placeholder="All Status" />
                     </SelectTrigger>
@@ -253,7 +211,7 @@ export default function ThemesPage({ user }: ThemesPageProps) {
                       <SelectItem value="inactive">Inactive</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Select value={visibilityFilter} onValueChange={setVisibilityFilter}>
+                  <Select value={visibilityFilter} onValueChange={(value) => handleFilterChange('visibility', value)}>
                     <SelectTrigger className="w-40">
                       <SelectValue placeholder="All Visibility" />
                     </SelectTrigger>
@@ -271,12 +229,12 @@ export default function ThemesPage({ user }: ThemesPageProps) {
           {/* Themes Table */}
           <Card>
             <CardHeader>
-              <CardTitle>Themes ({total})</CardTitle>
+              <CardTitle>Themes ({themes.total})</CardTitle>
             </CardHeader>
             <CardContent>
-              {loading ? (
-                <div className="flex items-center justify-center h-32">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              {themes.data.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  No themes found
                 </div>
               ) : (
                 <div className="overflow-x-auto">
@@ -295,13 +253,13 @@ export default function ThemesPage({ user }: ThemesPageProps) {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {themes.map((theme) => (
+                      {themes.data.map((theme) => (
                         <TableRow key={theme.id}>
                           <TableCell>
-                            {theme.preview_image ? (
+                            {theme.preview_image_url ? (
                               <div className="w-16 h-12 rounded-lg overflow-hidden bg-gray-100">
                                 <img
-                                  src={theme.preview_image}
+                                  src={theme.preview_image_url}
                                   alt={theme.name}
                                   className="w-full h-full object-cover"
                                 />
@@ -359,7 +317,14 @@ export default function ThemesPage({ user }: ThemesPageProps) {
                               variant={theme.is_public ? 'default' : 'secondary'}
                               className={theme.is_public ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}
                             >
-                              {theme.is_public ? 'Public' : 'Private'}
+                              <div className="flex items-center gap-1">
+                                {theme.is_public ? (
+                                  <Users className="h-3 w-3" />
+                                ) : (
+                                  <Lock className="h-3 w-3" />
+                                )}
+                                {theme.is_public ? 'Public' : 'Private'}
+                              </div>
                             </Badge>
                           </TableCell>
                           <TableCell>
@@ -438,25 +403,39 @@ export default function ThemesPage({ user }: ThemesPageProps) {
               )}
 
               {/* Pagination */}
-              {totalPages > 1 && (
+              {themes.last_page > 1 && (
                 <div className="flex items-center justify-between mt-4">
                   <div className="text-sm text-gray-500">
-                    Showing {((currentPage - 1) * 15) + 1} to {Math.min(currentPage * 15, total)} of {total} results
+                    Showing {((themes.current_page - 1) * themes.per_page) + 1} to {Math.min(themes.current_page * themes.per_page, themes.total)} of {themes.total} results
                   </div>
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      disabled={currentPage === 1}
-                      onClick={() => setCurrentPage(currentPage - 1)}
+                      disabled={themes.current_page === 1}
+                      onClick={() => {
+                        const params = new URLSearchParams();
+                        if (search) params.append('search', search);
+                        if (statusFilter && statusFilter !== 'all') params.append('status', statusFilter);
+                        if (visibilityFilter && visibilityFilter !== 'all') params.append('visibility', visibilityFilter);
+                        params.append('page', (themes.current_page - 1).toString());
+                        router.get(`/backoffice/themes?${params.toString()}`);
+                      }}
                     >
                       Previous
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      disabled={currentPage === totalPages}
-                      onClick={() => setCurrentPage(currentPage + 1)}
+                      disabled={themes.current_page === themes.last_page}
+                      onClick={() => {
+                        const params = new URLSearchParams();
+                        if (search) params.append('search', search);
+                        if (statusFilter && statusFilter !== 'all') params.append('status', statusFilter);
+                        if (visibilityFilter && visibilityFilter !== 'all') params.append('visibility', visibilityFilter);
+                        params.append('page', (themes.current_page + 1).toString());
+                        router.get(`/backoffice/themes?${params.toString()}`);
+                      }}
                     >
                       Next
                     </Button>

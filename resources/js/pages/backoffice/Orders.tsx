@@ -24,8 +24,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { getCsrfToken } from '@/lib/auth';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import {
     CheckCircle,
     Eye,
@@ -33,7 +32,7 @@ import {
     Search,
     XCircle
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 interface Order {
   id: number;
@@ -84,150 +83,75 @@ interface OrdersPageProps {
       name: string;
     }>;
   } | null;
+  orders: {
+    data: Order[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+  };
+  filters: {
+    search?: string;
+    status?: string;
+    date_from?: string;
+    date_to?: string;
+  };
 }
 
-export default function OrdersPage({ user }: OrdersPageProps) {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [paymentTypeFilter, setPaymentTypeFilter] = useState('all');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
+export default function OrdersPage({ user, orders, filters: initialFilters }: OrdersPageProps) {
+  const [search, setSearch] = useState(initialFilters.search || '');
+  const [statusFilter, setStatusFilter] = useState(initialFilters.status || 'all');
+  const [dateFrom, setDateFrom] = useState(initialFilters.date_from || '');
+  const [dateTo, setDateTo] = useState(initialFilters.date_to || '');
 
-  const fetchOrders = async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({
-        page: currentPage.toString(),
-        per_page: '15',
-        ...(search && { search }),
-        ...(statusFilter && statusFilter !== 'all' && { status: statusFilter }),
-        ...(paymentTypeFilter && paymentTypeFilter !== 'all' && { payment_type: paymentTypeFilter }),
-        ...(dateFrom && { date_from: dateFrom }),
-        ...(dateTo && { date_to: dateTo }),
-      });
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    if (statusFilter && statusFilter !== 'all') params.append('status', statusFilter);
+    if (dateFrom) params.append('date_from', dateFrom);
+    if (dateTo) params.append('date_to', dateTo);
 
-      const csrfToken = getCsrfToken();
-      if (!csrfToken) {
-
-        return;
-      }
-
-      const response = await fetch(`/api/backoffice/orders?${params}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': csrfToken,
-        },
-        credentials: 'include'
-      });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-
-          // Redirect to login or refresh the page
-          window.location.href = '/login';
-          return;
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data: OrdersResponse = await response.json();
-
-      if (data && data.data && data.data.data) {
-        setOrders(data.data.data);
-        setTotalPages(data.data.last_page);
-        setTotal(data.data.total);
-      } else {
-
-        setOrders([]);
-        setTotalPages(1);
-        setTotal(0);
-      }
-    } catch (error) {
-
-      setOrders([]);
-      setTotalPages(1);
-      setTotal(0);
-    } finally {
-      setLoading(false);
-    }
+    router.get(`/backoffice/orders?${params.toString()}`, {}, {
+      preserveState: true,
+      preserveScroll: true,
+    });
   };
 
-  useEffect(() => {
-    fetchOrders();
-  }, [currentPage, search, statusFilter, paymentTypeFilter, dateFrom, dateTo]);
 
-  const handleSearch = (value: string) => {
-    setSearch(value);
-    setCurrentPage(1);
+  const handleFilterChange = (filterType: string, value: string) => {
+    if (filterType === 'status') {
+      setStatusFilter(value);
+    } else if (filterType === 'date_from') {
+      setDateFrom(value);
+    } else if (filterType === 'date_to') {
+      setDateTo(value);
+    }
+    // Trigger search when filter changes
+    setTimeout(() => handleSearch(), 100);
   };
 
-  const handleMarkAsPaid = async (orderId: number) => {
-    try {
-      const csrfToken = getCsrfToken();
-      if (!csrfToken) {
-
-        return;
+  const handleMarkAsPaid = (orderId: number) => {
+    router.post(`/backoffice/api/orders/${orderId}/mark-paid`, {
+      external_transaction_id: `MANUAL_${Date.now()}`,
+    }, {
+      onSuccess: () => {
+        router.reload();
+      },
+      onError: () => {
+        console.error('Error marking order as paid');
       }
-
-      const response = await fetch(`/api/backoffice/orders/${orderId}/mark-paid`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': csrfToken,
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          external_transaction_id: `MANUAL_${Date.now()}`,
-        }),
-      });
-
-      if (response.ok) {
-        fetchOrders(); // Refresh the list
-      } else {
-
-      }
-    } catch (error) {
-
-    }
+    });
   };
 
-  const handleMarkAsVoid = async (orderId: number) => {
-    try {
-      const csrfToken = getCsrfToken();
-      if (!csrfToken) {
-
-        return;
+  const handleMarkAsVoid = (orderId: number) => {
+    router.post(`/backoffice/api/orders/${orderId}/mark-void`, {}, {
+      onSuccess: () => {
+        router.reload();
+      },
+      onError: () => {
+        console.error('Error marking order as void');
       }
-
-      const response = await fetch(`/api/backoffice/orders/${orderId}/mark-void`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': csrfToken,
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-        },
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        fetchOrders(); // Refresh the list
-      } else {
-
-      }
-    } catch (error) {
-
-    }
+    });
   };
 
   const formatCurrency = (amount: number) => {
@@ -280,40 +204,32 @@ export default function OrdersPage({ user }: OrdersPageProps) {
           {/* Filters */}
           <Card>
             <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="lg:col-span-2">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                       placeholder="Search orders..."
                       value={search}
-                      onChange={(e) => handleSearch(e.target.value)}
+                      onChange={(e) => setSearch(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                       className="pl-10"
                     />
+                    <Button onClick={handleSearch} size="sm" className="ml-2">
+                      Search
+                    </Button>
                   </div>
                 </div>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <Select value={statusFilter} onValueChange={(value) => handleFilterChange('status', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="All Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="all">All Orders</SelectItem>
                     <SelectItem value="paid">Paid</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="void">Void</SelectItem>
                     <SelectItem value="expired">Expired</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select value={paymentTypeFilter} onValueChange={setPaymentTypeFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Payment Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
-                    <SelectItem value="credit_card">Credit Card</SelectItem>
-                    <SelectItem value="e_wallet">E-Wallet</SelectItem>
-                    <SelectItem value="manual">Manual</SelectItem>
                   </SelectContent>
                 </Select>
                 <div className="flex gap-2">
@@ -321,13 +237,13 @@ export default function OrdersPage({ user }: OrdersPageProps) {
                     type="date"
                     placeholder="From Date"
                     value={dateFrom}
-                    onChange={(e) => setDateFrom(e.target.value)}
+                    onChange={(e) => handleFilterChange('date_from', e.target.value)}
                   />
                   <Input
                     type="date"
                     placeholder="To Date"
                     value={dateTo}
-                    onChange={(e) => setDateTo(e.target.value)}
+                    onChange={(e) => handleFilterChange('date_to', e.target.value)}
                   />
                 </div>
               </div>
@@ -337,12 +253,12 @@ export default function OrdersPage({ user }: OrdersPageProps) {
           {/* Orders Table */}
           <Card>
             <CardHeader>
-              <CardTitle>Orders ({total})</CardTitle>
+              <CardTitle>Orders ({orders.total})</CardTitle>
             </CardHeader>
             <CardContent>
-              {loading ? (
-                <div className="flex items-center justify-center h-32">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              {orders.data.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  No orders found
                 </div>
               ) : (
                 <div className="overflow-x-auto">
@@ -361,7 +277,7 @@ export default function OrdersPage({ user }: OrdersPageProps) {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {orders.map((order) => (
+                      {orders.data.map((order) => (
                         <TableRow key={order.id}>
                           <TableCell>
                             <div className="font-mono text-sm">{order.invoice_number}</div>
@@ -386,13 +302,8 @@ export default function OrdersPage({ user }: OrdersPageProps) {
                           <TableCell>
                             <div className="text-right">
                               <div className="font-medium">
-                                {formatCurrency(order.total_price + order.unique_price)}
+                                {formatCurrency(order.total_price)}
                               </div>
-                              {order.unique_price > 0 && (
-                                <div className="text-sm text-gray-500">
-                                  +{formatCurrency(order.unique_price)} unique
-                                </div>
-                              )}
                             </div>
                           </TableCell>
                           <TableCell>
@@ -453,25 +364,41 @@ export default function OrdersPage({ user }: OrdersPageProps) {
               )}
 
               {/* Pagination */}
-              {totalPages > 1 && (
+              {orders.last_page > 1 && (
                 <div className="flex items-center justify-between mt-4">
                   <div className="text-sm text-gray-500">
-                    Showing {((currentPage - 1) * 15) + 1} to {Math.min(currentPage * 15, total)} of {total} results
+                    Showing {((orders.current_page - 1) * orders.per_page) + 1} to {Math.min(orders.current_page * orders.per_page, orders.total)} of {orders.total} results
                   </div>
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      disabled={currentPage === 1}
-                      onClick={() => setCurrentPage(currentPage - 1)}
+                      disabled={orders.current_page === 1}
+                      onClick={() => {
+                        const params = new URLSearchParams();
+                        if (search) params.append('search', search);
+                        if (statusFilter && statusFilter !== 'all') params.append('status', statusFilter);
+                        if (dateFrom) params.append('date_from', dateFrom);
+                        if (dateTo) params.append('date_to', dateTo);
+                        params.append('page', (orders.current_page - 1).toString());
+                        router.get(`/backoffice/orders?${params.toString()}`);
+                      }}
                     >
                       Previous
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      disabled={currentPage === totalPages}
-                      onClick={() => setCurrentPage(currentPage + 1)}
+                      disabled={orders.current_page === orders.last_page}
+                      onClick={() => {
+                        const params = new URLSearchParams();
+                        if (search) params.append('search', search);
+                        if (statusFilter && statusFilter !== 'all') params.append('status', statusFilter);
+                        if (dateFrom) params.append('date_from', dateFrom);
+                        if (dateTo) params.append('date_to', dateTo);
+                        params.append('page', (orders.current_page + 1).toString());
+                        router.get(`/backoffice/orders?${params.toString()}`);
+                      }}
                     >
                       Next
                     </Button>

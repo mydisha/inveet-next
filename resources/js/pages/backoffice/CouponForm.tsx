@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Search, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -47,6 +47,15 @@ interface CouponFormData {
 }
 
 interface CouponFormProps {
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    roles: Array<{
+      id: number;
+      name: string;
+    }>;
+  } | null;
   coupon?: {
     id: number;
     code: string;
@@ -68,7 +77,7 @@ interface CouponFormProps {
   users: User[];
 }
 
-export default function CouponForm({ coupon, packages, users }: CouponFormProps) {
+export default function CouponForm({ user, coupon, packages, users }: CouponFormProps) {
   const isEdit = !!coupon;
   const title = isEdit ? 'Edit Coupon' : 'Create Coupon';
 
@@ -91,6 +100,9 @@ export default function CouponForm({ coupon, packages, users }: CouponFormProps)
 
   const [selectedPackages, setSelectedPackages] = useState<number[]>(data.applicable_packages);
   const [selectedUsers, setSelectedUsers] = useState<number[]>(data.applicable_users);
+  const [userSearch, setUserSearch] = useState('');
+  const [searchResults, setSearchResults] = useState<User[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     setSelectedPackages(data.applicable_packages);
@@ -107,7 +119,7 @@ export default function CouponForm({ coupon, packages, users }: CouponFormProps)
     };
 
     if (isEdit) {
-      put(`/backoffice/coupons/${coupon.id}`, {
+      put(`/backoffice/api/coupons/${coupon.id}`, {
         onSuccess: () => {
           toast.success('Coupon updated successfully');
         },
@@ -116,7 +128,7 @@ export default function CouponForm({ coupon, packages, users }: CouponFormProps)
         },
       });
     } else {
-      post('/backoffice/coupons', {
+      post('/backoffice/api/coupons', {
         onSuccess: () => {
           toast.success('Coupon created successfully');
         },
@@ -143,6 +155,47 @@ export default function CouponForm({ coupon, packages, users }: CouponFormProps)
     setData('applicable_users', newSelection);
   };
 
+  const searchUsers = async (query: string) => {
+    if (query.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const response = await fetch(`/backoffice/api/users/search?search=${encodeURIComponent(query)}&limit=20`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSearchResults(data.data || []);
+      } else {
+        setSearchResults([]);
+      }
+    } catch (error) {
+      console.error('Error searching users:', error);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleUserSearch = (value: string) => {
+    setUserSearch(value);
+    searchUsers(value);
+  };
+
+  const clearUserSearch = () => {
+    setUserSearch('');
+    setSearchResults([]);
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -152,7 +205,7 @@ export default function CouponForm({ coupon, packages, users }: CouponFormProps)
   };
 
   return (
-    <BackofficeLayout>
+    <BackofficeLayout user={user}>
       <Head title={title} />
 
       <div className="space-y-6">
@@ -394,32 +447,93 @@ export default function CouponForm({ coupon, packages, users }: CouponFormProps)
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">
                   Select users this coupon can be used by. Leave empty to allow all users.
-                  {users.length >= 1000 && (
-                    <span className="block text-orange-600 mt-1">
-                      Showing the 1000 most recent users. Use the search to find specific users.
-                    </span>
-                  )}
                 </p>
-                <div className="max-h-60 overflow-y-auto space-y-2">
-                  {users.map((user) => (
-                    <div key={user.id} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`user-${user.id}`}
-                        checked={selectedUsers.includes(user.id)}
-                        onCheckedChange={() => handleUserToggle(user.id)}
-                      />
-                      <Label htmlFor={`user-${user.id}`} className="flex-1">
-                        <div className="font-medium">{user.name}</div>
-                        <div className="text-sm text-muted-foreground">{user.email}</div>
-                      </Label>
-                    </div>
-                  ))}
+
+                {/* Search Input */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search users by name or email..."
+                    value={userSearch}
+                    onChange={(e) => handleUserSearch(e.target.value)}
+                    className="pl-10 pr-10"
+                  />
+                  {userSearch && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
+                      onClick={clearUserSearch}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
-                {users.length === 0 && (
-                  <div className="text-center py-4 text-muted-foreground">
-                    No users found
+
+                {/* Selected Users Count */}
+                {selectedUsers.length > 0 && (
+                  <div className="text-sm text-primary font-medium">
+                    {selectedUsers.length} user{selectedUsers.length !== 1 ? 's' : ''} selected
                   </div>
                 )}
+
+                {/* User List */}
+                <div className="max-h-60 overflow-y-auto space-y-2 border rounded-md p-2">
+                  {isSearching ? (
+                    <div className="text-center py-4 text-muted-foreground">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mx-auto mb-2"></div>
+                      Searching users...
+                    </div>
+                  ) : userSearch ? (
+                    // Show search results
+                    searchResults.length > 0 ? (
+                      searchResults.map((user) => (
+                        <div key={user.id} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`user-${user.id}`}
+                            checked={selectedUsers.includes(user.id)}
+                            onCheckedChange={() => handleUserToggle(user.id)}
+                          />
+                          <Label htmlFor={`user-${user.id}`} className="flex-1">
+                            <div className="font-medium">{user.name}</div>
+                            <div className="text-sm text-muted-foreground">{user.email}</div>
+                          </Label>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-4 text-muted-foreground">
+                        No users found matching "{userSearch}"
+                      </div>
+                    )
+                  ) : (
+                    // Show initial users (recent users)
+                    users.length > 0 ? (
+                      <>
+                        <div className="text-xs text-muted-foreground mb-2 font-medium">
+                          Recent users (click search to find more)
+                        </div>
+                        {users.map((user) => (
+                          <div key={user.id} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`user-${user.id}`}
+                              checked={selectedUsers.includes(user.id)}
+                              onCheckedChange={() => handleUserToggle(user.id)}
+                            />
+                            <Label htmlFor={`user-${user.id}`} className="flex-1">
+                              <div className="font-medium">{user.name}</div>
+                              <div className="text-sm text-muted-foreground">{user.email}</div>
+                            </Label>
+                          </div>
+                        ))}
+                      </>
+                    ) : (
+                      <div className="text-center py-4 text-muted-foreground">
+                        No users available
+                      </div>
+                    )
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>

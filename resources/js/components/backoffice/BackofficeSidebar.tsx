@@ -124,7 +124,7 @@ export default function BackofficeSidebar({ user, sidebarOpen, setSidebarOpen }:
                 alt="Inveet.Id Backoffice"
                 className="h-8 w-auto hover:opacity-80 transition-opacity duration-300 cursor-pointer"
               />
-              <span className="text-xs font-inter-bold text-foreground mt-1">backoffice</span>
+              <span className="text-xs font-inter-bold text-secondary-foreground mt-1 bg-secondary px-2 py-1 rounded-md">Backoffice</span>
             </Link>
             <Button
               variant="ghost"

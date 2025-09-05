@@ -1,18 +1,14 @@
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { apiGet } from '@/lib/api';
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import {
-    DollarSign,
-    MessageSquare,
-    Palette,
-    Settings,
-    ShoppingCart,
-    TrendingUp,
-    Users
+  DollarSign,
+  MessageSquare,
+  Palette,
+  Settings,
+  ShoppingCart,
+  Users
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 interface DashboardStats {
   total_users: number;
@@ -41,7 +37,23 @@ interface DashboardStats {
   themes_this_month: number;
 }
 
-interface BackofficeDashboardProps {
+interface ActivityItem {
+  id: number;
+  log_name: string;
+  event: string;
+  description: string;
+  event_label: string;
+  event_color: string;
+  log_name_label: string;
+  created_at: string;
+  user?: {
+    id: number;
+    name: string;
+    email: string;
+  };
+}
+
+interface DashboardProps {
   user: {
     id: number;
     name: string;
@@ -51,106 +63,14 @@ interface BackofficeDashboardProps {
       name: string;
     }>;
   } | null;
+  userStats: DashboardStats;
+  orderStats: DashboardStats;
+  feedbackStats: DashboardStats;
+  themeStats: DashboardStats;
+  activities: ActivityItem[];
 }
 
-export default function BackofficeDashboard({ user }: BackofficeDashboardProps) {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState({
-    users: true,
-    orders: true,
-    feedbacks: true,
-    themes: true,
-  });
-  const [errors, setErrors] = useState({
-    users: null,
-    orders: null,
-    feedbacks: null,
-    themes: null,
-  });
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      // Load each statistics section independently for better performance
-      const loadUserStats = async (retryCount = 0) => {
-        try {
-          const userStats = await apiGet('/backoffice/api/users/statistics');
-          setStats(prev => ({ ...prev, ...userStats.data }));
-          setErrors(prev => ({ ...prev, users: null }));
-        } catch (error) {
-          setErrors(prev => ({ ...prev, users: error.message || 'Failed to load user statistics' }));
-
-          // Retry once after 2 seconds
-          if (retryCount === 0) {
-            setTimeout(() => loadUserStats(1), 2000);
-          }
-        } finally {
-          setLoading(prev => ({ ...prev, users: false }));
-        }
-      };
-
-      const loadOrderStats = async (retryCount = 0) => {
-        try {
-          const orderStats = await apiGet('/backoffice/api/orders/statistics');
-          setStats(prev => ({ ...prev, ...orderStats.data }));
-          setErrors(prev => ({ ...prev, orders: null }));
-        } catch (error) {
-          setErrors(prev => ({ ...prev, orders: error.message || 'Failed to load order statistics' }));
-
-          if (retryCount === 0) {
-            setTimeout(() => loadOrderStats(1), 2000);
-          }
-        } finally {
-          setLoading(prev => ({ ...prev, orders: false }));
-        }
-      };
-
-      const loadFeedbackStats = async (retryCount = 0) => {
-        try {
-          const feedbackStats = await apiGet('/backoffice/api/feedbacks/statistics');
-          setStats(prev => ({ ...prev, ...feedbackStats.data }));
-          setErrors(prev => ({ ...prev, feedbacks: null }));
-        } catch (error) {
-          setErrors(prev => ({ ...prev, feedbacks: error.message || 'Failed to load feedback statistics' }));
-
-          if (retryCount === 0) {
-            setTimeout(() => loadFeedbackStats(1), 2000);
-          }
-        } finally {
-          setLoading(prev => ({ ...prev, feedbacks: false }));
-        }
-      };
-
-      const loadThemeStats = async (retryCount = 0) => {
-        try {
-          const themeStats = await apiGet('/backoffice/api/themes/statistics');
-          setStats(prev => ({ ...prev, ...themeStats.data }));
-          setErrors(prev => ({ ...prev, themes: null }));
-        } catch (error) {
-          setErrors(prev => ({ ...prev, themes: error.message || 'Failed to load theme statistics' }));
-
-          if (retryCount === 0) {
-            setTimeout(() => loadThemeStats(1), 2000);
-          }
-        } finally {
-          setLoading(prev => ({ ...prev, themes: false }));
-        }
-      };
-
-      // Start all requests in parallel but handle them independently
-      loadUserStats();
-      loadOrderStats();
-      loadFeedbackStats();
-      loadThemeStats();
-    };
-
-    fetchStats();
-  }, []);
-
-  const isLoading = loading.users || loading.orders || loading.feedbacks || loading.themes;
-  const loadedCount = Object.values(loading).filter(loading => !loading).length;
-  const totalCount = Object.keys(loading).length;
-  const progressPercentage = (loadedCount / totalCount) * 100;
-
+export default function Dashboard({ user, userStats, orderStats, feedbackStats, themeStats, activities }: DashboardProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -159,210 +79,233 @@ export default function BackofficeDashboard({ user }: BackofficeDashboardProps) 
     }).format(amount);
   };
 
-  const LoadingSpinner = () => (
-    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-400"></div>
-  );
+  const formatNumber = (num: number) => {
+    return new Intl.NumberFormat('id-ID').format(num);
+  };
 
-  const statCards = [
-    {
-      label: 'Total Users',
-      value: loading.users ? <LoadingSpinner /> : (stats?.total_users || 0),
-      icon: Users,
-      color: 'text-blue-500',
-      isLoading: loading.users,
-      error: errors.users
-    },
-    {
-      label: 'Active Users',
-      value: loading.users ? <LoadingSpinner /> : (stats?.active_users || 0),
-      icon: TrendingUp,
-      color: 'text-green-500',
-      isLoading: loading.users,
-      error: errors.users
-    },
-    {
-      label: 'Total Orders',
-      value: loading.orders ? <LoadingSpinner /> : (stats?.total_orders || 0),
-      icon: ShoppingCart,
-      color: 'text-purple-500',
-      isLoading: loading.orders,
-      error: errors.orders
-    },
-    {
-      label: 'Total Revenue',
-      value: loading.orders ? <LoadingSpinner /> : formatCurrency((stats?.total_revenue || 0) + (stats?.unique_revenue || 0)),
-      icon: DollarSign,
-      color: 'text-emerald-500',
-      isLoading: loading.orders,
-      error: errors.orders
-    },
-    {
-      label: 'Feedbacks',
-      value: loading.feedbacks ? <LoadingSpinner /> : (stats?.total_feedbacks || 0),
-      icon: MessageSquare,
-      color: 'text-orange-500',
-      isLoading: loading.feedbacks,
-      error: errors.feedbacks
-    },
-    {
-      label: 'Themes',
-      value: loading.themes ? <LoadingSpinner /> : (stats?.total_themes || 0),
-      icon: Palette,
-      color: 'text-pink-500',
-      isLoading: loading.themes,
-      error: errors.themes
-    },
-  ];
+  const getActivityIcon = (logName: string) => {
+    switch (logName) {
+      case 'user':
+        return <Users className="h-4 w-4" />;
+      case 'order':
+        return <ShoppingCart className="h-4 w-4" />;
+      case 'feedback':
+        return <MessageSquare className="h-4 w-4" />;
+      case 'theme':
+        return <Palette className="h-4 w-4" />;
+      default:
+        return <Settings className="h-4 w-4" />;
+    }
+  };
 
-  const quickActions = [
-    {
-      title: 'Manage Users',
-      description: 'View and manage user accounts',
-      icon: Users,
-      href: '/backoffice/users',
-      variant: 'default' as const,
-    },
-    {
-      title: 'View Orders',
-      description: 'Monitor and manage orders',
-      icon: ShoppingCart,
-      href: '/backoffice/orders',
-      variant: 'outline' as const,
-    },
-    {
-      title: 'Manage Themes',
-      description: 'Upload and manage wedding themes',
-      icon: Palette,
-      href: '/backoffice/themes',
-      variant: 'outline' as const,
-    },
-    {
-      title: 'Website Settings',
-      description: 'Configure website settings',
-      icon: Settings,
-      href: '/backoffice/configurations',
-      variant: 'outline' as const,
-    },
-  ];
+  const getActivityColor = (eventColor: string) => {
+    const colorMap: { [key: string]: string } = {
+      'created': 'text-green-600 bg-green-100',
+      'updated': 'text-blue-600 bg-blue-100',
+      'deleted': 'text-red-600 bg-red-100',
+      'default': 'text-gray-600 bg-gray-100',
+    };
+    return colorMap[eventColor] || colorMap['default'];
+  };
 
   return (
-    <>
-      <Head title="Backoffice Dashboard" />
-      <BackofficeLayout user={user}>
-        <div className="space-y-8">
-          {/* Loading Progress */}
-          {isLoading && (
-            <Card className="mb-6">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700">Loading Dashboard Statistics</span>
-                  <span className="text-sm text-gray-500">{loadedCount}/{totalCount} loaded</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div
-                    className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
-                    style={{ width: `${progressPercentage}%` }}
-                  ></div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+    <BackofficeLayout user={user}>
+      <Head title="Dashboard" />
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {statCards.map((stat) => (
-              <Card key={stat.label} className={`hover:shadow-lg transition-shadow ${stat.isLoading ? 'opacity-75' : ''} ${stat.error ? 'border-red-200 bg-red-50' : ''}`}>
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 p-3 rounded-lg bg-gray-50">
-                      <stat.icon className={`h-6 w-6 ${stat.color}`} />
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+            <p className="text-muted-foreground">
+              Welcome back! Here's what's happening with your platform.
+            </p>
+          </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {/* Users Stats */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{formatNumber(userStats.total_users)}</div>
+              <p className="text-xs text-muted-foreground">
+                {formatNumber(userStats.active_users)} active users
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Orders</CardTitle>
+              <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{formatNumber(orderStats.total_orders)}</div>
+              <p className="text-xs text-muted-foreground">
+                {formatNumber(orderStats.paid_orders)} paid orders
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Revenue</CardTitle>
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{formatCurrency(orderStats.total_revenue)}</div>
+              <p className="text-xs text-muted-foreground">
+                {formatCurrency(orderStats.revenue_this_month)} this month
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Feedbacks</CardTitle>
+              <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{formatNumber(feedbackStats.total_feedbacks)}</div>
+              <p className="text-xs text-muted-foreground">
+                {feedbackStats.average_score?.toFixed(1) || '0.0'} average rating
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Detailed Stats */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {/* User Details */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">User Statistics</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Active Users</span>
+                <span className="font-medium">{formatNumber(userStats.active_users)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Inactive Users</span>
+                <span className="font-medium">{formatNumber(userStats.inactive_users)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">With Weddings</span>
+                <span className="font-medium">{formatNumber(userStats.users_with_weddings)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">With Orders</span>
+                <span className="font-medium">{formatNumber(userStats.users_with_orders)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">New This Month</span>
+                <span className="font-medium">{formatNumber(userStats.new_users_this_month)}</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Order Details */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Order Statistics</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Paid Orders</span>
+                <span className="font-medium">{formatNumber(orderStats.paid_orders)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Pending Orders</span>
+                <span className="font-medium">{formatNumber(orderStats.pending_orders)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Void Orders</span>
+                <span className="font-medium">{formatNumber(orderStats.void_orders)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">This Month</span>
+                <span className="font-medium">{formatNumber(orderStats.orders_this_month)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Unique Revenue</span>
+                <span className="font-medium">{formatCurrency(orderStats.unique_revenue)}</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Theme Details */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Theme Statistics</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Total Themes</span>
+                <span className="font-medium">{formatNumber(themeStats.total_themes)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Active Themes</span>
+                <span className="font-medium">{formatNumber(themeStats.active_themes)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Public Themes</span>
+                <span className="font-medium">{formatNumber(themeStats.public_themes)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">This Month</span>
+                <span className="font-medium">{formatNumber(themeStats.themes_this_month)}</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Activities */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Recent Activities</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {activities.length > 0 ? (
+              <div className="space-y-4">
+                {activities.map((activity) => (
+                  <div key={activity.id} className="flex items-start space-x-3">
+                    <div className={`p-2 rounded-full ${getActivityColor(activity.event_color)}`}>
+                      {getActivityIcon(activity.log_name)}
                     </div>
-                    <div className="ml-4 flex-1">
-                      <p className="text-sm font-medium text-gray-500">{stat.label}</p>
-                      <div className="flex items-center">
-                        {stat.isLoading ? (
-                          <div className="flex items-center space-x-2">
-                            <LoadingSpinner />
-                            <span className="text-sm text-gray-500">Loading...</span>
-                          </div>
-                        ) : stat.error ? (
-                          <div className="flex flex-col">
-                            <p className="text-sm text-red-500">Error loading data</p>
-                            <p className="text-xs text-gray-400">Retrying...</p>
-                          </div>
-                        ) : (
-                          <p className="text-2xl font-semibold text-gray-900">{stat.value}</p>
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center space-x-2">
+                        <p className="text-sm font-medium">{activity.description}</p>
+                        <span className={`px-2 py-1 text-xs rounded-full ${getActivityColor(activity.event_color)}`}>
+                          {activity.event_label}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                        <span>{activity.log_name_label}</span>
+                        <span>•</span>
+                        <span>{new Date(activity.created_at).toLocaleString('id-ID')}</span>
+                        {activity.user && (
+                          <>
+                            <span>•</span>
+                            <span>by {activity.user.name}</span>
+                          </>
                         )}
                       </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Quick Actions */}
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {quickActions.map((action) => (
-                  <Button
-                    key={action.title}
-                    className="w-full justify-start"
-                    variant={action.variant}
-                    asChild
-                  >
-                    <Link href={action.href}>
-                      <action.icon className="mr-2 h-4 w-4" />
-                      {action.title}
-                    </Link>
-                  </Button>
                 ))}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="flex-shrink-0">
-                      <div className="h-2 w-2 bg-green-400 rounded-full"></div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-900">New user registered</p>
-                      <p className="text-xs text-gray-500">2 minutes ago</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="flex-shrink-0">
-                      <div className="h-2 w-2 bg-blue-400 rounded-full"></div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-900">New order received</p>
-                      <p className="text-xs text-gray-500">5 minutes ago</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="flex-shrink-0">
-                      <div className="h-2 w-2 bg-yellow-400 rounded-full"></div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-900">New feedback received</p>
-                      <p className="text-xs text-gray-500">10 minutes ago</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </BackofficeLayout>
-    </>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">No recent activities found.</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </BackofficeLayout>
   );
 }

@@ -1131,6 +1131,66 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
+        // Get all statistics data
+        $userStats = [
+            'total_users' => \App\Models\User::count(),
+            'active_users' => \App\Models\User::where('is_active', true)->count(),
+            'inactive_users' => \App\Models\User::where('is_active', false)->count(),
+            'users_with_weddings' => \App\Models\User::has('weddings')->count(),
+            'users_with_orders' => \App\Models\User::has('orders')->count(),
+            'new_users_this_month' => \App\Models\User::whereMonth('created_at', now()->month)->count(),
+            'new_users_this_week' => \App\Models\User::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
+        ];
+
+        $orderStats = [
+            'total_orders' => \App\Models\Order::count(),
+            'paid_orders' => \App\Models\Order::where('status', 'paid')->count(),
+            'pending_orders' => \App\Models\Order::where('status', 'pending')->count(),
+            'void_orders' => \App\Models\Order::where('status', 'void')->count(),
+            'total_revenue' => \App\Models\Order::where('status', 'paid')->sum('total_price'),
+            'unique_revenue' => \App\Models\Order::where('status', 'paid')->distinct('user_id')->sum('total_price'),
+            'orders_this_month' => \App\Models\Order::whereMonth('created_at', now()->month)->count(),
+            'revenue_this_month' => \App\Models\Order::where('status', 'paid')->whereMonth('created_at', now()->month)->sum('total_price'),
+        ];
+
+        $feedbackStats = [
+            'total_feedbacks' => \App\Models\Feedback::count(),
+            'average_score' => \App\Models\Feedback::avg('score'),
+            'recommended_feedbacks' => \App\Models\Feedback::where('is_recommended', true)->count(),
+            'show_on_landing_feedbacks' => \App\Models\Feedback::where('show_on_landing', true)->count(),
+            'feedbacks_this_month' => \App\Models\Feedback::whereMonth('created_at', now()->month)->count(),
+        ];
+
+        $themeStats = [
+            'total_themes' => \App\Models\Theme::count(),
+            'active_themes' => \App\Models\Theme::where('is_active', true)->count(),
+            'public_themes' => \App\Models\Theme::where('is_public', true)->count(),
+            'themes_this_month' => \App\Models\Theme::whereMonth('created_at', now()->month)->count(),
+        ];
+
+        // Get recent activity logs
+        $activities = \App\Models\ActivityLog::with('user')
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get()
+            ->map(function ($log) {
+                return [
+                    'id' => $log->id,
+                    'log_name' => $log->log_name,
+                    'event' => $log->event,
+                    'description' => $log->description,
+                    'event_label' => $log->event_label,
+                    'event_color' => $log->event_color,
+                    'log_name_label' => $log->log_name_label,
+                    'created_at' => $log->created_at->toISOString(),
+                    'user' => $log->user ? [
+                        'id' => $log->user->id,
+                        'name' => $log->user->name,
+                        'email' => $log->user->email,
+                    ] : null,
+                ];
+            });
+
         return Inertia::render('backoffice/Dashboard', [
             'user' => $user ? [
                 'id' => $user->id,
@@ -1143,6 +1203,11 @@ class FrontendController extends Controller
                     ];
                 }),
             ] : null,
+            'userStats' => $userStats,
+            'orderStats' => $orderStats,
+            'feedbackStats' => $feedbackStats,
+            'themeStats' => $themeStats,
+            'activities' => $activities,
         ]);
     }
 
@@ -1267,6 +1332,56 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
+        // Get feedbacks with pagination and filters
+        $query = \App\Models\Feedback::with('user');
+
+        // Apply filters with SECURITY FIX: Sanitize search input
+        if ($request->has('search') && $request->search) {
+            $search = trim($request->search);
+            // SECURITY FIX: Limit search length and escape special characters
+            if (strlen($search) > 255) {
+                $search = substr($search, 0, 255);
+            }
+            $query->where(function ($q) use ($search) {
+                $q->where('content', 'like', "%{$search}%")
+                  ->orWhere('critics', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($userQuery) use ($search) {
+                      $userQuery->where('name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter by recommendation status
+        if ($request->has('recommended')) {
+            $recommended = $request->get('recommended');
+            if ($recommended === 'true') {
+                $query->where('is_recommended', true);
+            } elseif ($recommended === 'false') {
+                $query->where('is_recommended', false);
+            }
+        }
+
+        // Filter by show on landing status
+        if ($request->has('show_landing')) {
+            $showLanding = $request->get('show_landing');
+            if ($showLanding === 'true') {
+                $query->where('show_on_landing', true);
+            } elseif ($showLanding === 'false') {
+                $query->where('show_on_landing', false);
+            }
+        }
+
+        // Filter by score range
+        if ($request->has('min_score')) {
+            $query->where('score', '>=', $request->get('min_score'));
+        }
+        if ($request->has('max_score')) {
+            $query->where('score', '<=', $request->get('max_score'));
+        }
+
+        $feedbacks = $query->orderBy('created_at', 'desc')->paginate(20);
+
         return Inertia::render('backoffice/Feedbacks', [
             'user' => $user ? [
                 'id' => $user->id,
@@ -1279,6 +1394,8 @@ class FrontendController extends Controller
                     ];
                 }),
             ] : null,
+            'feedbacks' => $feedbacks,
+            'filters' => $request->only(['search', 'recommended', 'show_landing', 'min_score', 'max_score'])
         ]);
     }
 
@@ -1288,6 +1405,42 @@ class FrontendController extends Controller
     public function backofficeThemes(Request $request)
     {
         $user = $request->user();
+
+        // Get themes with pagination and filters
+        $query = \App\Models\Theme::query()
+            ->with(['user', 'packages'])
+            ->withCount('weddings as weddings_count');
+
+        // Search functionality
+        if ($request->has('search')) {
+            $search = $request->get('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by status
+        if ($request->has('status')) {
+            $status = $request->get('status');
+            if ($status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($status === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        // Filter by visibility
+        if ($request->has('visibility')) {
+            $visibility = $request->get('visibility');
+            if ($visibility === 'public') {
+                $query->where('is_public', true);
+            } elseif ($visibility === 'private') {
+                $query->where('is_public', false);
+            }
+        }
+
+        $themes = $query->orderBy('created_at', 'desc')->paginate(20);
 
         return Inertia::render('backoffice/Themes', [
             'user' => $user ? [
@@ -1301,6 +1454,8 @@ class FrontendController extends Controller
                     ];
                 }),
             ] : null,
+            'themes' => $themes,
+            'filters' => $request->only(['search', 'status', 'visibility'])
         ]);
     }
 
@@ -1416,12 +1571,41 @@ class FrontendController extends Controller
     public function backofficeOrdersStatistics()
     {
         $stats = [
-            'total_orders' => \App\Models\Order::count(),
-            'paid_orders' => \App\Models\Order::where('status', 'paid')->count(),
-            'pending_orders' => \App\Models\Order::where('status', 'pending')->count(),
-            'void_orders' => \App\Models\Order::where('status', 'void')->count(),
-            'total_revenue' => \App\Models\Order::where('status', 'paid')->sum('total_amount'),
-            'orders_this_month' => \App\Models\Order::whereMonth('created_at', now()->month)->count(),
+            'total_orders' => \App\Models\Order::where(function ($q) {
+                $q->where('payment_type', '!=', 'promo')
+                  ->where('payment_type', '!=', 'free')
+                  ->where('total_price', '>', 0);
+            })->count(),
+            'paid_orders' => \App\Models\Order::where('is_paid', true)
+                ->where(function ($q) {
+                    $q->where('payment_type', '!=', 'promo')
+                      ->where('payment_type', '!=', 'free')
+                      ->where('total_price', '>', 0);
+                })->count(),
+            'pending_orders' => \App\Models\Order::where('is_paid', false)->where('is_void', false)
+                ->where(function ($q) {
+                    $q->where('payment_type', '!=', 'promo')
+                      ->where('payment_type', '!=', 'free')
+                      ->where('total_price', '>', 0);
+                })->count(),
+            'void_orders' => \App\Models\Order::where('is_void', true)
+                ->where(function ($q) {
+                    $q->where('payment_type', '!=', 'promo')
+                      ->where('payment_type', '!=', 'free')
+                      ->where('total_price', '>', 0);
+                })->count(),
+            'total_revenue' => \App\Models\Order::where(function ($q) {
+                    $q->where('payment_type', '!=', 'promo')
+                      ->where('payment_type', '!=', 'free')
+                      ->where('total_price', '>', 0);
+                })
+                ->sum('total_price'),
+            'orders_this_month' => \App\Models\Order::whereMonth('created_at', now()->month)
+                ->where(function ($q) {
+                    $q->where('payment_type', '!=', 'promo')
+                      ->where('payment_type', '!=', 'free')
+                      ->where('total_price', '>', 0);
+                })->count(),
         ];
 
         return response()->json([
@@ -1437,7 +1621,7 @@ class FrontendController extends Controller
     {
         $stats = [
             'total_feedbacks' => \App\Models\Feedback::count(),
-            'average_rating' => \App\Models\Feedback::avg('rating'),
+            'average_rating' => \App\Models\Feedback::avg('score'),
             'recommended_feedbacks' => \App\Models\Feedback::where('is_recommended', true)->count(),
             'show_on_landing' => \App\Models\Feedback::where('show_on_landing', true)->count(),
             'feedbacks_this_month' => \App\Models\Feedback::whereMonth('created_at', now()->month)->count(),
@@ -1657,7 +1841,9 @@ class FrontendController extends Controller
      */
     public function backofficeThemesApi(Request $request)
     {
-        $query = \App\Models\Theme::query();
+        $query = \App\Models\Theme::query()
+            ->with(['user', 'packages'])
+            ->withCount('weddings as weddings_count');
 
         // Search functionality
         if ($request->has('search')) {
@@ -1696,6 +1882,12 @@ class FrontendController extends Controller
         // Pagination
         $perPage = $request->get('per_page', 15);
         $themes = $query->paginate($perPage);
+
+        // Add preview_image_url to each theme
+        $themes->getCollection()->transform(function ($theme) {
+            $theme->preview_image_url = $theme->preview_image_url;
+            return $theme;
+        });
 
         return response()->json([
             'success' => true,
@@ -1986,11 +2178,13 @@ class FrontendController extends Controller
      */
     public function backofficeCoupons(Request $request)
     {
+        $user = $request->user();
         $couponService = app(\App\Services\CouponService::class);
         $filters = $request->only(['status', 'type', 'search', 'per_page']);
         $coupons = $couponService->getAll($filters);
 
         return Inertia::render('backoffice/Coupons', [
+            'user' => $this->getUserData($user),
             'coupons' => $coupons,
             'filters' => $filters
         ]);
@@ -1999,16 +2193,18 @@ class FrontendController extends Controller
     /**
      * Coupons API - Show create coupon page
      */
-    public function backofficeCouponCreate()
+    public function backofficeCouponCreate(Request $request)
     {
+        $user = $request->user();
         $packages = \App\Models\Package::select('id', 'name', 'price')->get();
-        // Limit users to prevent memory issues - only get recent users or implement search
+        // Load only recent users initially - search will be handled via API
         $users = \App\Models\User::select('id', 'name', 'email')
             ->orderBy('created_at', 'desc')
-            ->limit(1000)
+            ->limit(50)
             ->get();
 
         return Inertia::render('backoffice/CouponForm', [
+            'user' => $this->getUserData($user),
             'packages' => $packages,
             'users' => $users
         ]);
@@ -2017,8 +2213,9 @@ class FrontendController extends Controller
     /**
      * Coupons API - Show coupon detail page
      */
-    public function backofficeCouponDetail($coupon)
+    public function backofficeCouponDetail(Request $request, $coupon)
     {
+        $user = $request->user();
         $couponService = app(\App\Services\CouponService::class);
         $couponModel = $couponService->findById($coupon);
 
@@ -2028,17 +2225,26 @@ class FrontendController extends Controller
 
         $usageStats = $couponService->getUsageStats($coupon);
 
+        // Get coupon usages with pagination
+        $usages = \App\Models\CouponUsage::with(['user', 'order'])
+            ->where('coupon_id', $coupon)
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
         return Inertia::render('backoffice/CouponDetail', [
+            'user' => $this->getUserData($user),
             'coupon' => $couponModel,
-            'usage_stats' => $usageStats
+            'usage_stats' => $usageStats,
+            'usages' => $usages
         ]);
     }
 
     /**
      * Coupons API - Show edit coupon page
      */
-    public function backofficeCouponEdit($coupon)
+    public function backofficeCouponEdit(Request $request, $coupon)
     {
+        $user = $request->user();
         $couponService = app(\App\Services\CouponService::class);
         $couponModel = $couponService->findById($coupon);
 
@@ -2047,16 +2253,44 @@ class FrontendController extends Controller
         }
 
         $packages = \App\Models\Package::select('id', 'name', 'price')->get();
-        // Limit users to prevent memory issues - only get recent users or implement search
+        // Load only recent users initially - search will be handled via API
         $users = \App\Models\User::select('id', 'name', 'email')
             ->orderBy('created_at', 'desc')
-            ->limit(1000)
+            ->limit(50)
             ->get();
 
         return Inertia::render('backoffice/CouponForm', [
+            'user' => $this->getUserData($user),
             'coupon' => $couponModel,
             'packages' => $packages,
             'users' => $users
+        ]);
+    }
+
+    /**
+     * Search users for coupon form
+     */
+    public function backofficeUsersSearch(Request $request)
+    {
+        $search = $request->get('search', '');
+        $limit = $request->get('limit', 20);
+
+        $query = \App\Models\User::select('id', 'name', 'email');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $users = $query->orderBy('name', 'asc')
+                      ->limit($limit)
+                      ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $users
         ]);
     }
 }

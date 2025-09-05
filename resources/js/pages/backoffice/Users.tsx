@@ -24,7 +24,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { apiPost } from '@/lib/api';
 import { Head, Link, router } from '@inertiajs/react';
 import {
   Edit,
@@ -129,27 +128,29 @@ export default function UsersPage({ user, users: initialUsers, filters: initialF
     }, 300);
   };
 
-  const handleAutoLogin = async (userId: number) => {
-    try {
-      const data = await apiPost(`/backoffice/api/users/${userId}/auto-login`);
-
-      if (data.success) {
-        // Open login URL in new tab
-        window.open(data.data.login_url, '_blank');
+  const handleAutoLogin = (userId: number) => {
+    router.post(`/backoffice/api/users/${userId}/auto-login`, {}, {
+      onSuccess: (page: any) => {
+        if (page.props.login_url) {
+          window.open(page.props.login_url, '_blank');
+        }
+      },
+      onError: () => {
+        console.error('Error generating auto-login');
       }
-    } catch (error) {
-
-    }
+    });
   };
 
-  const handleToggleStatus = async (userId: number, isActive: boolean) => {
-    try {
-      const endpoint = isActive ? 'deactivate' : 'activate';
-      await apiPost(`/backoffice/api/users/${userId}/${endpoint}`);
-      fetchUsers(); // Refresh the list
-    } catch (error) {
-
-    }
+  const handleToggleStatus = (userId: number, isActive: boolean) => {
+    const endpoint = isActive ? 'deactivate' : 'activate';
+    router.post(`/backoffice/api/users/${userId}/${endpoint}`, {}, {
+      onSuccess: () => {
+        router.reload();
+      },
+      onError: () => {
+        console.error('Error toggling user status');
+      }
+    });
   };
 
   const getRoleBadgeColor = (role: string) => {

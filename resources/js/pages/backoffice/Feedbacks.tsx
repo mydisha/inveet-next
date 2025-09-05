@@ -24,9 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { apiGet } from '@/lib/api';
-import { getCsrfToken } from '@/lib/auth';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import {
   Eye,
   EyeOff,
@@ -36,7 +34,7 @@ import {
   ThumbsUp,
   Trash2
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 interface Feedback {
   id: number;
@@ -73,138 +71,76 @@ interface FeedbacksPageProps {
       name: string;
     }>;
   } | null;
+  feedbacks: {
+    data: Feedback[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+  };
+  filters: {
+    search?: string;
+    recommended?: string;
+    show_landing?: string;
+    min_score?: string;
+    max_score?: string;
+  };
 }
 
-export default function FeedbacksPage({ user }: FeedbacksPageProps) {
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [scoreMin, setScoreMin] = useState('');
-  const [scoreMax, setScoreMax] = useState('');
-  const [recommendedFilter, setRecommendedFilter] = useState('all');
-  const [showOnLandingFilter, setShowOnLandingFilter] = useState('all');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
+export default function FeedbacksPage({ user, feedbacks, filters: initialFilters }: FeedbacksPageProps) {
+  const [search, setSearch] = useState(initialFilters.search || '');
+  const [scoreMin, setScoreMin] = useState(initialFilters.min_score || '');
+  const [scoreMax, setScoreMax] = useState(initialFilters.max_score || '');
+  const [recommendedFilter, setRecommendedFilter] = useState(initialFilters.recommended || 'all');
+  const [showOnLandingFilter, setShowOnLandingFilter] = useState(initialFilters.show_landing || 'all');
 
-  const fetchFeedbacks = async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({
-        page: currentPage.toString(),
-        per_page: '15',
-        ...(search && { search }),
-        ...(scoreMin && { score_min: scoreMin }),
-        ...(scoreMax && { score_max: scoreMax }),
-        ...(recommendedFilter && recommendedFilter !== 'all' && { is_recommended: recommendedFilter }),
-        ...(showOnLandingFilter && showOnLandingFilter !== 'all' && { show_on_landing: showOnLandingFilter }),
-        ...(dateFrom && { date_from: dateFrom }),
-        ...(dateTo && { date_to: dateTo }),
-      });
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    if (scoreMin) params.append('min_score', scoreMin);
+    if (scoreMax) params.append('max_score', scoreMax);
+    if (recommendedFilter && recommendedFilter !== 'all') params.append('recommended', recommendedFilter);
+    if (showOnLandingFilter && showOnLandingFilter !== 'all') params.append('show_landing', showOnLandingFilter);
 
-      const data: FeedbacksResponse = await apiGet(`/backoffice/api/feedbacks?${params}`);
-
-      setFeedbacks(data.data.data);
-      setTotalPages(data.data.last_page);
-      setTotal(data.data.total);
-    } catch (error) {
-
-    } finally {
-      setLoading(false);
-    }
+    router.get(`/backoffice/feedbacks?${params.toString()}`, {}, {
+      preserveState: true,
+      preserveScroll: true,
+    });
   };
 
-  useEffect(() => {
-    fetchFeedbacks();
-  }, [currentPage, search, scoreMin, scoreMax, recommendedFilter, showOnLandingFilter, dateFrom, dateTo]);
 
-  const handleSearch = (value: string) => {
-    setSearch(value);
-    setCurrentPage(1);
+  const handleToggleRecommendation = (feedbackId: number) => {
+    router.post(`/backoffice/api/feedbacks/${feedbackId}/toggle-recommendation`, {}, {
+      onSuccess: () => {
+        router.reload();
+      },
+      onError: () => {
+        console.error('Error toggling recommendation');
+      }
+    });
   };
 
-  const handleToggleRecommendation = async (feedbackId: number) => {
-    try {
-      const csrfToken = getCsrfToken();
-      if (!csrfToken) {
-
-        return;
+  const handleToggleShowOnLanding = (feedbackId: number) => {
+    router.post(`/backoffice/api/feedbacks/${feedbackId}/toggle-show-landing`, {}, {
+      onSuccess: () => {
+        router.reload();
+      },
+      onError: () => {
+        console.error('Error toggling show on landing');
       }
-
-      const response = await fetch(`/backoffice/api/feedbacks/${feedbackId}/toggle-recommendation`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': csrfToken,
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-        },
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        fetchFeedbacks(); // Refresh the list
-      }
-    } catch (error) {
-
-    }
+    });
   };
 
-  const handleToggleShowOnLanding = async (feedbackId: number) => {
-    try {
-      const csrfToken = getCsrfToken();
-      if (!csrfToken) {
-
-        return;
-      }
-
-      const response = await fetch(`/backoffice/api/feedbacks/${feedbackId}/toggle-show-landing`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': csrfToken,
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-        },
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        fetchFeedbacks(); // Refresh the list
-      }
-    } catch (error) {
-
-    }
-  };
-
-  const handleDelete = async (feedbackId: number) => {
+  const handleDelete = (feedbackId: number) => {
     if (confirm('Are you sure you want to delete this feedback?')) {
-      try {
-        const csrfToken = getCsrfToken();
-        if (!csrfToken) {
-
-          return;
+      router.delete(`/backoffice/api/feedbacks/${feedbackId}`, {
+        onSuccess: () => {
+          router.reload();
+        },
+        onError: () => {
+          console.error('Error deleting feedback');
         }
-
-        const response = await fetch(`/backoffice/api/feedbacks/${feedbackId}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken,
-            'Accept': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-          },
-          credentials: 'include',
-        });
-
-        if (response.ok) {
-          fetchFeedbacks(); // Refresh the list
-        }
-      } catch (error) {
-
-      }
+      });
     }
   };
 
@@ -240,9 +176,13 @@ export default function FeedbacksPage({ user }: FeedbacksPageProps) {
                     <Input
                       placeholder="Search feedbacks..."
                       value={search}
-                      onChange={(e) => handleSearch(e.target.value)}
+                      onChange={(e) => setSearch(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                       className="pl-10"
                     />
+                    <Button onClick={handleSearch} size="sm" className="ml-2">
+                      Search
+                    </Button>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -283,20 +223,6 @@ export default function FeedbacksPage({ user }: FeedbacksPageProps) {
                     <SelectItem value="false">Hide from Landing</SelectItem>
                   </SelectContent>
                 </Select>
-                <div className="flex gap-2">
-                  <Input
-                    type="date"
-                    placeholder="From Date"
-                    value={dateFrom}
-                    onChange={(e) => setDateFrom(e.target.value)}
-                  />
-                  <Input
-                    type="date"
-                    placeholder="To Date"
-                    value={dateTo}
-                    onChange={(e) => setDateTo(e.target.value)}
-                  />
-                </div>
               </div>
             </CardContent>
           </Card>
@@ -304,12 +230,12 @@ export default function FeedbacksPage({ user }: FeedbacksPageProps) {
           {/* Feedbacks Table */}
           <Card>
             <CardHeader>
-              <CardTitle>Feedbacks ({total})</CardTitle>
+              <CardTitle>Feedbacks ({feedbacks.total})</CardTitle>
             </CardHeader>
             <CardContent>
-              {loading ? (
-                <div className="flex items-center justify-center h-32">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              {feedbacks.data.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  No feedbacks found
                 </div>
               ) : (
                 <div className="overflow-x-auto">
@@ -326,7 +252,7 @@ export default function FeedbacksPage({ user }: FeedbacksPageProps) {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {feedbacks.map((feedback) => (
+                      {feedbacks.data.map((feedback) => (
                         <TableRow key={feedback.id}>
                           <TableCell>
                             <div>
@@ -432,25 +358,43 @@ export default function FeedbacksPage({ user }: FeedbacksPageProps) {
               )}
 
               {/* Pagination */}
-              {totalPages > 1 && (
+              {feedbacks.last_page > 1 && (
                 <div className="flex items-center justify-between mt-4">
                   <div className="text-sm text-gray-500">
-                    Showing {((currentPage - 1) * 15) + 1} to {Math.min(currentPage * 15, total)} of {total} results
+                    Showing {((feedbacks.current_page - 1) * feedbacks.per_page) + 1} to {Math.min(feedbacks.current_page * feedbacks.per_page, feedbacks.total)} of {feedbacks.total} results
                   </div>
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      disabled={currentPage === 1}
-                      onClick={() => setCurrentPage(currentPage - 1)}
+                      disabled={feedbacks.current_page === 1}
+                      onClick={() => {
+                        const params = new URLSearchParams();
+                        if (search) params.append('search', search);
+                        if (scoreMin) params.append('min_score', scoreMin);
+                        if (scoreMax) params.append('max_score', scoreMax);
+                        if (recommendedFilter && recommendedFilter !== 'all') params.append('recommended', recommendedFilter);
+                        if (showOnLandingFilter && showOnLandingFilter !== 'all') params.append('show_landing', showOnLandingFilter);
+                        params.append('page', (feedbacks.current_page - 1).toString());
+                        router.get(`/backoffice/feedbacks?${params.toString()}`);
+                      }}
                     >
                       Previous
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      disabled={currentPage === totalPages}
-                      onClick={() => setCurrentPage(currentPage + 1)}
+                      disabled={feedbacks.current_page === feedbacks.last_page}
+                      onClick={() => {
+                        const params = new URLSearchParams();
+                        if (search) params.append('search', search);
+                        if (scoreMin) params.append('min_score', scoreMin);
+                        if (scoreMax) params.append('max_score', scoreMax);
+                        if (recommendedFilter && recommendedFilter !== 'all') params.append('recommended', recommendedFilter);
+                        if (showOnLandingFilter && showOnLandingFilter !== 'all') params.append('show_landing', showOnLandingFilter);
+                        params.append('page', (feedbacks.current_page + 1).toString());
+                        router.get(`/backoffice/feedbacks?${params.toString()}`);
+                      }}
                     >
                       Next
                     </Button>

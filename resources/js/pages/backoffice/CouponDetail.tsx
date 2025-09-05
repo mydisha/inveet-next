@@ -10,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { apiGet } from '@/lib/api';
 import { Head, Link } from '@inertiajs/react';
 import {
   ArrowLeft,
@@ -19,8 +18,6 @@ import {
   ToggleLeft,
   ToggleRight
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
 
 interface CouponUsage {
   id: number;
@@ -40,6 +37,15 @@ interface CouponUsage {
 }
 
 interface CouponDetailProps {
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    roles: Array<{
+      id: number;
+      name: string;
+    }>;
+  } | null;
   coupon: {
     id: number;
     code: string;
@@ -69,27 +75,16 @@ interface CouponDetailProps {
     usage_limit?: number;
     remaining_uses?: number;
   };
+  usages: {
+    data: CouponUsage[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+  };
 }
 
-export default function CouponDetail({ coupon, usage_stats }: CouponDetailProps) {
-  const [usages, setUsages] = useState<CouponUsage[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  const fetchUsages = async () => {
-    setLoading(true);
-    try {
-      const response = await apiGet(`/backoffice/coupons/${coupon.id}/usages`);
-      setUsages(response.data);
-    } catch (error) {
-      toast.error('Failed to fetch usage history');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsages();
-  }, [coupon.id]);
+export default function CouponDetail({ user, coupon, usage_stats, usages }: CouponDetailProps) {
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -126,7 +121,7 @@ export default function CouponDetail({ coupon, usage_stats }: CouponDetailProps)
   };
 
   return (
-    <BackofficeLayout>
+    <BackofficeLayout user={user}>
       <Head title={`Coupon: ${coupon.code}`} />
 
       <div className="space-y-6">
@@ -188,13 +183,13 @@ export default function CouponDetail({ coupon, usage_stats }: CouponDetailProps)
                 )}
 
                 <div className="grid grid-cols-2 gap-4">
-                  {coupon.minimum_amount > 0 && (
+                  {coupon.minimum_amount && coupon.minimum_amount > 0 && (
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">Minimum Amount</label>
                       <p>{formatCurrency(coupon.minimum_amount)}</p>
                     </div>
                   )}
-                  {coupon.maximum_discount > 0 && (
+                  {coupon.maximum_discount && coupon.maximum_discount > 0 && (
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">Maximum Discount</label>
                       <p>{formatCurrency(coupon.maximum_discount)}</p>
@@ -243,9 +238,7 @@ export default function CouponDetail({ coupon, usage_stats }: CouponDetailProps)
                 <CardTitle>Usage History</CardTitle>
               </CardHeader>
               <CardContent>
-                {loading ? (
-                  <div className="text-center py-4">Loading...</div>
-                ) : usages.length > 0 ? (
+                {usages.data && usages.data.length > 0 ? (
                   <div className="overflow-x-auto">
                     <Table>
                       <TableHeader>
@@ -257,7 +250,7 @@ export default function CouponDetail({ coupon, usage_stats }: CouponDetailProps)
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {usages.map((usage) => (
+                        {usages.data.map((usage) => (
                           <TableRow key={usage.id}>
                             <TableCell>
                               <div>

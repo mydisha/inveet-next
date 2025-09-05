@@ -15,7 +15,12 @@ class OrderController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Order::with(['user', 'package', 'wedding.theme']);
+        $query = Order::with(['user', 'package', 'wedding.theme'])
+            ->where(function ($q) {
+                $q->where('payment_type', '!=', 'promo')
+                  ->where('payment_type', '!=', 'free')
+                  ->where('total_price', '>', 0);
+            });
 
         // Search functionality
         if ($request->has('search')) {
@@ -169,16 +174,54 @@ class OrderController extends Controller
     public function statistics(): JsonResponse
     {
         $stats = [
-            'total_orders' => Order::count(),
-            'paid_orders' => Order::where('is_paid', true)->count(),
-            'pending_orders' => Order::where('is_paid', false)->where('is_void', false)->count(),
-            'void_orders' => Order::where('is_void', true)->count(),
-            'total_revenue' => Order::where('is_paid', true)->sum('total_price'),
-            'unique_revenue' => Order::where('is_paid', true)->sum('unique_price'),
-            'orders_this_month' => Order::whereMonth('created_at', now()->month)->count(),
-            'revenue_this_month' => Order::where('is_paid', true)
+            'total_orders' => Order::where(function ($q) {
+                $q->where('payment_type', '!=', 'promo')
+                  ->where('payment_type', '!=', 'free')
+                  ->where('total_price', '>', 0);
+            })->count(),
+            'paid_orders' => Order::where('is_paid', true)
+                ->where(function ($q) {
+                    $q->where('payment_type', '!=', 'promo')
+                      ->where('payment_type', '!=', 'free')
+                      ->where('total_price', '>', 0);
+                })->count(),
+            'pending_orders' => Order::where('is_paid', false)->where('is_void', false)
+                ->where(function ($q) {
+                    $q->where('payment_type', '!=', 'promo')
+                      ->where('payment_type', '!=', 'free')
+                      ->where('total_price', '>', 0);
+                })->count(),
+            'void_orders' => Order::where('is_void', true)
+                ->where(function ($q) {
+                    $q->where('payment_type', '!=', 'promo')
+                      ->where('payment_type', '!=', 'free')
+                      ->where('total_price', '>', 0);
+                })->count(),
+            'total_revenue' => Order::where(function ($q) {
+                    $q->where('payment_type', '!=', 'promo')
+                      ->where('payment_type', '!=', 'free')
+                      ->where('total_price', '>', 0);
+                })
+                ->sum('total_price'),
+            'unique_revenue' => Order::where(function ($q) {
+                    $q->where('payment_type', '!=', 'promo')
+                      ->where('payment_type', '!=', 'free')
+                      ->where('total_price', '>', 0);
+                })
+                ->sum('total_price'),
+            'orders_this_month' => Order::whereMonth('created_at', now()->month)
+                ->where(function ($q) {
+                    $q->where('payment_type', '!=', 'promo')
+                      ->where('payment_type', '!=', 'free')
+                      ->where('total_price', '>', 0);
+                })->count(),
+            'revenue_this_month' => Order::where(function ($q) {
+                    $q->where('payment_type', '!=', 'promo')
+                      ->where('payment_type', '!=', 'free')
+                      ->where('total_price', '>', 0);
+                })
                 ->whereMonth('created_at', now()->month)
-                ->sum(DB::raw('total_price + unique_price')),
+                ->sum('total_price'),
         ];
 
         return response()->json([
