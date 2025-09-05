@@ -15,7 +15,7 @@ export function useAuth() {
     try {
       await AuthUtils.logout(options);
     } catch (error) {
-      console.error('Logout failed:', error);
+
       throw error;
     } finally {
       setIsLoading(false);

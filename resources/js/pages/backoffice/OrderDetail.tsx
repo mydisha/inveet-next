@@ -118,10 +118,10 @@ export default function OrderDetailPage({ user, order }: OrderDetailProps) {
         if (response.ok) {
           router.reload();
         } else {
-          console.error('Failed to mark order as paid:', response.status);
+
         }
       } catch (error) {
-        console.error('Failed to mark order as paid:', error);
+
       }
     }
   };
@@ -143,10 +143,10 @@ export default function OrderDetailPage({ user, order }: OrderDetailProps) {
         if (response.ok) {
           router.reload();
         } else {
-          console.error('Failed to mark order as void:', response.status);
+
         }
       } catch (error) {
-        console.error('Failed to mark order as void:', error);
+
       }
     }
   };

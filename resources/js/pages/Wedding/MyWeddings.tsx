@@ -79,7 +79,7 @@ export default function MyWeddings({ user, weddings }: MyWeddingsProps) {
     // Handle wedding deletion
     if (confirm(`Are you sure you want to delete "${wedding.title || 'this wedding'}"?`)) {
       // Implement deletion logic
-      console.log('Delete wedding:', wedding.id);
+
     }
   };
 

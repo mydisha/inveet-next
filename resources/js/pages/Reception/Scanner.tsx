@@ -59,7 +59,7 @@ export default function Scanner({ stats }: ScannerProps) {
         setScanError(result.message || 'Failed to process QR code');
       }
     } catch (error) {
-      console.error('Scan error:', error);
+
       setScanError('Network error. Please try again.');
     } finally {
       setIsProcessing(false);

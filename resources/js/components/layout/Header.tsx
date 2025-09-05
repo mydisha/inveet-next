@@ -35,7 +35,7 @@ export default function Header({ user, setSidebarOpen }: HeaderProps) {
         showFeedback: true
       });
     } catch (error) {
-      console.error('Logout failed:', error);
+
     }
   };
 

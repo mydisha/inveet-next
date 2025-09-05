@@ -113,7 +113,7 @@ export default function OrdersPage({ user }: OrdersPageProps) {
 
       const csrfToken = getCsrfToken();
       if (!csrfToken) {
-        console.error('CSRF token not available');
+
         return;
       }
 
@@ -130,7 +130,7 @@ export default function OrdersPage({ user }: OrdersPageProps) {
 
       if (!response.ok) {
         if (response.status === 401) {
-          console.error('Unauthorized: Please log in again');
+
           // Redirect to login or refresh the page
           window.location.href = '/login';
           return;
@@ -145,13 +145,13 @@ export default function OrdersPage({ user }: OrdersPageProps) {
         setTotalPages(data.data.last_page);
         setTotal(data.data.total);
       } else {
-        console.error('Invalid response format:', data);
+
         setOrders([]);
         setTotalPages(1);
         setTotal(0);
       }
     } catch (error) {
-      console.error('Failed to fetch orders:', error);
+
       setOrders([]);
       setTotalPages(1);
       setTotal(0);
@@ -173,7 +173,7 @@ export default function OrdersPage({ user }: OrdersPageProps) {
     try {
       const csrfToken = getCsrfToken();
       if (!csrfToken) {
-        console.error('CSRF token not available');
+
         return;
       }
 
@@ -194,10 +194,10 @@ export default function OrdersPage({ user }: OrdersPageProps) {
       if (response.ok) {
         fetchOrders(); // Refresh the list
       } else {
-        console.error('Failed to mark order as paid:', response.status);
+
       }
     } catch (error) {
-      console.error('Failed to mark order as paid:', error);
+
     }
   };
 
@@ -205,7 +205,7 @@ export default function OrdersPage({ user }: OrdersPageProps) {
     try {
       const csrfToken = getCsrfToken();
       if (!csrfToken) {
-        console.error('CSRF token not available');
+
         return;
       }
 
@@ -223,10 +223,10 @@ export default function OrdersPage({ user }: OrdersPageProps) {
       if (response.ok) {
         fetchOrders(); // Refresh the list
       } else {
-        console.error('Failed to mark order as void:', response.status);
+
       }
     } catch (error) {
-      console.error('Failed to mark order as void:', error);
+
     }
   };
 

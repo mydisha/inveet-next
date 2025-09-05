@@ -146,7 +146,7 @@ export default function CheckoutPayment({ package: selectedPackage, coupon, coup
       },
       onError: (errors) => {
         setIsProcessing(false);
-        console.error('Order creation failed:', errors);
+
         alert('Failed to create order. Please try again.');
       }
     });

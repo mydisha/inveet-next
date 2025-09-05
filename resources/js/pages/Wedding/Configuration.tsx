@@ -93,7 +93,7 @@ export default function Configuration({ user, wedding }: ConfigurationProps) {
                 showFeedback: true
             });
         } catch (error) {
-            console.error('Logout failed:', error);
+
             // Fallback to form-based logout
             await logout({
                 useApi: false,

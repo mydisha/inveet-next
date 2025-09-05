@@ -6,6 +6,7 @@ use App\Http\Controllers\Backoffice\OrderController;
 use App\Http\Controllers\Backoffice\FeedbackController;
 use App\Http\Controllers\Backoffice\ThemeController;
 use App\Http\Controllers\Backoffice\ConfigurationController;
+use App\Http\Controllers\Backoffice\ActivityLogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -84,6 +85,19 @@ Route::middleware(['auth:sanctum', 'backoffice'])->prefix('backoffice')->group(f
         Route::get('/{configuration}', [ConfigurationController::class, 'show']);
         Route::put('/{configuration}', [ConfigurationController::class, 'update']);
         Route::delete('/{configuration}', [ConfigurationController::class, 'destroy']);
+    });
+
+    // Activity Logs
+    Route::prefix('activity-logs')->group(function () {
+        Route::get('/', [ActivityLogController::class, 'index']);
+        Route::get('/filters', [ActivityLogController::class, 'filters']);
+                    Route::get('/statistics', [ActivityLogController::class, 'statistics']);
+            Route::get('/performance', [ActivityLogController::class, 'performance']);
+            Route::get('/categories', [ActivityLogController::class, 'categories']);
+            Route::get('/recent-changes', [ActivityLogController::class, 'recentChanges']);
+        Route::get('/user/{userId}', [ActivityLogController::class, 'userActivities']);
+        Route::get('/model/{modelType}/{modelId}', [ActivityLogController::class, 'modelActivities']);
+        Route::get('/{id}', [ActivityLogController::class, 'show']);
     });
 
 });

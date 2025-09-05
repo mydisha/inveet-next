@@ -15,23 +15,18 @@ export class AuthUtils {
     const { redirectTo = '/login', showFeedback = true } = options;
 
     try {
-      console.log('🚪 Starting logout process...');
 
       // Clear local data first
       this.clearAuthData();
 
       // Use Inertia.js to perform logout
-      console.log('🔄 Performing logout via Inertia.js...');
 
       router.post('/logout', {}, {
         onSuccess: () => {
-          console.log('✅ Logout successful');
           if (showFeedback) {
-            console.log('✅ Logged out successfully');
           }
         },
         onError: (errors) => {
-          console.error('❌ Logout failed:', errors);
           // Fallback to form-based logout
           this.logoutViaForm();
         },
@@ -42,7 +37,6 @@ export class AuthUtils {
       });
 
     } catch (error) {
-      console.error('❌ Logout process failed:', error);
 
       // Clear local data even if everything fails
       this.clearAuthData();
@@ -56,7 +50,6 @@ export class AuthUtils {
    * Logout using traditional form submission (fallback method)
    */
   private static logoutViaForm(): void {
-    console.log('🔄 Using form-based logout as fallback...');
 
     const form = document.createElement('form');
     form.method = 'POST';
@@ -71,7 +64,6 @@ export class AuthUtils {
       tokenInput.value = csrfToken;
       form.appendChild(tokenInput);
     } else {
-      console.error('CSRF token not found. Cannot perform logout.');
       // Fallback: redirect to home page
       window.location.href = '/';
       return;
@@ -86,7 +78,6 @@ export class AuthUtils {
    * Clear all authentication-related data from localStorage
    */
   private static clearAuthData(): void {
-    console.log('🧹 Clearing authentication data...');
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user');
     localStorage.removeItem('wedding_data');
@@ -100,7 +91,6 @@ export class AuthUtils {
       }
     }
     keysToRemove.forEach(key => localStorage.removeItem(key));
-    console.log('✅ Authentication data cleared');
   }
 
   /**
@@ -111,7 +101,6 @@ export class AuthUtils {
     const token = localStorage.getItem('auth_token');
     const user = localStorage.getItem('user');
     const isAuth = !!(token && user);
-    console.log('🔍 Client-side auth check:', { token: !!token, user: !!user, isAuth });
     return isAuth;
   }
 
@@ -121,7 +110,6 @@ export class AuthUtils {
    */
   static async checkServerAuth(): Promise<boolean> {
     try {
-      console.log('🔍 Checking server authentication...');
 
       const response = await fetch('/api/user/profile', {
         method: 'GET',
@@ -132,27 +120,21 @@ export class AuthUtils {
         }
       });
 
-      console.log('📡 Server response status:', response.status);
 
       if (response.ok) {
-        console.log('✅ Server auth check: User is authenticated');
         return true;
       } else if (response.status === 401) {
-        console.log('❌ Server auth check: User is not authenticated (401)');
         // Clear local data if server says we're not authenticated
         this.clearAuthData();
         return false;
       } else if (response.status === 419) {
-        console.log('❌ Server auth check: CSRF token mismatch (419)');
         // Clear local data and try to refresh CSRF token
         this.clearAuthData();
         return false;
       } else {
-        console.warn('⚠️ Server auth check: Unexpected response', response.status);
         return false;
       }
     } catch (error) {
-      console.error('❌ Server auth check failed:', error);
       // If network error, assume not authenticated for security
       return false;
     }
@@ -210,11 +192,9 @@ export class AuthUtils {
           metaTag.setAttribute('content', newToken);
         }
 
-        console.log('CSRF token refreshed successfully');
         return newToken;
       }
     } catch (error) {
-      console.error('Failed to refresh CSRF token:', error);
     }
 
     return null;
@@ -233,7 +213,6 @@ export class AuthUtils {
       try {
         await this.refreshCsrfToken();
       } catch (error) {
-        console.error('Failed to initialize CSRF token:', error);
       }
     }
   }
@@ -243,7 +222,6 @@ export class AuthUtils {
    */
   static async forceRefreshCsrfToken(): Promise<string | null> {
     try {
-      console.log('🔄 Force refreshing CSRF token...');
 
       const response = await fetch('/api/csrf-token', {
         method: 'GET',
@@ -256,13 +234,10 @@ export class AuthUtils {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('📦 Server response data:', data);
 
         const newToken = data.csrf_token;
 
         if (!newToken) {
-          console.error('❌ No CSRF token received from server');
-          console.error('   Full response data:', data);
           return null;
         }
 
@@ -271,26 +246,13 @@ export class AuthUtils {
         if (metaTag) {
           const oldToken = metaTag.getAttribute('content');
           metaTag.setAttribute('content', newToken);
-          console.log('✅ CSRF token force refreshed successfully');
-          console.log('   Old token:', oldToken ? oldToken.substring(0, 10) + '...' : 'null');
-          console.log('   New token:', newToken ? newToken.substring(0, 10) + '...' : 'null');
-          console.log('   Timestamp:', data.timestamp);
-          console.log('   Session ID:', data.session_id);
-          if (data.debug) {
-            console.log('   Debug info:', data.debug);
-          }
         } else {
-          console.error('❌ CSRF meta tag not found!');
         }
 
         return newToken;
       } else {
-        console.error('❌ Failed to refresh CSRF token. Response status:', response.status);
-        const errorText = await response.text();
-        console.error('   Error response:', errorText);
       }
     } catch (error) {
-      console.error('❌ Failed to force refresh CSRF token:', error);
     }
 
     return null;

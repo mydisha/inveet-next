@@ -63,7 +63,7 @@ export default function GuestList({ user, weddingId, invitationLink }: GuestList
       await navigator.clipboard.writeText(defaultInvitationLink);
       // You could add a toast notification here
     } catch (err) {
-      console.error('Failed to copy link:', err);
+
     }
   };
 

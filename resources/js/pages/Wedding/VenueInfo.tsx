@@ -92,12 +92,12 @@ export default function VenueInfo({ user, wedding }: WeddingVenueProps) {
         script.defer = true;
         script.onload = () => setMapLoaded(true);
         script.onerror = () => {
-          console.warn('Failed to load Google Maps API');
+
           setMapLoaded(false);
         };
         document.head.appendChild(script);
       } catch (error) {
-        console.warn('Error loading Google Maps:', error);
+
         setMapLoaded(false);
       }
     };
@@ -152,7 +152,7 @@ export default function VenueInfo({ user, wedding }: WeddingVenueProps) {
         }
       }
     } catch (error) {
-      console.warn('Error initializing Google Maps:', error);
+
     }
   }, [mapLoaded, data.venue_latitude, data.venue_longitude, data.venue_name, data.venue_address]);
 
@@ -378,7 +378,7 @@ export default function VenueInfo({ user, wedding }: WeddingVenueProps) {
                           window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
                         }
                       } catch (error) {
-                        console.warn('Error opening directions:', error);
+
                       }
                     }}
                     className="flex items-center space-x-2"

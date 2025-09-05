@@ -45,12 +45,6 @@ export default function Checkout({ package: pkg }: CheckoutProps) {
 
   const handleCheckout = () => {
     // Here you would implement the actual checkout logic
-    console.log('Checkout with:', {
-      package: pkg,
-      coupon: appliedCoupon,
-      discountAmount,
-      finalAmount
-    });
   };
 
   return (

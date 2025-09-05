@@ -16,11 +16,6 @@ class LogoutController extends Controller
     {
         $userId = Auth::id();
 
-        Log::info('Logout initiated', [
-            'user_id' => $userId,
-            'is_inertia' => $request->header('X-Inertia'),
-            'is_api' => $request->expectsJson()
-        ]);
 
         // Use Laravel's built-in logout method
         Auth::logout();
@@ -31,7 +26,6 @@ class LogoutController extends Controller
         // Regenerate the CSRF token
         $request->session()->regenerateToken();
 
-        Log::info('Logout completed', ['user_id' => $userId]);
 
         // For Inertia.js requests, return a redirect response
         if ($request->header('X-Inertia')) {

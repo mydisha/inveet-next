@@ -34,7 +34,7 @@ export default function BackofficeHeader({ user, setSidebarOpen }: BackofficeHea
         showFeedback: true
       });
     } catch (error) {
-      console.error('Logout failed:', error);
+
     }
   };
 

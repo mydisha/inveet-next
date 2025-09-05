@@ -110,7 +110,7 @@ export default function Guestbook({ wedding, comments, stats }: GuestbookProps) 
 
   const exportToExcel = () => {
     // TODO: Implement Excel export functionality
-    console.log('Export to Excel');
+
   };
 
   return (

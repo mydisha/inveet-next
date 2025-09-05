@@ -80,7 +80,7 @@ Route::middleware(['auth', 'backoffice'])->prefix('backoffice')->group(function 
     Route::get('/configurations', [FrontendController::class, 'backofficeConfigurations'])->name('backoffice.configurations');
 
     // API routes for backoffice (using web authentication with CSRF protection)
-    Route::prefix('api')->middleware('csrf')->group(function () {
+    Route::prefix('api')->group(function () {
         Route::get('/users/statistics', [FrontendController::class, 'backofficeUsersStatistics']);
         Route::get('/orders/statistics', [FrontendController::class, 'backofficeOrdersStatistics']);
         Route::get('/feedbacks/statistics', [FrontendController::class, 'backofficeFeedbacksStatistics']);
@@ -123,6 +123,14 @@ Route::get('/dashboard-simple', function () {
     ]);
 });
 
+// Profile routes (accessible by all authenticated users)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [FrontendController::class, 'profile'])->name('profile');
+    Route::get('/profile/edit', [App\Http\Controllers\Profile\EditProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile/preferences', [App\Http\Controllers\Profile\PreferencesController::class, 'edit'])->name('profile.preferences');
+    Route::patch('/profile/preferences', [App\Http\Controllers\Profile\PreferencesController::class, 'update'])->name('profile.preferences.update');
+});
+
 // Protected routes (require authentication and customer role)
 Route::middleware(['auth', 'customer'])->group(function () {
     // Onboarding routes (no wedding required)
@@ -132,12 +140,6 @@ Route::middleware(['auth', 'customer'])->group(function () {
     Route::get('/onboarding/design-selection', [FrontendController::class, 'designSelection'])->name('onboarding.design-selection');
     Route::get('/onboarding/wedding-url', [FrontendController::class, 'weddingUrl'])->name('onboarding.wedding-url');
     Route::get('/onboarding/activation', [FrontendController::class, 'activation'])->name('onboarding.activation');
-
-    // Profile routes (no wedding required)
-    Route::get('/profile', [FrontendController::class, 'profile'])->name('profile');
-    Route::get('/profile/edit', [App\Http\Controllers\Profile\EditProfileController::class, 'edit'])->name('profile.edit');
-    Route::get('/profile/preferences', [App\Http\Controllers\Profile\PreferencesController::class, 'edit'])->name('profile.preferences');
-    Route::patch('/profile/preferences', [App\Http\Controllers\Profile\PreferencesController::class, 'update'])->name('profile.preferences.update');
 
     // Routes that require wedding access
     Route::middleware('wedding.access')->group(function () {

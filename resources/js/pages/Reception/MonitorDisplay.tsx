@@ -58,7 +58,7 @@ export default function MonitorDisplay({ initialGuests = [] }: MonitorDisplayPro
           setGuests(result.guests);
         }
       } catch (error) {
-        console.error('Failed to fetch recent scans:', error);
+
       }
     };
 

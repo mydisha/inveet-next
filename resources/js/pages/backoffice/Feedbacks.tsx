@@ -110,7 +110,7 @@ export default function FeedbacksPage({ user }: FeedbacksPageProps) {
       setTotalPages(data.data.last_page);
       setTotal(data.data.total);
     } catch (error) {
-      console.error('Failed to fetch feedbacks:', error);
+
     } finally {
       setLoading(false);
     }
@@ -129,7 +129,7 @@ export default function FeedbacksPage({ user }: FeedbacksPageProps) {
     try {
       const csrfToken = getCsrfToken();
       if (!csrfToken) {
-        console.error('CSRF token not available');
+
         return;
       }
 
@@ -148,7 +148,7 @@ export default function FeedbacksPage({ user }: FeedbacksPageProps) {
         fetchFeedbacks(); // Refresh the list
       }
     } catch (error) {
-      console.error('Failed to toggle recommendation:', error);
+
     }
   };
 
@@ -156,7 +156,7 @@ export default function FeedbacksPage({ user }: FeedbacksPageProps) {
     try {
       const csrfToken = getCsrfToken();
       if (!csrfToken) {
-        console.error('CSRF token not available');
+
         return;
       }
 
@@ -175,7 +175,7 @@ export default function FeedbacksPage({ user }: FeedbacksPageProps) {
         fetchFeedbacks(); // Refresh the list
       }
     } catch (error) {
-      console.error('Failed to toggle show on landing:', error);
+
     }
   };
 
@@ -184,7 +184,7 @@ export default function FeedbacksPage({ user }: FeedbacksPageProps) {
       try {
         const csrfToken = getCsrfToken();
         if (!csrfToken) {
-          console.error('CSRF token not available');
+
           return;
         }
 
@@ -203,7 +203,7 @@ export default function FeedbacksPage({ user }: FeedbacksPageProps) {
           fetchFeedbacks(); // Refresh the list
         }
       } catch (error) {
-        console.error('Failed to delete feedback:', error);
+
       }
     }
   };

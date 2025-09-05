@@ -16,7 +16,7 @@ export default function DebugCsrf() {
       const newToken = await forceRefreshCsrfToken();
       setCurrentToken(newToken || 'Failed to refresh');
     } catch (error) {
-      console.error('Refresh failed:', error);
+
       setCurrentToken('Refresh failed');
     } finally {
       setIsRefreshing(false);

@@ -91,7 +91,7 @@ export default function InvitationList({ user, weddings }: InvitationListProps) 
                 showFeedback: true
             });
         } catch (error) {
-            console.error('Logout failed:', error);
+
             // Fallback to form-based logout
             await logout({
                 useApi: false,

@@ -229,50 +229,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/settings/title/{weddingId?}', [UserController::class, 'updateTitleSettings']);
 });
 
-// Admin routes (require admin role)
-Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-    // User management routes
-    Route::get('/admin/users', [UserController::class, 'index']);
-    Route::post('/admin/users', [UserController::class, 'store']);
-    Route::get('/admin/users/{uuid}', [UserController::class, 'show']);
-    Route::put('/admin/users/{uuid}', [UserController::class, 'update']);
-    Route::delete('/admin/users/{uuid}', [UserController::class, 'destroy']);
-    Route::post('/admin/users/{uuid}/activate', [UserController::class, 'activate']);
-    Route::post('/admin/users/{uuid}/deactivate', [UserController::class, 'deactivate']);
-    Route::post('/admin/users/{uuid}/assign-role', [UserController::class, 'assignRole']);
-    Route::post('/admin/users/{uuid}/remove-role', [UserController::class, 'removeRole']);
-    Route::post('/admin/users/{uuid}/sync-roles', [UserController::class, 'syncRoles']);
-
-    // Package management routes
-    Route::post('/admin/packages', [PackageController::class, 'store']);
-    Route::put('/admin/packages/{uuid}', [PackageController::class, 'update']);
-    Route::delete('/admin/packages/{uuid}', [PackageController::class, 'destroy']);
-    Route::post('/admin/packages/{uuid}/toggle-recommendation', [PackageController::class, 'toggleRecommendation']);
-    Route::post('/admin/packages/{uuid}/activate', [PackageController::class, 'activate']);
-    Route::post('/admin/packages/{uuid}/deactivate', [PackageController::class, 'deactivate']);
-    Route::put('/admin/packages/{uuid}/discount', [PackageController::class, 'updateDiscount']);
-
-    // Order management routes
-    Route::get('/admin/orders', [OrderController::class, 'index']);
-    Route::get('/admin/orders/paid', [OrderController::class, 'index']);
-    Route::get('/admin/orders/pending', [OrderController::class, 'index']);
-    Route::get('/admin/orders/void', [OrderController::class, 'index']);
-
-    // Wedding management routes
-    Route::get('/admin/weddings', [WeddingController::class, 'index']);
-    Route::get('/admin/weddings/active', [WeddingController::class, 'index']);
-    Route::get('/admin/weddings/published', [WeddingController::class, 'index']);
-
-    // Special invitation management routes
-    Route::get('/admin/invitations', [SpecialInvitationController::class, 'index']);
-    Route::get('/admin/invitations/active', [SpecialInvitationController::class, 'index']);
-    Route::get('/admin/invitations/locked', [SpecialInvitationController::class, 'index']);
-});
-
-// Additional utility routes
-Route::get('/packages/price-range', [PackageController::class, 'getByPriceRange']);
-Route::get('/invitations/active', [SpecialInvitationController::class, 'getActiveInvitations']);
-Route::get('/invitations/locked', [SpecialInvitationController::class, 'getLockedInvitations']);
+// Note: Admin functionality is handled by backoffice routes in routes/backoffice.php
+// and web routes in routes/web.php for better organization and separation of concerns
 
 // Health check route
 Route::get('/health', function () {

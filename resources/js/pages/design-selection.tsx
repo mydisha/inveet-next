@@ -53,7 +53,7 @@ export default function DesignSelection({ user }: DesignSelectionProps) {
           setError('Failed to load themes');
         }
       } catch (err) {
-        console.error('Error fetching themes:', err);
+
         setError('Failed to load themes');
       } finally {
         setLoading(false);

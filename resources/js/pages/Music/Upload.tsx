@@ -26,8 +26,8 @@ export default function MusicUpload({ user }: MusicUploadProps) {
       await new Promise(resolve => setTimeout(resolve, 2000));
 
       // In a real application, this would upload to the server
-      console.log('Uploading file:', file.name);
-      console.log('Metadata:', metadata);
+
+
 
       setUploadSuccess(true);
 

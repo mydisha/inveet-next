@@ -55,44 +55,101 @@ interface BackofficeDashboardProps {
 
 export default function BackofficeDashboard({ user }: BackofficeDashboardProps) {
   const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState({
+    users: true,
+    orders: true,
+    feedbacks: true,
+    themes: true,
+  });
+  const [errors, setErrors] = useState({
+    users: null,
+    orders: null,
+    feedbacks: null,
+    themes: null,
+  });
 
   useEffect(() => {
     const fetchStats = async () => {
-      try {
+      // Load each statistics section independently for better performance
+      const loadUserStats = async (retryCount = 0) => {
+        try {
+          const userStats = await apiGet('/backoffice/api/users/statistics');
+          setStats(prev => ({ ...prev, ...userStats.data }));
+          setErrors(prev => ({ ...prev, users: null }));
+        } catch (error) {
+          setErrors(prev => ({ ...prev, users: error.message || 'Failed to load user statistics' }));
 
-        const [userStats, orderStats, feedbackStats, themeStats] = await Promise.all([
-          apiGet('/backoffice/api/users/statistics'),
-          apiGet('/backoffice/api/orders/statistics'),
-          apiGet('/backoffice/api/feedbacks/statistics'),
-          apiGet('/backoffice/api/themes/statistics'),
-        ]);
+          // Retry once after 2 seconds
+          if (retryCount === 0) {
+            setTimeout(() => loadUserStats(1), 2000);
+          }
+        } finally {
+          setLoading(prev => ({ ...prev, users: false }));
+        }
+      };
 
-        setStats({
-          ...userStats.data,
-          ...orderStats.data,
-          ...feedbackStats.data,
-          ...themeStats.data,
-        });
-      } catch (error) {
-        console.error('Failed to fetch stats:', error);
-      } finally {
-        setLoading(false);
-      }
+      const loadOrderStats = async (retryCount = 0) => {
+        try {
+          const orderStats = await apiGet('/backoffice/api/orders/statistics');
+          setStats(prev => ({ ...prev, ...orderStats.data }));
+          setErrors(prev => ({ ...prev, orders: null }));
+        } catch (error) {
+          setErrors(prev => ({ ...prev, orders: error.message || 'Failed to load order statistics' }));
+
+          if (retryCount === 0) {
+            setTimeout(() => loadOrderStats(1), 2000);
+          }
+        } finally {
+          setLoading(prev => ({ ...prev, orders: false }));
+        }
+      };
+
+      const loadFeedbackStats = async (retryCount = 0) => {
+        try {
+          const feedbackStats = await apiGet('/backoffice/api/feedbacks/statistics');
+          setStats(prev => ({ ...prev, ...feedbackStats.data }));
+          setErrors(prev => ({ ...prev, feedbacks: null }));
+        } catch (error) {
+          setErrors(prev => ({ ...prev, feedbacks: error.message || 'Failed to load feedback statistics' }));
+
+          if (retryCount === 0) {
+            setTimeout(() => loadFeedbackStats(1), 2000);
+          }
+        } finally {
+          setLoading(prev => ({ ...prev, feedbacks: false }));
+        }
+      };
+
+      const loadThemeStats = async (retryCount = 0) => {
+        try {
+          const themeStats = await apiGet('/backoffice/api/themes/statistics');
+          setStats(prev => ({ ...prev, ...themeStats.data }));
+          setErrors(prev => ({ ...prev, themes: null }));
+        } catch (error) {
+          setErrors(prev => ({ ...prev, themes: error.message || 'Failed to load theme statistics' }));
+
+          if (retryCount === 0) {
+            setTimeout(() => loadThemeStats(1), 2000);
+          }
+        } finally {
+          setLoading(prev => ({ ...prev, themes: false }));
+        }
+      };
+
+      // Start all requests in parallel but handle them independently
+      loadUserStats();
+      loadOrderStats();
+      loadFeedbackStats();
+      loadThemeStats();
     };
 
     fetchStats();
   }, []);
 
-  if (loading) {
-    return (
-      <BackofficeLayout title="Dashboard">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      </BackofficeLayout>
-    );
-  }
+  const isLoading = loading.users || loading.orders || loading.feedbacks || loading.themes;
+  const loadedCount = Object.values(loading).filter(loading => !loading).length;
+  const totalCount = Object.keys(loading).length;
+  const progressPercentage = (loadedCount / totalCount) * 100;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -102,13 +159,59 @@ export default function BackofficeDashboard({ user }: BackofficeDashboardProps) 
     }).format(amount);
   };
 
+  const LoadingSpinner = () => (
+    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-400"></div>
+  );
+
   const statCards = [
-    { label: 'Total Users', value: stats?.total_users || 0, icon: Users, color: 'text-blue-500' },
-    { label: 'Active Users', value: stats?.active_users || 0, icon: TrendingUp, color: 'text-green-500' },
-    { label: 'Total Orders', value: stats?.total_orders || 0, icon: ShoppingCart, color: 'text-purple-500' },
-    { label: 'Total Revenue', value: formatCurrency((stats?.total_revenue || 0) + (stats?.unique_revenue || 0)), icon: DollarSign, color: 'text-emerald-500' },
-    { label: 'Feedbacks', value: stats?.total_feedbacks || 0, icon: MessageSquare, color: 'text-orange-500' },
-    { label: 'Themes', value: stats?.total_themes || 0, icon: Palette, color: 'text-pink-500' },
+    {
+      label: 'Total Users',
+      value: loading.users ? <LoadingSpinner /> : (stats?.total_users || 0),
+      icon: Users,
+      color: 'text-blue-500',
+      isLoading: loading.users,
+      error: errors.users
+    },
+    {
+      label: 'Active Users',
+      value: loading.users ? <LoadingSpinner /> : (stats?.active_users || 0),
+      icon: TrendingUp,
+      color: 'text-green-500',
+      isLoading: loading.users,
+      error: errors.users
+    },
+    {
+      label: 'Total Orders',
+      value: loading.orders ? <LoadingSpinner /> : (stats?.total_orders || 0),
+      icon: ShoppingCart,
+      color: 'text-purple-500',
+      isLoading: loading.orders,
+      error: errors.orders
+    },
+    {
+      label: 'Total Revenue',
+      value: loading.orders ? <LoadingSpinner /> : formatCurrency((stats?.total_revenue || 0) + (stats?.unique_revenue || 0)),
+      icon: DollarSign,
+      color: 'text-emerald-500',
+      isLoading: loading.orders,
+      error: errors.orders
+    },
+    {
+      label: 'Feedbacks',
+      value: loading.feedbacks ? <LoadingSpinner /> : (stats?.total_feedbacks || 0),
+      icon: MessageSquare,
+      color: 'text-orange-500',
+      isLoading: loading.feedbacks,
+      error: errors.feedbacks
+    },
+    {
+      label: 'Themes',
+      value: loading.themes ? <LoadingSpinner /> : (stats?.total_themes || 0),
+      icon: Palette,
+      color: 'text-pink-500',
+      isLoading: loading.themes,
+      error: errors.themes
+    },
   ];
 
   const quickActions = [
@@ -147,10 +250,28 @@ export default function BackofficeDashboard({ user }: BackofficeDashboardProps) 
       <Head title="Backoffice Dashboard" />
       <BackofficeLayout user={user}>
         <div className="space-y-8">
+          {/* Loading Progress */}
+          {isLoading && (
+            <Card className="mb-6">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Loading Dashboard Statistics</span>
+                  <span className="text-sm text-gray-500">{loadedCount}/{totalCount} loaded</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
+                    style={{ width: `${progressPercentage}%` }}
+                  ></div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Stats Grid */}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {statCards.map((stat) => (
-              <Card key={stat.label} className="hover:shadow-lg transition-shadow">
+              <Card key={stat.label} className={`hover:shadow-lg transition-shadow ${stat.isLoading ? 'opacity-75' : ''} ${stat.error ? 'border-red-200 bg-red-50' : ''}`}>
                 <CardContent className="p-6">
                   <div className="flex items-center">
                     <div className="flex-shrink-0 p-3 rounded-lg bg-gray-50">
@@ -158,7 +279,21 @@ export default function BackofficeDashboard({ user }: BackofficeDashboardProps) 
                     </div>
                     <div className="ml-4 flex-1">
                       <p className="text-sm font-medium text-gray-500">{stat.label}</p>
-                      <p className="text-2xl font-semibold text-gray-900">{stat.value}</p>
+                      <div className="flex items-center">
+                        {stat.isLoading ? (
+                          <div className="flex items-center space-x-2">
+                            <LoadingSpinner />
+                            <span className="text-sm text-gray-500">Loading...</span>
+                          </div>
+                        ) : stat.error ? (
+                          <div className="flex flex-col">
+                            <p className="text-sm text-red-500">Error loading data</p>
+                            <p className="text-xs text-gray-400">Retrying...</p>
+                          </div>
+                        ) : (
+                          <p className="text-2xl font-semibold text-gray-900">{stat.value}</p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </CardContent>

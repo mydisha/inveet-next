@@ -110,7 +110,7 @@ export default function ThemesPage({ user }: ThemesPageProps) {
       setTotalPages(response.data.last_page);
       setTotal(response.data.total);
     } catch (error) {
-      console.error('Failed to fetch themes:', error);
+
     } finally {
       setLoading(false);
     }
@@ -129,7 +129,7 @@ export default function ThemesPage({ user }: ThemesPageProps) {
     try {
       const csrfToken = getCsrfToken();
       if (!csrfToken) {
-        console.error('CSRF token not available');
+
         return;
       }
 
@@ -148,7 +148,7 @@ export default function ThemesPage({ user }: ThemesPageProps) {
         fetchThemes(); // Refresh the list
       }
     } catch (error) {
-      console.error('Failed to toggle theme status:', error);
+
     }
   };
 
@@ -156,7 +156,7 @@ export default function ThemesPage({ user }: ThemesPageProps) {
     try {
       const csrfToken = getCsrfToken();
       if (!csrfToken) {
-        console.error('CSRF token not available');
+
         return;
       }
 
@@ -175,7 +175,7 @@ export default function ThemesPage({ user }: ThemesPageProps) {
         fetchThemes(); // Refresh the list
       }
     } catch (error) {
-      console.error('Failed to toggle theme visibility:', error);
+
     }
   };
 
@@ -184,7 +184,7 @@ export default function ThemesPage({ user }: ThemesPageProps) {
       try {
         const csrfToken = getCsrfToken();
         if (!csrfToken) {
-          console.error('CSRF token not available');
+
           return;
         }
 
@@ -203,7 +203,7 @@ export default function ThemesPage({ user }: ThemesPageProps) {
           fetchThemes(); // Refresh the list
         }
       } catch (error) {
-        console.error('Failed to delete theme:', error);
+
       }
     }
   };

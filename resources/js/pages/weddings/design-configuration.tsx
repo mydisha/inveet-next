@@ -22,7 +22,6 @@ import {
     X
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import ApiService from '../../services/api';
 
 interface Theme {
   id: number;
@@ -97,24 +96,19 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
   useEffect(() => {
     const fetchThemes = async () => {
       try {
-        console.log('🎨 Design Configuration: Fetching themes from API...');
         setLoading(true);
         setError(null);
 
         // Try direct fetch first to debug
         const directResponse = await fetch('/api/themes/active?limit=12');
         const directData = await directResponse.json();
-        console.log('🎨 Design Configuration: Direct fetch response:', directData);
 
         if (directData.success && directData.data) {
-          console.log('🎨 Design Configuration: Themes loaded successfully:', directData.data.length, 'themes');
           setThemes(directData.data);
         } else {
-          console.error('🎨 Design Configuration: Direct fetch failed:', directData);
           setError('Failed to load themes');
         }
       } catch (err) {
-        console.error('🎨 Design Configuration: Error fetching themes:', err);
         setError(`Failed to load themes: ${err.message}`);
       } finally {
         setLoading(false);
@@ -126,7 +120,6 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
 
   // Convert themes to design templates format for compatibility
   const designTemplates: DesignTemplate[] = themes.map(theme => {
-    console.log('🎨 Design Configuration: Converting theme:', theme);
     return {
       id: theme.id.toString(),
       name: theme.name,
@@ -145,7 +138,6 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
     };
   });
 
-  console.log('🎨 Design Configuration: Converted design templates:', designTemplates);
 
   // Fallback design templates if no themes are loaded
   const fallbackDesignTemplates: DesignTemplate[] = [
@@ -252,13 +244,6 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
   const templatesToUse = themes.length > 0 ? designTemplates : fallbackDesignTemplates;
 
   // Debug logging
-  console.log('🎨 Design Configuration: State:', {
-    loading,
-    error,
-    themesCount: themes.length,
-    usingApiData: !loading && !error && themes.length > 0,
-    templatesCount: templatesToUse.length
-  });
 
   // Get unique categories
   const categories = useMemo(() => {
@@ -308,7 +293,6 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
 
   const handleSaveCustomPalette = () => {
     // Here you would typically save the custom palette to the backend
-    console.log('Custom palette saved:', customColors);
     setShowCustomPalette(false);
   };
 
@@ -325,14 +309,7 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Show success message or redirect
-      console.log('Design configuration saved:', {
-        template: selectedTemplate,
-        palette: selectedPalette,
-        customColors: selectedPalette === 'custom' ? customColors : null,
-        coverImage: coverImage
-      });
     } catch (error) {
-      console.error('Error saving design configuration:', error);
     } finally {
       setIsSaving(false);
     }
@@ -548,13 +525,6 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
                             size="sm"
                             variant="outline"
                             onClick={async () => {
-                              console.log('🧪 Manual API test...');
-                              try {
-                                const response = await ApiService.getActiveThemes();
-                                console.log('🧪 Manual API response:', response);
-                              } catch (err) {
-                                console.error('🧪 Manual API error:', err);
-                              }
                             }}
                           >
                             Test API Call
@@ -563,14 +533,6 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
                             size="sm"
                             variant="outline"
                             onClick={async () => {
-                              console.log('🧪 Direct fetch test...');
-                              try {
-                                        const response = await fetch('/api/themes/active?limit=12');
-        const data = await response.json();
-                                console.log('🧪 Direct fetch response:', data);
-                              } catch (err) {
-                                console.error('🧪 Direct fetch error:', err);
-                              }
                             }}
                           >
                             Test Direct Fetch

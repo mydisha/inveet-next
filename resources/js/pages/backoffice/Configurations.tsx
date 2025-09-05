@@ -108,7 +108,7 @@ export default function ConfigurationsPage({ user }: ConfigurationsPageProps) {
 
       const csrfToken = getCsrfToken();
       if (!csrfToken) {
-        console.error('CSRF token not available');
+
         return;
       }
 
@@ -125,7 +125,7 @@ export default function ConfigurationsPage({ user }: ConfigurationsPageProps) {
 
       if (!response.ok) {
         if (response.status === 401) {
-          console.error('Unauthorized: Please log in again');
+
           window.location.href = '/login';
           return;
         }
@@ -139,13 +139,13 @@ export default function ConfigurationsPage({ user }: ConfigurationsPageProps) {
         setTotalPages(data.data.last_page);
         setTotal(data.data.total);
       } else {
-        console.error('Invalid response format:', data);
+
         setConfigurations([]);
         setTotalPages(1);
         setTotal(0);
       }
     } catch (error) {
-      console.error('Failed to fetch configurations:', error);
+
       setConfigurations([]);
       setTotalPages(1);
       setTotal(0);
@@ -174,7 +174,7 @@ export default function ConfigurationsPage({ user }: ConfigurationsPageProps) {
     try {
       const csrfToken = getCsrfToken();
       if (!csrfToken) {
-        console.error('CSRF token not available');
+
         return;
       }
 
@@ -198,7 +198,7 @@ export default function ConfigurationsPage({ user }: ConfigurationsPageProps) {
         fetchConfigurations(); // Refresh the list
       }
     } catch (error) {
-      console.error('Failed to update configuration:', error);
+
     }
   };
 
@@ -207,7 +207,7 @@ export default function ConfigurationsPage({ user }: ConfigurationsPageProps) {
       try {
         const csrfToken = getCsrfToken();
         if (!csrfToken) {
-          console.error('CSRF token not available');
+
           return;
         }
 
@@ -226,7 +226,7 @@ export default function ConfigurationsPage({ user }: ConfigurationsPageProps) {
           fetchConfigurations(); // Refresh the list
         }
       } catch (error) {
-        console.error('Failed to delete configuration:', error);
+
       }
     }
   };
@@ -235,7 +235,7 @@ export default function ConfigurationsPage({ user }: ConfigurationsPageProps) {
     try {
       const csrfToken = getCsrfToken();
       if (!csrfToken) {
-        console.error('CSRF token not available');
+
         return;
       }
 
@@ -253,10 +253,10 @@ export default function ConfigurationsPage({ user }: ConfigurationsPageProps) {
       if (response.ok) {
         fetchConfigurations(); // Refresh the list
       } else {
-        console.error('Failed to initialize defaults:', response.status);
+
       }
     } catch (error) {
-      console.error('Failed to initialize defaults:', error);
+
     }
   };
 

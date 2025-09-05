@@ -96,7 +96,7 @@ export default function GuestGreeting({ guestData, qrCode }: GuestGreetingProps)
           url: window.location.href,
         });
       } catch (err) {
-        console.log('Error sharing:', err);
+
       }
     }
   };

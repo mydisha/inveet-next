@@ -135,7 +135,7 @@ export default function WeddingLocation({ user }: WeddingLocationProps) {
         }
       });
     } catch (error) {
-      console.error('Search error:', error);
+
     }
   };
 

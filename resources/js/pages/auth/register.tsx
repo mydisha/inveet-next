@@ -24,7 +24,7 @@ export default function Register() {
     post("/register", {
             onSuccess: (page) => {
         // Registration successful, show success message and redirect
-        console.log('Registration successful!', page);
+
         setSuccessMessage('Account created successfully! Redirecting to dashboard...');
 
         // CSRF token will be refreshed automatically by the server
@@ -35,18 +35,18 @@ export default function Register() {
           router.visit('/dashboard', {
             method: 'get',
             onSuccess: () => {
-              console.log('Redirected to dashboard successfully');
+
             }
           });
         }, 1500);
       },
       onError: (errors) => {
-        console.error('Registration failed:', errors);
+
         setSuccessMessage(""); // Clear any success message
       },
       onFinish: () => {
         // This will be called regardless of success or error
-        console.log('Registration request finished');
+
       }
     });
   };

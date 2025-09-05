@@ -108,7 +108,7 @@ export default function WeddingDetails() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form data:', { ...formData, events });
+
   };
 
   return (

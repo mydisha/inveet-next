@@ -79,12 +79,12 @@ export default function MusicIndex({ user }: MusicIndexProps) {
 
   const handleDownload = (music: MusicItem) => {
     // In a real application, this would trigger a download from the server
-    console.log('Downloading:', music.title);
+
   };
 
   const handleEdit = (music: MusicItem) => {
     // In a real application, this would open an edit modal
-    console.log('Editing:', music.title);
+
   };
 
   return (

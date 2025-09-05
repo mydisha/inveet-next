@@ -45,7 +45,7 @@ interface CoupleInfoProps {
 }
 
 export default function CoupleInfo({ user, wedding }: CoupleInfoProps) {
-  console.log('CoupleInfo component rendering with:', { user, wedding });
+
 
   const [groomPhotoPreview, setGroomPhotoPreview] = useState<string>(wedding.groom_photo || '');
   const [bridePhotoPreview, setBridePhotoPreview] = useState<string>(wedding.bride_photo || '');
@@ -318,7 +318,7 @@ export default function CoupleInfo({ user, wedding }: CoupleInfoProps) {
     </DashboardPage>
     );
   } catch (error) {
-    console.error('Error in CoupleInfo component:', error);
+
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">

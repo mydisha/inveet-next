@@ -13,12 +13,20 @@ return new class extends Migration
     public function up(): void
     {
         // Update preview_image to store only relative paths
-        DB::table('themes')
+        $themes = DB::table('themes')
             ->whereNotNull('preview_image')
             ->where('preview_image', 'like', 'https://%')
-            ->update([
-                'preview_image' => DB::raw("SUBSTRING(preview_image, LOCATE('/themes/', preview_image))")
-            ]);
+            ->get();
+
+        foreach ($themes as $theme) {
+            $previewImage = $theme->preview_image;
+            if (strpos($previewImage, '/themes/') !== false) {
+                $relativePath = substr($previewImage, strpos($previewImage, '/themes/'));
+                DB::table('themes')
+                    ->where('id', $theme->id)
+                    ->update(['preview_image' => $relativePath]);
+            }
+        }
     }
 
     /**

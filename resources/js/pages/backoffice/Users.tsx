@@ -114,7 +114,7 @@ export default function UsersPage({ user, users: initialUsers, filters: initialF
         setLoading(false);
       },
       onError: (errors) => {
-        console.error('Failed to fetch users:', errors);
+
         setLoading(false);
       }
     });
@@ -138,7 +138,7 @@ export default function UsersPage({ user, users: initialUsers, filters: initialF
         window.open(data.data.login_url, '_blank');
       }
     } catch (error) {
-      console.error('Failed to generate auto-login:', error);
+
     }
   };
 
@@ -148,7 +148,7 @@ export default function UsersPage({ user, users: initialUsers, filters: initialF
       await apiPost(`/backoffice/api/users/${userId}/${endpoint}`);
       fetchUsers(); // Refresh the list
     } catch (error) {
-      console.error('Failed to toggle user status:', error);
+
     }
   };
 

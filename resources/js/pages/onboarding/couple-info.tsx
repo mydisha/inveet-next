@@ -175,7 +175,7 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
           setBridePhotoPreview(croppedImageUrl);
         }
       } catch (error) {
-        console.error('Error cropping image:', error);
+
       }
     }
     setShowCropper(false);
@@ -259,14 +259,14 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
         });
       }
     } catch (error) {
-      console.error('Search error:', error);
+
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Client-side only - no backend submission
-    console.log('Form data:', data);
+
     alert('Form completed! (This is a demo - no data was saved)');
     // Navigate to next step
     window.location.href = '/onboarding/design-selection';

@@ -40,7 +40,6 @@ class AuthenticatedSessionController extends Controller
         $userId = Auth::id();
         $sessionId = $request->session()->getId();
 
-        \Log::info('Traditional logout called', ['user_id' => $userId, 'session_id' => $sessionId]);
 
         Auth::guard('web')->logout();
 
@@ -55,7 +54,6 @@ class AuthenticatedSessionController extends Controller
 
         $this->refreshCsrfToken($request);
 
-        \Log::info('Traditional logout completed', ['user_id' => $userId, 'session_id' => $sessionId]);
 
         return redirect('/')->with('success', 'You have been logged out successfully.');
     }

@@ -394,6 +394,11 @@ export default function CouponForm({ coupon, packages, users }: CouponFormProps)
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">
                   Select users this coupon can be used by. Leave empty to allow all users.
+                  {users.length >= 1000 && (
+                    <span className="block text-orange-600 mt-1">
+                      Showing the 1000 most recent users. Use the search to find specific users.
+                    </span>
+                  )}
                 </p>
                 <div className="max-h-60 overflow-y-auto space-y-2">
                   {users.map((user) => (
@@ -410,6 +415,11 @@ export default function CouponForm({ coupon, packages, users }: CouponFormProps)
                     </div>
                   ))}
                 </div>
+                {users.length === 0 && (
+                  <div className="text-center py-4 text-muted-foreground">
+                    No users found
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

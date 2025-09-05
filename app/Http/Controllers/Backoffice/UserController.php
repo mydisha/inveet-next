@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backoffice;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
@@ -12,6 +13,12 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
+    protected $activityLogService;
+
+    public function __construct(ActivityLogService $activityLogService)
+    {
+        $this->activityLogService = $activityLogService;
+    }
     /**
      * Display a listing of users.
      */
@@ -129,6 +136,12 @@ class UserController extends Controller
     {
         $user->activate();
 
+        // Log admin action
+        $this->activityLogService->logAdminAction('activate', $user, [
+            'user_name' => $user->name,
+            'user_email' => $user->email
+        ]);
+
         return response()->json([
             'success' => true,
             'message' => 'User activated successfully',
@@ -142,6 +155,12 @@ class UserController extends Controller
     public function deactivate(User $user): JsonResponse
     {
         $user->deactivate();
+
+        // Log admin action
+        $this->activityLogService->logAdminAction('deactivate', $user, [
+            'user_name' => $user->name,
+            'user_email' => $user->email
+        ]);
 
         return response()->json([
             'success' => true,

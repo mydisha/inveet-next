@@ -3,7 +3,7 @@ import { apiEndpoints } from '../routes';
 
 // Create axios instance with default configuration
 const baseURL = import.meta.env.VITE_APP_URL || window.location.origin;
-console.log('🌐 API Base URL:', baseURL);
+
 
 const api: AxiosInstance = axios.create({
   baseURL: baseURL,
@@ -46,7 +46,7 @@ api.interceptors.response.use(
       window.location.href = '/login';
     } else if (error.response?.status === 419) {
       // Page Expired - CSRF token mismatch, try to refresh token
-      console.warn('CSRF token expired, attempting to refresh...');
+
 
       try {
         const response = await fetch('/api/csrf-token', {
@@ -68,7 +68,7 @@ api.interceptors.response.use(
             metaTag.setAttribute('content', newToken);
           }
 
-          console.log('CSRF token refreshed successfully');
+
 
           // Retry the original request with the new token
           if (error.config) {
@@ -77,11 +77,11 @@ api.interceptors.response.use(
           }
         } else {
           // If CSRF refresh fails, redirect to login
-          console.error('Failed to refresh CSRF token, redirecting to login');
+
           window.location.href = '/login';
         }
       } catch (refreshError) {
-        console.error('Failed to refresh CSRF token:', refreshError);
+
         // If CSRF refresh fails, redirect to login
         window.location.href = '/login';
       }
@@ -133,12 +133,12 @@ export class ApiService {
 
   static async logout() {
     try {
-      console.log('🔄 API Service: Attempting logout...');
-      console.log('   Current CSRF token:', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')?.substring(0, 10) + '...');
-      console.log('   Logout URL:', api.defaults.baseURL + apiEndpoints.auth.logout);
+
+
+
 
       const response = await api.post(apiEndpoints.auth.logout);
-      console.log('✅ API Service: Logout response:', response.data);
+
 
       // Clear auth token and other auth-related data
       localStorage.removeItem('auth_token');
@@ -146,16 +146,16 @@ export class ApiService {
       localStorage.removeItem('wedding_data');
       return { success: true };
     } catch (error: any) {
-      console.error('❌ API Service: Logout error:', error);
+
 
       // If we get 401 Unauthorized, try the public logout route
       if (error.response?.status === 401) {
-        console.log('🔄 API Service: 401 error, trying public logout...');
+
         try {
           const publicResponse = await api.post('/api/logout-public');
-          console.log('✅ API Service: Public logout response:', publicResponse.data);
+
         } catch (publicError) {
-          console.error('❌ API Service: Public logout also failed:', publicError);
+
         }
       }
 

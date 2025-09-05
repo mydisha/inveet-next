@@ -32,25 +32,18 @@ const InvitationShowcase = () => {
   useEffect(() => {
     const fetchThemes = async () => {
       try {
-        console.log('🏠 Landing Page: Fetching themes from API...');
         setLoading(true);
         setError(null);
 
         const response = await fetch('/api/themes/active?limit=12');
         const data = await response.json();
-        console.log('🏠 Landing Page: API Response:', data);
 
         if (data.success && data.data) {
-          console.log('🏠 Landing Page: Themes loaded successfully:', data.data.length, 'themes');
-          console.log('🏠 Landing Page: First theme data:', data.data[0]);
-          console.log('🏠 Landing Page: First theme preview_image_url:', data.data[0]?.preview_image_url);
           setThemes(data.data);
         } else {
-          console.error('🏠 Landing Page: API returned unsuccessful response:', data);
           setError('Failed to load themes');
         }
       } catch (err) {
-        console.error('🏠 Landing Page: Error fetching themes:', err);
         setError('Failed to load themes');
       } finally {
         setLoading(false);
@@ -128,11 +121,6 @@ const InvitationShowcase = () => {
                                 <h2 className="text-4xl md:text-5xl font-bold">
             Pilih tema undangan yang menarik
           </h2>
-          {themes.length > 0 && (
-            <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-              {themes.length} tema tersedia dari database
-            </div>
-          )}
         </div>
 
         {/* Category Filter */}
@@ -174,18 +162,8 @@ const InvitationShowcase = () => {
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out max-w-full"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    console.error('🏠 Landing Page: Image failed to load:', {
-                      themeName: theme.name,
-                      previewImageUrl: theme.preview_image_url,
-                      fallbackUsed: !theme.preview_image_url,
-                      actualSrc: target.src
-                    });
                   }}
                   onLoad={() => {
-                    console.log('🏠 Landing Page: Image loaded successfully:', {
-                      themeName: theme.name,
-                      previewImageUrl: theme.preview_image_url
-                    });
                   }}
                 />
               </div>

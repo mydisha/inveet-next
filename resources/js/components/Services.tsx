@@ -86,8 +86,8 @@ const Services = () => {
           </div>
                       <h2 className="text-4xl md:text-5xl font-bold">
               Semua lebih praktis
-              <br />
-              <span className="bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">#bersamaInveet</span>
+              {/* <br /> */}
+              {/* <span className="bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">#bersamaInveet</span> */}
             </h2>
         </div>
 

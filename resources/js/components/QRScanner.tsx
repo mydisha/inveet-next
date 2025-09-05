@@ -47,7 +47,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScan, onError, className
       await qrScannerRef.current.start();
       setHasPermission(true);
     } catch (err) {
-      console.error('QR Scanner error:', err);
+
       const errorMessage = err instanceof Error ? err.message : 'Failed to start camera';
       setError(errorMessage);
       setHasPermission(false);

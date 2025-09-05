@@ -208,23 +208,23 @@ export default function Coupons({ coupons: initialCoupons, filters: initialFilte
                   />
                 </div>
               </div>
-              <Select value={filters.status || ''} onValueChange={(value) => handleFilterChange('status', value)}>
+              <Select value={filters.status || 'all'} onValueChange={(value) => handleFilterChange('status', value === 'all' ? undefined : value)}>
                 <SelectTrigger className="w-full sm:w-48">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Status</SelectItem>
+                  <SelectItem value="all">All Status</SelectItem>
                   <SelectItem value="active">Active</SelectItem>
                   <SelectItem value="inactive">Inactive</SelectItem>
                   <SelectItem value="expired">Expired</SelectItem>
                 </SelectContent>
               </Select>
-              <Select value={filters.type || ''} onValueChange={(value) => handleFilterChange('type', value)}>
+              <Select value={filters.type || 'all'} onValueChange={(value) => handleFilterChange('type', value === 'all' ? undefined : value)}>
                 <SelectTrigger className="w-full sm:w-48">
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Types</SelectItem>
+                  <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="percentage">Percentage</SelectItem>
                   <SelectItem value="fixed">Fixed Amount</SelectItem>
                 </SelectContent>

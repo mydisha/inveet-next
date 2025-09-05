@@ -2002,7 +2002,11 @@ class FrontendController extends Controller
     public function backofficeCouponCreate()
     {
         $packages = \App\Models\Package::select('id', 'name', 'price')->get();
-        $users = \App\Models\User::select('id', 'name', 'email')->get();
+        // Limit users to prevent memory issues - only get recent users or implement search
+        $users = \App\Models\User::select('id', 'name', 'email')
+            ->orderBy('created_at', 'desc')
+            ->limit(1000)
+            ->get();
 
         return Inertia::render('backoffice/CouponForm', [
             'packages' => $packages,
@@ -2043,7 +2047,11 @@ class FrontendController extends Controller
         }
 
         $packages = \App\Models\Package::select('id', 'name', 'price')->get();
-        $users = \App\Models\User::select('id', 'name', 'email')->get();
+        // Limit users to prevent memory issues - only get recent users or implement search
+        $users = \App\Models\User::select('id', 'name', 'email')
+            ->orderBy('created_at', 'desc')
+            ->limit(1000)
+            ->get();
 
         return Inertia::render('backoffice/CouponForm', [
             'coupon' => $couponModel,
