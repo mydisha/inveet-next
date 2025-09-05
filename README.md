@@ -1,58 +1,78 @@
 # Inveet - Digital Wedding Invitation Platform
 
-A beautiful, modern, and elegant digital wedding invitation platform built with Laravel, React, and Tailwind CSS. Create stunning wedding invitations that your guests will love.
+A comprehensive, modern digital wedding invitation platform built with Laravel 11, React 18, and Tailwind CSS. Create stunning, personalized wedding invitations with advanced features like guest management, RSVP tracking, and payment integration.
 
-## ✨ Features
+## ✨ Key Features
 
-### 🎨 Beautiful Design
-- **Soft, Elegant Color Palette**: Rose gold, soft pink, cream, sage, lavender, and peach tones
-- **Modern UI/UX**: Clean, intuitive interface with smooth animations
-- **Mobile-First Design**: Responsive design that works perfectly on all devices
-- **Wedding-Themed Elements**: Floating animations, sparkle effects, and elegant gradients
+### 🎨 Design & Customization
+- **100+ Premium Templates**: Traditional, Modern, Romantic, Vintage, Tropical, and Rustic styles
+- **Fully Customizable**: Toggle features like countdown, RSVP, gallery, love story, and music
+- **Mobile-First Design**: Responsive design optimized for all devices
+- **Elegant Color Palette**: Rose gold, soft pink, cream, sage, lavender, and peach tones
+- **Photo Management**: Upload and manage couple photos, individual photos, and couple shots
 
 ### 🚀 Core Functionality
-- **Landing Page**: Beautiful marketing page with features showcase
 - **User Authentication**: Secure login/signup with Google OAuth support
-- **Dashboard**: User-friendly dashboard with wedding invitation management
+- **Role-Based Access Control**: Admin, customer, and reseller roles with Spatie Laravel Permission
+- **Wedding Management**: Create, edit, publish, and manage multiple weddings
 - **Onboarding Flow**: Step-by-step invitation creation process
+- **Dashboard**: Comprehensive management interface with analytics
 
-### 📱 Onboarding Steps
+### 📱 Onboarding Process
 1. **Couple Information**: Names, nicknames, Instagram handles, parent names, photos, love story
 2. **Wedding Details**: Venue, location, date/time with Indonesian timezone support (WIB, WITA, WIT)
 3. **Custom URL**: Choose your unique invitation link (xxxx.inveet.id)
 4. **Design Selection**: Pick from beautiful templates with customizable features
 5. **Activation**: Final setup with feedback collection
 
-### 🎯 Design Features
-- **Template Variety**: Traditional, Modern, Romantic, Vintage, Tropical, Rustic styles
-- **Customizable Elements**: Toggle couple photos, countdown, RSVP, gallery, love story, etc.
-- **Photo Management**: Upload and manage couple photos, individual photos, and couple shots
-- **Event Management**: Support for multiple events (Akad, Resepsi, Unduh Mantu, etc.)
+### 💰 Business Features
+- **Package Management**: Multiple pricing tiers with discount system
+- **Order Processing**: Complete order management with payment integration
+- **Coupon System**: Discount codes and promotional offers
+- **Payment Integration**: Multiple payment methods and virtual accounts
+- **Wallet System**: Digital wallet for transactions and withdrawals
+- **Reseller Program**: Multi-level reseller management system
+
+### 🎵 Advanced Features
+- **Background Music**: Upload custom music or choose from library
+- **Guest Management**: Import/export guest lists with RSVP tracking
+- **Analytics**: View count tracking and guest engagement metrics
+- **Special Invitations**: VIP invitations with password protection
+- **QR Code Integration**: Easy sharing and tracking
+- **Activity Logging**: Comprehensive audit trail for all actions
 
 ## 🛠️ Technology Stack
 
 ### Backend
-- **Laravel 11**: PHP framework for robust backend development
-- **SQLite**: Lightweight database for development
+- **Laravel 11**: PHP framework with latest features
+- **SQLite**: Lightweight database for development (easily switchable to MySQL/PostgreSQL)
 - **Inertia.js**: Seamless SPA experience without API complexity
+- **Laravel Sanctum**: API authentication
+- **Spatie Laravel Permission**: Role and permission management
+- **Laravel Socialite**: OAuth authentication
 
 ### Frontend
-- **React 19**: Modern React with latest features
+- **React 18**: Modern React with hooks and concurrent features
 - **TypeScript**: Type-safe development
-- **Tailwind CSS 4**: Utility-first CSS framework
+- **Tailwind CSS 3**: Utility-first CSS framework
 - **shadcn/ui**: Beautiful, accessible UI components
+- **Radix UI**: Headless UI primitives
 - **Lucide React**: Consistent icon library
+- **React Dropzone**: File upload handling
+- **React Easy Crop**: Image cropping functionality
 
 ### Development Tools
 - **Vite**: Fast build tool and dev server
 - **ESLint + Prettier**: Code quality and formatting
-- **Pest**: PHP testing framework
+- **Pest**: Modern PHP testing framework
+- **Laravel Pint**: Code style fixer
+- **Concurrently**: Run multiple development servers
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
-- PHP 8.2+
-- Node.js 18+
+- PHP 8.2 or higher
+- Node.js 18 or higher
 - Composer
 - npm or yarn
 
@@ -64,56 +84,122 @@ A beautiful, modern, and elegant digital wedding invitation platform built with 
    cd inveet-next
    ```
 
-2. **Install PHP dependencies**
+2. **Install dependencies**
    ```bash
+   # Install PHP dependencies
    composer install
-   ```
 
-3. **Install Node.js dependencies**
-   ```bash
+   # Install Node.js dependencies
    npm install
    ```
 
-4. **Environment setup**
+3. **Environment setup**
    ```bash
    cp .env.example .env
    php artisan key:generate
    ```
 
-5. **Database setup**
+4. **Database setup**
    ```bash
    php artisan migrate
    php artisan db:seed
    ```
 
-6. **Build assets**
+5. **Start development servers**
    ```bash
-   npm run build
+   # Option 1: Use the Makefile (recommended)
+   make dev
+
+   # Option 2: Manual start
+   php artisan serve    # Backend on http://localhost:8000
+   npm run dev         # Frontend on http://localhost:5173
    ```
 
-7. **Start development server**
-   ```bash
-   php artisan serve
-   npm run dev
-   ```
+### Using the Makefile
+
+The project includes a comprehensive Makefile for easy development:
+
+```bash
+# Development
+make dev          # Run both frontend and backend
+make frontend     # Run only frontend
+make backend      # Run only backend
+
+# Setup
+make install      # Install all dependencies
+make setup        # Complete initial setup
+make migrate      # Run database migrations
+make seed         # Seed the database
+
+# Testing
+make test         # Run PHP tests
+make test-pest    # Run tests with Pest
+
+# Build
+make build        # Build for production
+make build-ssr    # Build with SSR support
+
+# Maintenance
+make clean        # Clean cache and temporary files
+make logs         # Show Laravel logs
+make status       # Show running processes
+```
 
 ## 📁 Project Structure
 
 ```
 inveet-next/
-├── app/                    # Laravel application logic
-│   ├── Http/             # Controllers, Middleware, Requests
-│   ├── Models/           # Eloquent models
-│   ├── Services/         # Business logic services
-│   └── Repositories/     # Data access layer
+├── app/
+│   ├── Console/Commands/          # Artisan commands
+│   ├── Events/                    # Event classes
+│   ├── Http/
+│   │   ├── Controllers/           # API and web controllers
+│   │   ├── Middleware/            # Custom middleware
+│   │   └── Requests/              # Form request validation
+│   ├── Jobs/                      # Queue jobs
+│   ├── Listeners/                 # Event listeners
+│   ├── Models/                    # Eloquent models
+│   │   ├── User.php              # User model with roles
+│   │   ├── Wedding.php           # Wedding management
+│   │   ├── Order.php             # Order processing
+│   │   ├── Package.php           # Package management
+│   │   ├── Theme.php             # Template themes
+│   │   └── SpecialInvitation.php # VIP invitations
+│   ├── Repositories/              # Data access layer
+│   ├── Services/                  # Business logic services
+│   └── Traits/                    # Reusable traits
+├── database/
+│   ├── migrations/                # Database migrations
+│   ├── seeders/                   # Database seeders
+│   └── factories/                 # Model factories
 ├── resources/
-│   ├── js/              # React components and pages
-│   │   ├── components/  # Reusable UI components
-│   │   ├── pages/       # Page components
-│   │   └── ui/          # shadcn/ui components
-│   └── css/             # Tailwind CSS and custom styles
-├── routes/               # Application routes
-└── database/             # Migrations and seeders
+│   ├── js/
+│   │   ├── components/            # React components
+│   │   │   ├── ui/               # shadcn/ui components
+│   │   │   ├── Header.tsx        # Navigation
+│   │   │   ├── Footer.tsx        # Footer
+│   │   │   └── About.tsx         # About section
+│   │   ├── pages/                # Page components
+│   │   │   ├── onboarding/       # Onboarding flow
+│   │   │   └── dashboard/        # Dashboard pages
+│   │   └── app.tsx               # Main app component
+│   └── css/
+│       └── app.css               # Tailwind CSS and custom styles
+├── routes/
+│   ├── web.php                   # Web routes
+│   ├── api.php                   # API routes
+│   ├── auth.php                  # Authentication routes
+│   └── backoffice.php            # Admin routes
+├── public/
+│   └── themes/                   # Theme assets
+├── storage/
+│   └── app/                      # File storage
+├── tests/                        # Test files
+├── Makefile                      # Development commands
+├── package.json                  # Node.js dependencies
+├── composer.json                 # PHP dependencies
+├── vite.config.ts               # Vite configuration
+└── tailwind.config.ts           # Tailwind configuration
 ```
 
 ## 🎨 Design System
@@ -138,102 +224,158 @@ inveet-next/
 - **Forms**: Consistent input styling with focus states
 - **Navigation**: Intuitive breadcrumbs and progress indicators
 
-## 📱 Pages & Components
+## 📱 Key Pages & Features
 
 ### Landing Page (`/`)
-- Hero section with call-to-action
-- Features showcase
-- How it works guide
+- Hero section with compelling call-to-action
+- Features showcase with interactive elements
+- Step-by-step process explanation
+- Pricing plans comparison
 - Social proof and testimonials
 
-### Authentication
-- **Login** (`/login`): Sign in with email or Google
+### Authentication System
+- **Login** (`/login`): Email/password and Google OAuth
+- **Registration** (`/register`): User signup with validation
 - **Forgot Password** (`/forgot-password`): Password reset flow
+- **Email Verification**: Secure account activation
 
 ### Dashboard (`/dashboard`)
-- Welcome message
-- Quick stats overview
-- Onboarding call-to-action
+- Welcome message with user stats
 - Wedding invitation management
+- Quick actions and shortcuts
+- Recent activity feed
+- Onboarding progress tracking
 
 ### Onboarding Flow
-- **Overview** (`/onboarding`): Step-by-step progress
+- **Overview** (`/onboarding`): Step-by-step progress indicator
 - **Couple Info** (`/onboarding/couple-info`): Personal details and photos
 - **Wedding Details** (`/onboarding/wedding-details`): Venue and event information
-- **Custom URL** (`/onboarding/custom-url`): Unique invitation link
+- **Custom URL** (`/onboarding/custom-url`): Unique invitation link selection
 - **Design Selection** (`/onboarding/design-selection`): Template and feature choices
 - **Activation** (`/onboarding/activation`): Final setup and launch
 
-## 🔧 Customization
+### Admin Panel (`/backoffice`)
+- User management with role assignment
+- Wedding invitation oversight
+- Order and payment management
+- Theme and package management
+- Analytics and reporting
 
-### Adding New Design Templates
-1. Add template data to the designs array in `design-selection.tsx`
-2. Include preview images and feature descriptions
-3. Update category and styling options
+## 🔧 Development
 
-### Modifying Color Scheme
-1. Update CSS variables in `resources/css/app.css`
-2. Modify Tailwind color classes throughout components
-3. Ensure consistency across all UI elements
+### Code Quality
+```bash
+# Run linting
+npm run lint
+
+# Run type checking
+npm run type-check
+
+# Run PHP code style fixer
+./vendor/bin/pint
+
+# Run tests
+make test
+```
+
+### Database Management
+```bash
+# Create new migration
+php artisan make:migration create_table_name
+
+# Run migrations
+php artisan migrate
+
+# Rollback migrations
+php artisan migrate:rollback
+
+# Fresh migration with seeding
+php artisan migrate:fresh --seed
+```
 
 ### Adding New Features
-1. Extend the onboarding flow with new steps
-2. Update progress tracking and navigation
-3. Add corresponding form components and validation
+1. Create model, migration, and factory
+2. Implement repository and service layers
+3. Add controller with proper validation
+4. Create React components
+5. Add routes and middleware
+6. Write tests
+7. Update documentation
 
 ## 🧪 Testing
 
 ```bash
-# Run PHP tests
-php artisan test
-
-# Run with Pest
-./vendor/bin/pest
+# Run all tests
+make test
 
 # Run specific test file
 ./vendor/bin/pest tests/Feature/DashboardTest.php
+
+# Run tests with coverage
+./vendor/bin/pest --coverage
 ```
 
 ## 📦 Deployment
 
 ### Production Build
 ```bash
+# Build frontend assets
 npm run build
+
+# Build with SSR support
 npm run build:ssr
+
+# Optimize for production
+composer install --optimize-autoloader --no-dev
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
 ```
 
 ### Environment Variables
-- `APP_ENV=production`
-- `APP_DEBUG=false`
-- `APP_URL=https://yourdomain.com`
-- Database credentials
-- OAuth provider keys
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://yourdomain.com
+DB_CONNECTION=mysql
+DB_HOST=your-db-host
+DB_DATABASE=your-database
+DB_USERNAME=your-username
+DB_PASSWORD=your-password
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+```
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
 4. Add tests if applicable
-5. Submit a pull request
+5. Run the test suite (`make test`)
+6. Commit your changes (`git commit -m 'Add amazing feature'`)
+7. Push to the branch (`git push origin feature/amazing-feature`)
+8. Open a Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- **shadcn/ui** for beautiful component library
+- **Laravel** for the robust PHP framework
+- **React** for the modern frontend library
 - **Tailwind CSS** for utility-first styling
-- **Laravel** for robust backend framework
-- **React** for modern frontend development
+- **shadcn/ui** for beautiful component library
+- **Spatie** for excellent Laravel packages
+- **Inertia.js** for seamless SPA experience
 
 ## 📞 Support
 
 For support and questions:
 - Create an issue in the repository
-- Contact the development team
 - Check the documentation
+- Contact the development team
 
 ---
 

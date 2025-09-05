@@ -111,4 +111,51 @@ class Payment extends Model
     {
         return $this->payment_status === 'failed';
     }
+
+    /**
+     * Check if the payment is using Xendit gateway.
+     */
+    public function isXenditPayment(): bool
+    {
+        return $this->gateway_source === 'xendit';
+    }
+
+    /**
+     * Get Xendit payment status mapping.
+     */
+    public function getXenditStatusMapping(): array
+    {
+        return [
+            'PENDING' => 'pending',
+            'PAID' => 'settlement',
+            'SETTLED' => 'settlement',
+            'EXPIRED' => 'failed',
+            'FAILED' => 'failed',
+        ];
+    }
+
+    /**
+     * Update payment status from Xendit callback.
+     */
+    public function updateFromXenditCallback(array $callbackData): void
+    {
+        $statusMapping = $this->getXenditStatusMapping();
+        $xenditStatus = $callbackData['status'] ?? 'PENDING';
+
+        $currentCallbackResponse = $this->callback_response ?? [];
+        $currentCallbackResponse = array_merge($currentCallbackResponse, $callbackData);
+
+        $this->update([
+            'payment_status' => $statusMapping[$xenditStatus] ?? 'pending',
+            'callback_response' => $currentCallbackResponse,
+        ]);
+    }
+
+    /**
+     * Scope a query to only include Xendit payments.
+     */
+    public function scopeXendit($query)
+    {
+        return $query->where('gateway_source', 'xendit');
+    }
 }

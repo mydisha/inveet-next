@@ -16,8 +16,10 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReceptionController;
 use App\Http\Controllers\SpecialInvitationController;
+use App\Http\Controllers\TestXenditController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WeddingController;
@@ -107,6 +109,13 @@ Route::middleware('guest')->group(function () {
 
     // User search for backoffice
     Route::get('/backoffice/users/search', [App\Http\Controllers\FrontendController::class, 'backofficeUsersSearch']);
+
+    // Xendit webhook (public route for payment callbacks)
+    Route::post('/payment/xendit/webhook', [PaymentController::class, 'handleWebhook']);
+
+    // Test Xendit integration (for development/testing)
+    Route::get('/test/xendit/connection', [TestXenditController::class, 'testConnection']);
+    Route::post('/test/xendit/invoice', [TestXenditController::class, 'testInvoice']);
 });
 
 // Public logout route (for expired sessions)
@@ -200,6 +209,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/packages/{packageUuid}/orders', [OrderController::class, 'findByPackageId']);
     Route::post('/orders/{uuid}/process-payment', [OrderController::class, 'processPayment']);
     Route::post('/orders/{uuid}/cancel', [OrderController::class, 'cancel']);
+
+    // Payment management routes
+    Route::post('/payments', [PaymentController::class, 'createPayment']);
+    Route::get('/payments/{paymentUuid}/status', [PaymentController::class, 'getPaymentStatus']);
+    Route::get('/payments/methods', [PaymentController::class, 'getPaymentMethods']);
 
     // Special invitation management routes
     Route::post('/invitations', [SpecialInvitationController::class, 'store']);
