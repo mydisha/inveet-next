@@ -1,3 +1,4 @@
+import BackButton from '@/components/backoffice/BackButton';
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -175,9 +176,12 @@ export default function Coupons({ user, coupons, filters: initialFilters }: Coup
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Coupons</h1>
-            <p className="text-muted-foreground">Manage discount coupons and promotional codes</p>
+          <div className="flex items-center space-x-4">
+            <BackButton href="/backoffice" label="Back to Dashboard" />
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Coupons</h1>
+              <p className="text-muted-foreground">Manage discount coupons and promotional codes</p>
+            </div>
           </div>
           <Link href="/backoffice/coupons/create">
             <Button className="flex items-center gap-2">

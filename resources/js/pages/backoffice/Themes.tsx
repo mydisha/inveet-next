@@ -1,3 +1,4 @@
+import BackButton from '@/components/backoffice/BackButton';
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -163,6 +164,14 @@ export default function ThemesPage({ user, themes, filters: initialFilters }: Th
       <Head title="Theme Management - Backoffice" />
       <BackofficeLayout user={user} title="Theme Management" description="Manage wedding themes">
         <div className="space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <BackButton href="/backoffice" label="Back to Dashboard" />
+            <div className="text-sm text-muted-foreground">
+              {themes.length} themes available
+            </div>
+          </div>
+
           {/* Header Actions */}
           <div className="flex justify-between items-center">
             <div>

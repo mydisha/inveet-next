@@ -15,7 +15,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.23",
         "laravel/tinker": "^2.10.1",
-        "laravel/wayfinder": "^0.1.9",
+        "laravel/wayfinder": "^0.1.11",
         "spatie/laravel-permission": "^6.21",
         "xendit/xendit-php": "^7.0.0"
     },

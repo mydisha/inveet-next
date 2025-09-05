@@ -2,312 +2,114 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Wedding\StoreWeddingRequest;
-use App\Http\Requests\Wedding\UpdateWeddingRequest;
 use App\Services\WeddingService;
-use Illuminate\Http\JsonResponse;
+use App\Services\GuestService;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Inertia\Inertia;
 
-class WeddingController extends Controller
+class WeddingController extends BaseController
 {
     protected $weddingService;
+    protected $guestService;
 
-    public function __construct(WeddingService $weddingService)
+    public function __construct(WeddingService $weddingService, GuestService $guestService)
     {
+        parent::__construct(app(\App\Services\AuthService::class));
         $this->weddingService = $weddingService;
+        $this->guestService = $guestService;
     }
 
     /**
-     * Display a listing of the resource.
+     * Show a specific wedding by slug
      */
-    public function index(Request $request): JsonResponse
-    {
-        $this->authorize('view-weddings');
-
-        $filters = $request->only(['published_only', 'active_only']);
-        $weddings = $this->weddingService->getAll($filters);
-
-        return response()->json([
-            'success' => true,
-            'data' => $weddings,
-            'message' => 'Weddings retrieved successfully'
-        ]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreWeddingRequest $request): JsonResponse
-    {
-        $this->authorize('create-weddings');
-
-        $wedding = $this->weddingService->create($request->validated());
-
-        return response()->json([
-            'success' => true,
-            'data' => $wedding,
-            'message' => 'Wedding created successfully'
-        ], Response::HTTP_CREATED);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(int $id): JsonResponse
-    {
-        $this->authorize('view-weddings');
-
-        $wedding = $this->weddingService->findById($id);
-
-        if (!$wedding) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Wedding not found'
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => $wedding,
-            'message' => 'Wedding retrieved successfully'
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateWeddingRequest $request, int $id): JsonResponse
-    {
-        $this->authorize('edit-weddings');
-
-        $wedding = $this->weddingService->update($id, $request->validated());
-
-        if (!$wedding) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Wedding not found'
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => $wedding,
-            'message' => 'Wedding updated successfully'
-        ]);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(int $id): JsonResponse
-    {
-        $this->authorize('delete-weddings');
-
-        $deleted = $this->weddingService->delete($id);
-
-        if (!$deleted) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Wedding not found'
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Wedding deleted successfully'
-        ]);
-    }
-
-    /**
-     * Get weddings by user ID
-     */
-    public function findByUserId(int $userId): JsonResponse
-    {
-        $weddings = $this->weddingService->findByUserId($userId);
-
-        return response()->json([
-            'success' => true,
-            'data' => $weddings,
-            'message' => 'User weddings retrieved successfully'
-        ]);
-    }
-
-    /**
-     * Get wedding by slug
-     */
-    public function findBySlug(string $slug): JsonResponse
+    public function show($slug)
     {
         $wedding = $this->weddingService->findBySlug($slug);
 
         if (!$wedding) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Wedding not found'
-            ], Response::HTTP_NOT_FOUND);
+            abort(404);
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => $wedding,
-            'message' => 'Wedding retrieved successfully'
+        return Inertia::render('Wedding/Show', [
+            'wedding' => $wedding,
         ]);
     }
 
     /**
-     * Get draft weddings for a user
+     * Show user's weddings
      */
-    public function getDraftWeddings(int $userId): JsonResponse
+    public function myWeddings(Request $request)
     {
-        $weddings = $this->weddingService->findDraftWeddings($userId);
+        $this->ensureFreshCsrfToken($request);
 
-        return response()->json([
-            'success' => true,
-            'data' => $weddings,
-            'message' => 'Draft weddings retrieved successfully'
-        ]);
+        $user = $this->getUser($request);
+        $weddings = $this->weddingService->findByUserId($user->id);
+
+        return $this->renderWithUser('Wedding/MyWeddings', [
+            'weddings' => $weddings,
+        ], $request);
     }
 
     /**
-     * Publish a wedding
+     * Show wedding invitation with theme
      */
-    public function publish(int $id): JsonResponse
+    public function showInvitation(Request $request, $slug)
     {
-        $this->authorize('publish-weddings');
+        // Mock wedding data for now - in real app, fetch from database
+        $wedding = (object) [
+            'id' => 1,
+            'title' => 'Levi & Dio Wedding',
+            'slug' => $slug,
+            'groom_name' => 'Dio',
+            'bride_name' => 'Levi',
+            'groom_father_name' => 'Ahmad',
+            'groom_mother_name' => 'Dio',
+            'bride_father_name' => 'Lorem',
+            'bride_mother_name' => 'Ipsum',
+            'akad_date' => '2024-12-12',
+            'akad_time' => '08.00 AM',
+            'akad_location' => 'HOUSE OF THE BRIDE',
+            'reception_date' => '2024-12-13',
+            'reception_time' => '02.00 - 05.00 PM',
+            'reception_location' => 'ROOTPIXEL HALL',
+            'theme_id' => 'overlay-shadow-01',
+        ];
 
-        $published = $this->weddingService->publishWedding($id);
-
-        if (!$published) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Wedding not found'
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Wedding published successfully'
-        ]);
+        // Render the theme template
+        return view('themes.overlay-shadow-01.index', compact('wedding'));
     }
 
     /**
-     * Unpublish a wedding
+     * Show wedding couple information page
      */
-    public function unpublish(int $id): JsonResponse
+    public function coupleInfo(Request $request, $id)
     {
-        $this->authorize('unpublish-weddings');
+        // Mock wedding data for now - in real app, fetch from database
+        $wedding = (object) [
+            'id' => $id,
+            'couple_name_1' => 'Rafi',
+            'couple_name_2' => 'Nuna',
+            'slug' => 'sample-wedding',
+            'groom_name' => 'Rafi Ahmad',
+            'groom_nickname' => 'Rafi',
+            'groom_email' => 'rafi@example.com',
+            'groom_phone' => '+62 812 3456 7890',
+            'groom_instagram' => '@rafi_ahmad',
+            'groom_father_name' => 'Ahmad Suryadi',
+            'groom_mother_name' => 'Siti Aminah',
+            'bride_name' => 'Nuna Sari',
+            'bride_nickname' => 'Nuna',
+            'bride_email' => 'nuna@example.com',
+            'bride_phone' => '+62 812 3456 7891',
+            'bride_instagram' => '@nuna_sari',
+            'bride_father_name' => 'Budi Santoso',
+            'bride_mother_name' => 'Rina Wati',
+            'groom_photo' => null,
+            'bride_photo' => null,
+        ];
 
-        $unpublished = $this->weddingService->unpublishWedding($id);
-
-        if (!$unpublished) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Wedding not found'
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Wedding unpublished successfully'
-        ]);
-    }
-
-    /**
-     * Increment view count
-     */
-    public function incrementViewCount(int $id): JsonResponse
-    {
-        $wedding = $this->weddingService->incrementViewCount($id);
-
-        if (!$wedding) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Wedding not found'
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => $wedding,
-            'message' => 'View count incremented successfully'
-        ]);
-    }
-
-    /**
-     * Get weddings by theme ID
-     */
-    public function findByThemeId(int $themeId): JsonResponse
-    {
-        $weddings = $this->weddingService->findByThemeId($themeId);
-
-        return response()->json([
-            'success' => true,
-            'data' => $weddings,
-            'message' => 'Theme weddings retrieved successfully'
-        ]);
-    }
-
-    /**
-     * Activate a wedding
-     */
-    public function activate(int $id): JsonResponse
-    {
-        $this->authorize('activate-weddings');
-
-        $activated = $this->weddingService->activateWedding($id);
-
-        if (!$activated) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Wedding not found'
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Wedding activated successfully'
-        ]);
-    }
-
-    /**
-     * Deactivate a wedding
-     */
-    public function deactivate(int $id): JsonResponse
-    {
-        $this->authorize('deactivate-weddings');
-
-        $deactivated = $this->weddingService->deactivateWedding($id);
-
-        if (!$deactivated) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Wedding not found'
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Wedding deactivated successfully'
-        ]);
-    }
-
-    /**
-     * Mark wedding as draft
-     */
-    public function markAsDraft(int $id): JsonResponse
-    {
-        $marked = $this->weddingService->markAsDraft($id);
-
-        if (!$marked) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Wedding not found'
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Wedding marked as draft successfully'
-        ]);
+        return $this->renderWithUser('Wedding/CoupleInfo', [
+            'wedding' => $wedding,
+        ], $request);
     }
 }

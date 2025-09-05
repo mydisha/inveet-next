@@ -3,9 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\UserRepository;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Spatie\Permission\Models\Role;
+use Illuminate\Database\Eloquent\Collection;
 
 class UserService implements BaseServiceInterface
 {
@@ -18,10 +16,40 @@ class UserService implements BaseServiceInterface
 
     public function getAll(array $filters = [])
     {
-        if (isset($filters['active_only']) && $filters['active_only']) {
-            return $this->userRepository->findActiveUsers();
+        $query = $this->userRepository->getModel()->with(['roles'])
+            ->withCount(['weddings', 'orders']);
+
+        // Search functionality
+        if (isset($filters['search']) && $filters['search']) {
+            $search = $filters['search'];
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone_number', 'like', "%{$search}%");
+            });
         }
-        return $this->userRepository->all();
+
+        // Filter by role
+        if (isset($filters['role'])) {
+            $query->role($filters['role']);
+        }
+
+        // Filter by status
+        if (isset($filters['status'])) {
+            $status = $filters['status'];
+            if ($status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($status === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        // Sort
+        $sortBy = $filters['sort_by'] ?? 'created_at';
+        $sortOrder = $filters['sort_order'] ?? 'desc';
+        $query->orderBy($sortBy, $sortOrder);
+
+        return $query->get();
     }
 
     public function findById(int $id)
@@ -31,49 +59,12 @@ class UserService implements BaseServiceInterface
 
     public function create(array $data)
     {
-        // Hash password if provided
-        if (isset($data['password'])) {
-            $data['password'] = Hash::make($data['password']);
-        }
-
-        // Generate slug if name is provided
-        if (isset($data['name'])) {
-            $data['slug'] = Str::slug($data['name']);
-        }
-
-        $user = $this->userRepository->create($data);
-
-        // Assign default role if specified
-        if (isset($data['role'])) {
-            $role = Role::findByName($data['role']);
-            if ($role) {
-                $user->assignRole($role);
-            }
-        }
-
-        return $user;
+        return $this->userRepository->create($data);
     }
 
     public function update(int $id, array $data)
     {
-        // Hash password if provided
-        if (isset($data['password'])) {
-            $data['password'] = Hash::make($data['password']);
-        }
-
-        // Generate slug if name is provided
-        if (isset($data['name'])) {
-            $data['slug'] = Str::slug($data['name']);
-        }
-
-        $user = $this->userRepository->update($id, $data);
-
-        // Update roles if specified
-        if (isset($data['roles'])) {
-            $user->syncRoles($data['roles']);
-        }
-
-        return $user;
+        return $this->userRepository->update($id, $data);
     }
 
     public function delete(int $id)
@@ -83,68 +74,95 @@ class UserService implements BaseServiceInterface
 
     public function paginate(int $perPage = 15, array $filters = [])
     {
-        return $this->userRepository->paginate($perPage);
-    }
+        $query = $this->userRepository->getModel()->with(['roles'])
+            ->withCount(['weddings', 'orders']);
 
-    public function findByEmail(string $email)
-    {
-        return $this->userRepository->findByEmail($email);
-    }
+        // Apply filters
+        if (isset($filters['search']) && $filters['search']) {
+            $search = $filters['search'];
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone_number', 'like', "%{$search}%");
+            });
+        }
 
-    public function findBySocialiteId(string $socialiteId)
-    {
-        return $this->userRepository->findBySocialiteId($socialiteId);
-    }
+        if (isset($filters['role'])) {
+            $query->role($filters['role']);
+        }
 
-    public function updateProfile(int $userId, array $data)
-    {
-        return $this->userRepository->updateProfile($userId, $data);
-    }
-
-    public function deactivateUser(int $userId)
-    {
-        return $this->userRepository->deactivateUser($userId);
-    }
-
-    public function activateUser(int $userId)
-    {
-        return $this->userRepository->activateUser($userId);
-    }
-
-    public function assignRole(int $userId, string $roleName)
-    {
-        $user = $this->findById($userId);
-        if ($user) {
-            $role = Role::findByName($roleName);
-            if ($role) {
-                $user->assignRole($role);
-                return true;
+        if (isset($filters['status'])) {
+            $status = $filters['status'];
+            if ($status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($status === 'inactive') {
+                $query->where('is_active', false);
             }
         }
-        return false;
+
+        $sortBy = $filters['sort_by'] ?? 'created_at';
+        $sortOrder = $filters['sort_order'] ?? 'desc';
+        $query->orderBy($sortBy, $sortOrder);
+
+        return $query->paginate($perPage);
     }
 
-    public function removeRole(int $userId, string $roleName)
+    /**
+     * Get user statistics
+     */
+    public function getStatistics()
+    {
+        $now = now();
+        return [
+            'total_users' => $this->userRepository->getModel()->count(),
+            'active_users' => $this->userRepository->getModel()->where('is_active', true)->count(),
+            'inactive_users' => $this->userRepository->getModel()->where('is_active', false)->count(),
+            'users_with_weddings' => $this->userRepository->getModel()->has('weddings')->count(),
+            'users_with_orders' => $this->userRepository->getModel()->has('orders')->count(),
+            'new_users_this_month' => $this->userRepository->getModel()->whereMonth('created_at', $now->month)->count(),
+            'new_users_this_week' => $this->userRepository->getModel()->whereBetween('created_at', [$now->startOfWeek(), $now->endOfWeek()])->count(),
+        ];
+    }
+
+    /**
+     * Activate user
+     */
+    public function activate(int $userId)
     {
         $user = $this->findById($userId);
         if ($user) {
-            $role = Role::findByName($roleName);
-            if ($role) {
-                $user->removeRole($role);
-                return true;
-            }
+            $user->activate();
+            return $user;
         }
         return false;
     }
 
-    public function syncRoles(int $userId, array $roleNames)
+    /**
+     * Deactivate user
+     */
+    public function deactivate(int $userId)
     {
         $user = $this->findById($userId);
         if ($user) {
-            $roles = Role::whereIn('name', $roleNames)->get();
-            $user->syncRoles($roles);
-            return true;
+            $user->deactivate();
+            return $user;
         }
         return false;
+    }
+
+    /**
+     * Search users
+     */
+    public function search(string $query, int $limit = 20)
+    {
+        return $this->userRepository->getModel()
+            ->select('id', 'name', 'email')
+            ->where(function ($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%")
+                  ->orWhere('email', 'like', "%{$query}%");
+            })
+            ->orderBy('name', 'asc')
+            ->limit($limit)
+            ->get();
     }
 }

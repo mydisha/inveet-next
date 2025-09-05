@@ -1,3 +1,4 @@
+import BackButton from '@/components/backoffice/BackButton';
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,8 +6,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Save, User } from 'lucide-react';
+import { Head, useForm } from '@inertiajs/react';
+import { Save, User } from 'lucide-react';
 import { useState } from 'react';
 
 interface User {
@@ -77,12 +78,7 @@ export default function UserEditPage({ user, currentUser }: UserEditProps) {
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link href={`/backoffice/users/${user.id}`}>
-                <Button variant="outline" size="sm">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to User Details
-                </Button>
-              </Link>
+              <BackButton href={`/backoffice/users/${user.id}`} label="Back to User Details" />
             </div>
           </div>
 

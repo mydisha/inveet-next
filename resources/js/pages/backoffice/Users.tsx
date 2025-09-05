@@ -1,3 +1,4 @@
+import BackButton from '@/components/backoffice/BackButton';
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -173,6 +174,14 @@ export default function UsersPage({ user, users: initialUsers, filters: initialF
       <Head title="User Management - Backoffice" />
       <BackofficeLayout user={user} title="User Management" description="Manage registered users">
         <div className="space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <BackButton href="/backoffice" label="Back to Dashboard" />
+            <div className="text-sm text-muted-foreground">
+              {users?.total || 0} total users
+            </div>
+          </div>
+
           {/* Filters */}
           <Card>
             <CardContent className="p-6">

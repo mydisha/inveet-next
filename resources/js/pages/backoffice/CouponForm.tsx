@@ -1,3 +1,4 @@
+import BackButton from '@/components/backoffice/BackButton';
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,8 +13,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Save, Search, X } from 'lucide-react';
+import { Head, useForm } from '@inertiajs/react';
+import { Save, Search, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface Package {
@@ -210,12 +211,7 @@ export default function CouponForm({ user, coupon, packages, users }: CouponForm
       <div className="h-full flex flex-col">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6 flex-shrink-0">
-          <Link href="/backoffice/coupons">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Coupons
-            </Button>
-          </Link>
+          <BackButton href="/backoffice/coupons" label="Back to Coupons" variant="ghost" />
           <div>
             <h1 className="text-3xl font-bold text-foreground">{title}</h1>
             <p className="text-muted-foreground">

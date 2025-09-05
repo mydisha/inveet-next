@@ -2,315 +2,126 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Order\StoreOrderRequest;
 use App\Services\OrderService;
-use Illuminate\Http\JsonResponse;
+use App\Services\PackageService;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Inertia\Inertia;
 
-class OrderController extends Controller
+class OrderController extends BaseController
 {
     protected $orderService;
+    protected $packageService;
 
-    public function __construct(OrderService $orderService)
+    public function __construct(OrderService $orderService, PackageService $packageService)
     {
+        parent::__construct(app(\App\Services\AuthService::class));
         $this->orderService = $orderService;
+        $this->packageService = $packageService;
     }
 
     /**
-     * Display a listing of the resource.
+     * Show user's orders
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request)
     {
-        $this->authorize('view-orders');
+        $this->ensureFreshCsrfToken($request);
 
-        $filters = $request->only(['paid_only', 'pending_only', 'void_only']);
-        $orders = $this->orderService->getAll($filters);
+        $user = $this->getUser($request);
+        $orders = $this->orderService->findByUserId($user->id);
 
-        return response()->json([
-            'success' => true,
-            'data' => $orders,
-            'message' => 'Orders retrieved successfully'
-        ]);
+        return $this->renderWithUser('Order/Index', [
+            'orders' => $orders,
+        ], $request);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Show the checkout page
      */
-    public function store(StoreOrderRequest $request): JsonResponse
+    public function checkout(Request $request, $package = null)
     {
-        $this->authorize('create-orders');
+        $user = $this->getUser($request);
 
-        $order = $this->orderService->create($request->validated());
-
-        return response()->json([
-            'success' => true,
-            'data' => $order,
-            'message' => 'Order created successfully'
-        ], Response::HTTP_CREATED);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(int $id): JsonResponse
-    {
-        $this->authorize('view-orders');
-
-        $order = $this->orderService->findById($id);
-
-        if (!$order) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Order not found'
-            ], Response::HTTP_NOT_FOUND);
+        if ($package) {
+            // Show specific package checkout
+            $packageModel = $this->packageService->findById($package);
+            return Inertia::render('Checkout', [
+                'package' => $packageModel,
+                'user' => $this->getUserData($user),
+            ]);
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => $order,
-            'message' => 'Order retrieved successfully'
+        // Show all packages (existing behavior)
+        $packages = $this->packageService->findActivePackages();
+
+        // Calculate discounted prices for each package
+        $packagesWithDiscounts = $packages->map(function ($package) {
+            $package->discounted_price = $package->discounted_price;
+            $package->discount_amount = $package->discount_amount;
+            return $package;
+        });
+
+        return Inertia::render('Checkout', [
+            'user' => $this->getUserData($user),
+            'packages' => $packagesWithDiscounts,
         ]);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Show the checkout payment method selection page
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function checkoutPayment(Request $request)
     {
-        $this->authorize('edit-orders');
+        $packageId = $request->query('package_id');
+        $coupon = $request->query('coupon');
+        $couponDiscount = $request->query('coupon_discount', 0);
+        $user = $this->getUser($request);
 
-        $request->validate([
-            'status' => 'sometimes|string|max:255',
-            'payment_type' => 'sometimes|string|max:255',
-            'payment_url' => 'sometimes|nullable|string|max:500',
-        ]);
-
-        $order = $this->orderService->update($id, $request->validated());
-
-        if (!$order) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Order not found'
-            ], Response::HTTP_NOT_FOUND);
+        if (!$packageId) {
+            return redirect('/checkout');
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => $order,
-            'message' => 'Order updated successfully'
-        ]);
-    }
+        $package = $this->packageService->findById($packageId);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(int $id): JsonResponse
-    {
-        $this->authorize('delete-orders');
-
-        $deleted = $this->orderService->delete($id);
-
-        if (!$deleted) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Order not found'
-            ], Response::HTTP_NOT_FOUND);
+        if (!$package) {
+            return redirect('/checkout');
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Order deleted successfully'
+        // Calculate discounted prices
+        $package->discounted_price = $package->discounted_price;
+        $package->discount_amount = $package->discount_amount;
+
+        return Inertia::render('CheckoutPayment', [
+            'user' => $this->getUserData($user),
+            'package' => $package,
+            'coupon' => $coupon,
+            'coupon_discount' => (float) $couponDiscount,
         ]);
     }
 
     /**
-     * Get orders by user ID
+     * Show the checkout success page
      */
-    public function findByUserId(int $userId): JsonResponse
+    public function checkoutSuccess(Request $request)
     {
-        $orders = $this->orderService->findByUserId($userId);
+        $orderId = $request->query('order_id');
+        $order = null;
 
-        return response()->json([
-            'success' => true,
-            'data' => $orders,
-            'message' => 'User orders retrieved successfully'
-        ]);
-    }
-
-    /**
-     * Get orders by wedding ID
-     */
-    public function findByWeddingId(int $weddingId): JsonResponse
-    {
-        $orders = $this->orderService->findByWeddingId($weddingId);
-
-        return response()->json([
-            'success' => true,
-            'data' => $orders,
-            'message' => 'Wedding orders retrieved successfully'
-        ]);
-    }
-
-    /**
-     * Get order by invoice number
-     */
-    public function findByInvoiceNumber(string $invoiceNumber): JsonResponse
-    {
-        $order = $this->orderService->findByInvoiceNumber($invoiceNumber);
-
-        if (!$order) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Order not found'
-            ], Response::HTTP_NOT_FOUND);
+        if ($orderId) {
+            try {
+                $order = $this->orderService->findById($orderId);
+                if ($order) {
+                    // Load package relationship
+                    $order->load('package');
+                }
+            } catch (\Exception $e) {
+                // Order not found or error occurred
+                $order = null;
+            }
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => $order,
-            'message' => 'Order retrieved successfully'
-        ]);
-    }
-
-    /**
-     * Mark order as paid
-     */
-    public function markAsPaid(Request $request, int $id): JsonResponse
-    {
-        $this->authorize('mark-orders-paid');
-
-        $request->validate([
-            'external_transaction_id' => 'sometimes|string|max:255'
-        ]);
-
-        $marked = $this->orderService->markAsPaid($id, $request->only('external_transaction_id'));
-
-        if (!$marked) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Order not found'
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Order marked as paid successfully'
-        ]);
-    }
-
-    /**
-     * Mark order as void
-     */
-    public function markAsVoid(int $id): JsonResponse
-    {
-        $this->authorize('mark-orders-void');
-
-        $marked = $this->orderService->markAsVoid($id);
-
-        if (!$marked) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Order not found'
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Order marked as void successfully'
-        ]);
-    }
-
-    /**
-     * Update order status
-     */
-    public function updateStatus(Request $request, int $id): JsonResponse
-    {
-        $request->validate([
-            'status' => 'required|string|max:255'
-        ]);
-
-        $updated = $this->orderService->updateStatus($id, $request->status);
-
-        if (!$updated) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Order not found'
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Order status updated successfully'
-        ]);
-    }
-
-    /**
-     * Get orders by package ID
-     */
-    public function findByPackageId(int $packageId): JsonResponse
-    {
-        $orders = $this->orderService->findByPackageId($packageId);
-
-        return response()->json([
-            'success' => true,
-            'data' => $orders,
-            'message' => 'Package orders retrieved successfully'
-        ]);
-    }
-
-    /**
-     * Process payment for an order
-     */
-    public function processPayment(Request $request, int $id): JsonResponse
-    {
-        $this->authorize('process-payments');
-
-        $request->validate([
-            'external_transaction_id' => 'sometimes|string|max:255',
-            'payment_type' => 'sometimes|string|max:255'
-        ]);
-
-        $processed = $this->orderService->processPayment($id, $request->only([
-            'external_transaction_id', 'payment_type'
-        ]));
-
-        if (!$processed) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Order not found or cannot be processed'
-            ], Response::HTTP_BAD_REQUEST);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Payment processed successfully'
-        ]);
-    }
-
-    /**
-     * Cancel an order
-     */
-    public function cancel(Request $request, int $id): JsonResponse
-    {
-        $this->authorize('cancel-orders');
-
-        $request->validate([
-            'reason' => 'sometimes|string|max:500'
-        ]);
-
-        $cancelled = $this->orderService->cancelOrder($id, $request->validated()['reason'] ?? null);
-
-        if (!$cancelled) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Order cannot be cancelled'
-            ], Response::HTTP_BAD_REQUEST);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Order cancelled successfully'
+        return Inertia::render('CheckoutSuccess', [
+            'order' => $order,
+            'order_id' => $orderId,
         ]);
     }
 }

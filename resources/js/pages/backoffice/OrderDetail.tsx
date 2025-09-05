@@ -1,10 +1,10 @@
+import BackButton from '@/components/backoffice/BackButton';
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import {
-    ArrowLeft,
     Calendar,
     CheckCircle,
     CreditCard,
@@ -25,19 +25,19 @@ interface Order {
   status: string;
   created_at: string;
   paid_at?: string;
-  user: {
+  user?: {
     id: number;
     name: string;
     email: string;
   };
-  package: {
+  package?: {
     id: number;
     name: string;
   };
   wedding?: {
     id: number;
     slug: string;
-    theme: {
+    theme?: {
       name: string;
     };
   };
@@ -159,12 +159,7 @@ export default function OrderDetailPage({ user, order }: OrderDetailProps) {
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link href="/backoffice/orders">
-                <Button variant="outline" size="sm">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Orders
-                </Button>
-              </Link>
+              <BackButton href="/backoffice/orders" label="Back to Orders" />
               <div>
                 <h1 className="text-2xl font-bold">Order {order.invoice_number}</h1>
                 <p className="text-gray-500">Order ID: {order.id}</p>
@@ -191,13 +186,13 @@ export default function OrderDetailPage({ user, order }: OrderDetailProps) {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium text-gray-500">Name</label>
-                      <p className="text-lg">{order.user.name}</p>
+                      <p className="text-lg">{order.user?.name || 'N/A'}</p>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-gray-500">Email</label>
                       <p className="text-lg flex items-center">
                         <Mail className="h-4 w-4 mr-2" />
-                        {order.user.email}
+                        {order.user?.email || 'N/A'}
                       </p>
                     </div>
                   </div>
@@ -216,13 +211,13 @@ export default function OrderDetailPage({ user, order }: OrderDetailProps) {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium text-gray-500">Package</label>
-                      <p className="text-lg">{order.package.name}</p>
+                      <p className="text-lg">{order.package?.name || 'N/A'}</p>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-gray-500">Wedding</label>
                       {order.wedding ? (
                         <div>
-                          <p className="text-lg">{order.wedding.theme.name}</p>
+                          <p className="text-lg">{order.wedding.theme?.name || order.wedding.slug || 'Untitled Wedding'}</p>
                           <p className="text-sm text-gray-500">/{order.wedding.slug}</p>
                         </div>
                       ) : (

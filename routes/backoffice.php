@@ -1,103 +1,33 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Backoffice\UserController;
-use App\Http\Controllers\Backoffice\OrderController;
-use App\Http\Controllers\Backoffice\FeedbackController;
-use App\Http\Controllers\Backoffice\ThemeController;
-use App\Http\Controllers\Backoffice\ConfigurationController;
-use App\Http\Controllers\Backoffice\ActivityLogController;
+use App\Http\Controllers\BackofficeController;
 
-/*
-|--------------------------------------------------------------------------
-| Backoffice Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register backoffice routes for your application.
-| These routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "backoffice" middleware group. Make something great!
-|
-*/
+// Backoffice routes (protected with admin access)
+Route::middleware(['auth', 'backoffice'])->prefix('backoffice')->group(function () {
+    // Dashboard routes
+    Route::get('/', [BackofficeController::class, 'dashboard'])->name('backoffice.dashboard');
+    Route::get('/dashboard', [BackofficeController::class, 'dashboard'])->name('backoffice.dashboard.alt');
 
-Route::middleware(['auth:sanctum', 'backoffice'])->prefix('backoffice')->group(function () {
+    // Management routes
+    Route::get('/users', [BackofficeController::class, 'users'])->name('backoffice.users');
+    Route::get('/users/{id}', [BackofficeController::class, 'userDetail'])->name('backoffice.users.detail');
+    Route::get('/users/{id}/edit', [BackofficeController::class, 'userEdit'])->name('backoffice.users.edit');
 
-    // Dashboard/Statistics
-    Route::get('/dashboard', function () {
-        return response()->json([
-            'success' => true,
-            'message' => 'Backoffice dashboard accessed successfully'
-        ]);
-    });
+    Route::get('/orders', [BackofficeController::class, 'orders'])->name('backoffice.orders');
+    Route::get('/orders/{id}', [BackofficeController::class, 'orderDetail'])->name('backoffice.orders.detail');
 
-    // User Management
-    Route::prefix('users')->group(function () {
-        Route::get('/', [UserController::class, 'index']);
-        Route::get('/statistics', [UserController::class, 'statistics']);
-        Route::get('/{user}', [UserController::class, 'show']);
-        Route::put('/{user}', [UserController::class, 'update']);
-        Route::post('/{user}/auto-login', [UserController::class, 'autoLogin']);
-        Route::post('/{user}/activate', [UserController::class, 'activate']);
-        Route::post('/{user}/deactivate', [UserController::class, 'deactivate']);
-    });
+    Route::get('/feedbacks', [BackofficeController::class, 'feedbacks'])->name('backoffice.feedbacks');
+    Route::get('/feedbacks/{id}', [BackofficeController::class, 'feedbackDetail'])->name('backoffice.feedbacks.detail');
 
-    // Order Management
-    Route::prefix('orders')->group(function () {
-        Route::get('/', [OrderController::class, 'index']);
-        Route::get('/statistics', [OrderController::class, 'statistics']);
-        Route::get('/{order}', [OrderController::class, 'show']);
-        Route::put('/{order}', [OrderController::class, 'update']);
-        Route::post('/{order}/mark-paid', [OrderController::class, 'markAsPaid']);
-        Route::post('/{order}/mark-void', [OrderController::class, 'markAsVoid']);
-    });
+    Route::get('/themes', [BackofficeController::class, 'themes'])->name('backoffice.themes');
+    Route::get('/themes/{id}', [BackofficeController::class, 'themeDetail'])->name('backoffice.themes.detail');
+    Route::get('/themes/create', [BackofficeController::class, 'themeCreate'])->name('backoffice.themes.create');
+    Route::get('/themes/{id}/edit', [BackofficeController::class, 'themeEdit'])->name('backoffice.themes.edit');
 
-    // Feedback Management
-    Route::prefix('feedbacks')->group(function () {
-        Route::get('/', [FeedbackController::class, 'index']);
-        Route::get('/statistics', [FeedbackController::class, 'statistics']);
-        Route::get('/{feedback}', [FeedbackController::class, 'show']);
-        Route::put('/{feedback}', [FeedbackController::class, 'update']);
-        Route::post('/{feedback}/toggle-recommendation', [FeedbackController::class, 'toggleRecommendation']);
-        Route::post('/{feedback}/toggle-show-landing', [FeedbackController::class, 'toggleShowOnLanding']);
-        Route::delete('/{feedback}', [FeedbackController::class, 'destroy']);
-    });
+    Route::get('/coupons', [BackofficeController::class, 'coupons'])->name('backoffice.coupons');
 
-    // Theme Management
-    Route::prefix('themes')->group(function () {
-        Route::get('/', [ThemeController::class, 'index']);
-        Route::post('/', [ThemeController::class, 'store']);
-        Route::get('/statistics', [ThemeController::class, 'statistics']);
-        Route::get('/{theme}', [ThemeController::class, 'show']);
-        Route::put('/{theme}', [ThemeController::class, 'update']);
-        Route::post('/{theme}/toggle-active', [ThemeController::class, 'toggleActive']);
-        Route::post('/{theme}/toggle-public', [ThemeController::class, 'togglePublic']);
-        Route::delete('/{theme}', [ThemeController::class, 'destroy']);
-    });
-
-    // Website Configuration
-    Route::prefix('configurations')->group(function () {
-        Route::get('/', [ConfigurationController::class, 'index']);
-        Route::post('/', [ConfigurationController::class, 'store']);
-        Route::get('/groups', [ConfigurationController::class, 'getGroups']);
-        Route::get('/group/{group}', [ConfigurationController::class, 'getByGroup']);
-        Route::get('/website-settings', [ConfigurationController::class, 'getWebsiteSettings']);
-        Route::post('/initialize-defaults', [ConfigurationController::class, 'initializeDefaults']);
-        Route::post('/update-multiple', [ConfigurationController::class, 'updateMultiple']);
-        Route::get('/{configuration}', [ConfigurationController::class, 'show']);
-        Route::put('/{configuration}', [ConfigurationController::class, 'update']);
-        Route::delete('/{configuration}', [ConfigurationController::class, 'destroy']);
-    });
-
-    // Activity Logs
-    Route::prefix('activity-logs')->group(function () {
-        Route::get('/', [ActivityLogController::class, 'index']);
-        Route::get('/filters', [ActivityLogController::class, 'filters']);
-                    Route::get('/statistics', [ActivityLogController::class, 'statistics']);
-            Route::get('/performance', [ActivityLogController::class, 'performance']);
-            Route::get('/categories', [ActivityLogController::class, 'categories']);
-            Route::get('/recent-changes', [ActivityLogController::class, 'recentChanges']);
-        Route::get('/user/{userId}', [ActivityLogController::class, 'userActivities']);
-        Route::get('/model/{modelType}/{modelId}', [ActivityLogController::class, 'modelActivities']);
-        Route::get('/{id}', [ActivityLogController::class, 'show']);
-    });
-
+    Route::get('/configurations', [BackofficeController::class, 'configurations'])->name('backoffice.configurations');
+    Route::get('/configurations/{id}', [BackofficeController::class, 'configurationDetail'])->name('backoffice.configurations.detail');
+    Route::get('/configurations/create', [BackofficeController::class, 'configurationCreate'])->name('backoffice.configurations.create');
 });

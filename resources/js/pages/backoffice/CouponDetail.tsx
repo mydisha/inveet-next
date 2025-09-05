@@ -1,3 +1,4 @@
+import BackButton from '@/components/backoffice/BackButton';
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,9 +11,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import {
-  ArrowLeft,
   Calendar,
   Edit,
   ToggleLeft,
@@ -127,12 +127,7 @@ export default function CouponDetail({ user, coupon, usage_stats, usages }: Coup
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Link href="/backoffice/coupons">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Coupons
-            </Button>
-          </Link>
+          <BackButton href="/backoffice/coupons" label="Back to Coupons" variant="ghost" />
           <div className="flex-1">
             <div className="flex items-center gap-4">
               <h1 className="text-3xl font-bold text-foreground">{coupon.code}</h1>

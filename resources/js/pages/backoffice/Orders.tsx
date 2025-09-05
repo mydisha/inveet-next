@@ -1,3 +1,4 @@
+import BackButton from '@/components/backoffice/BackButton';
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -44,19 +45,19 @@ interface Order {
   payment_type: string;
   created_at: string;
   paid_at: string | null;
-  user: {
+  user?: {
     id: number;
     name: string;
     email: string;
   };
-  package: {
+  package?: {
     id: number;
     name: string;
   };
   wedding: {
     id: number;
-    title: string;
-    theme: {
+    slug: string;
+    theme?: {
       id: number;
       name: string;
     };
@@ -193,9 +194,12 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Orders ({orders.total})</h1>
-            <p className="text-gray-600">Manage and track all orders</p>
+          <div className="flex items-center space-x-4">
+            <BackButton href="/backoffice" label="Back to Dashboard" />
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Orders ({orders.total})</h1>
+              <p className="text-gray-600">Manage and track all orders</p>
+            </div>
           </div>
         </div>
 
@@ -267,17 +271,19 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
                       </TableCell>
                       <TableCell>
                         <div>
-                          <div className="font-medium">{order.user.name}</div>
-                          <div className="text-sm text-gray-500">{order.user.email}</div>
+                          <div className="font-medium">{order.user?.name || 'N/A'}</div>
+                          <div className="text-sm text-gray-500">{order.user?.email || 'N/A'}</div>
                         </div>
                       </TableCell>
-                      <TableCell>{order.package.name}</TableCell>
+                      <TableCell>{order.package?.name || 'N/A'}</TableCell>
                       <TableCell>
                         {order.wedding ? (
                           <div>
-                            <div className="font-medium">{order.wedding.title}</div>
+                            <div className="font-medium">
+                              {order.wedding.slug || 'Untitled Wedding'}
+                            </div>
                             <div className="text-sm text-gray-500">
-                              {order.wedding.theme.name}
+                              {order.wedding.theme?.name || 'N/A'}
                             </div>
                           </div>
                         ) : (

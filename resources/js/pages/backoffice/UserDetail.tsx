@@ -1,9 +1,10 @@
+import BackButton from '@/components/backoffice/BackButton';
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, Calendar, Mail, Phone, ShoppingCart, User, Users } from 'lucide-react';
+import { Head } from '@inertiajs/react';
+import { Calendar, Mail, Phone, ShoppingCart, User, Users } from 'lucide-react';
 
 interface User {
   id: number;
@@ -79,12 +80,7 @@ export default function UserDetailPage({ user, currentUser }: UserDetailProps) {
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link href="/backoffice/users">
-                <Button variant="outline" size="sm">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Users
-                </Button>
-              </Link>
+              <BackButton href="/backoffice/users" label="Back to Users" />
             </div>
             <div className="flex space-x-2">
               <Link href={`/backoffice/users/${user.id}/edit`}>

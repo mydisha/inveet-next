@@ -1,3 +1,4 @@
+import BackButton from '@/components/backoffice/BackButton';
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -340,6 +341,14 @@ export default function ConfigurationsPage({ user }: ConfigurationsPageProps) {
       <Head title="Website Configuration - Backoffice" />
       <BackofficeLayout user={user} title="Website Configuration" description="Manage website settings">
         <div className="space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <BackButton href="/backoffice" label="Back to Dashboard" />
+            <div className="text-sm text-muted-foreground">
+              {configurations.length} configurations
+            </div>
+          </div>
+
           {/* Header Actions */}
           <div className="flex justify-between items-center">
             <div>

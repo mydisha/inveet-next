@@ -36,6 +36,11 @@ class OrderService implements BaseServiceInterface
         return $this->orderRepository->find($id);
     }
 
+    public function findByIdWithRelations(int $id)
+    {
+        return $this->orderRepository->findWithRelations($id);
+    }
+
     public function create(array $data)
     {
         // Generate invoice number if not provided
@@ -69,7 +74,7 @@ class OrderService implements BaseServiceInterface
 
     public function paginate(int $perPage = 15, array $filters = [])
     {
-        return $this->orderRepository->paginate($perPage);
+        return $this->orderRepository->paginateWithRelations($perPage, $filters);
     }
 
     public function findByUserId(int $userId)
@@ -156,7 +161,7 @@ class OrderService implements BaseServiceInterface
         $prefix = 'INV';
         $date = now()->format('Ymd');
         $random = Str::random(6);
-        
+
         return $prefix . $date . $random;
     }
 }
