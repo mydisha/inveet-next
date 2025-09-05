@@ -28,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'spatie.permission' => \App\Http\Middleware\PermissionMiddleware::class,
             'wedding.access' => \App\Http\Middleware\CheckWeddingAccess::class,
             'backoffice' => \App\Http\Middleware\BackofficeAccess::class,
+            'customer' => \App\Http\Middleware\CustomerAccess::class,
             'web-api' => \App\Http\Middleware\WebApiAuth::class,
         ]);
 

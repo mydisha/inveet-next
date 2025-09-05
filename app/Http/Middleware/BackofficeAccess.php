@@ -4,6 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 use Symfony\Component\HttpFoundation\Response;
 
 class BackofficeAccess
@@ -15,22 +17,21 @@ class BackofficeAccess
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthenticated'
-            ], 401);
+        if (!Auth::check()) {
+            return redirect()->route('login');
         }
 
-        $user = auth()->user();
+        $user = Auth::user();
 
         // Check if user has admin or super-admin role
         if (!$user->hasAnyRole(['admin', 'super-admin'])) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Access denied. Admin privileges required.',
-                'error' => 'INSUFFICIENT_PERMISSIONS'
-            ], 403);
+            // If user has customer role, redirect to customer dashboard
+            if ($user->hasRole('customer')) {
+                return redirect()->route('dashboard')->with('info', 'This area is for administrators only. Redirecting you to your dashboard.');
+            }
+
+            // For other roles or no roles, redirect to appropriate dashboard
+            return redirect()->route('dashboard')->with('info', 'Access denied. Redirecting you to your dashboard.');
         }
 
         return $next($request);

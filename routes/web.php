@@ -48,11 +48,20 @@ Route::middleware('guest')->group(function () {
 // Public routes (no auth required)
 Route::get('/', [FrontendController::class, 'landing'])->name('home');
 
-// Dashboard route (protected)
-Route::get('/dashboard', [FrontendController::class, 'dashboard'])->middleware('auth')->name('dashboard');
+// Dashboard route (protected for customers only)
+Route::get('/dashboard', [FrontendController::class, 'dashboard'])->middleware(['auth', 'customer'])->name('dashboard');
 
-// Design selection route (protected)
-Route::get('/design-selection', [FrontendController::class, 'designSelection'])->middleware('auth')->name('design-selection');
+// Design selection route (protected for customers only)
+Route::get('/design-selection', [FrontendController::class, 'designSelection'])->middleware(['auth', 'customer'])->name('design-selection');
+
+// Checkout route (protected for customers only)
+Route::get('/checkout/{package}', [FrontendController::class, 'checkout'])->middleware(['auth', 'customer'])->name('checkout');
+
+// Coupon validation API routes (protected for customers)
+Route::middleware(['auth', 'customer'])->group(function () {
+    Route::post('/api/coupons/validate', [App\Http\Controllers\CouponController::class, 'validate']);
+    Route::get('/api/coupons/available', [App\Http\Controllers\CouponController::class, 'available']);
+});
 
 // Backoffice routes (protected with admin access)
 Route::middleware(['auth', 'backoffice'])->prefix('backoffice')->group(function () {
@@ -63,11 +72,15 @@ Route::middleware(['auth', 'backoffice'])->prefix('backoffice')->group(function 
     Route::get('/orders', [FrontendController::class, 'backofficeOrders'])->name('backoffice.orders');
     Route::get('/orders/{order}', [FrontendController::class, 'backofficeOrderDetail'])->name('backoffice.orders.show');
     Route::get('/feedbacks', [FrontendController::class, 'backofficeFeedbacks'])->name('backoffice.feedbacks');
+    Route::get('/coupons', [FrontendController::class, 'backofficeCoupons'])->name('backoffice.coupons');
+    Route::get('/coupons/create', [FrontendController::class, 'backofficeCouponCreate'])->name('backoffice.coupons.create');
+    Route::get('/coupons/{coupon}', [FrontendController::class, 'backofficeCouponDetail'])->name('backoffice.coupons.show');
+    Route::get('/coupons/{coupon}/edit', [FrontendController::class, 'backofficeCouponEdit'])->name('backoffice.coupons.edit');
     Route::get('/themes', [FrontendController::class, 'backofficeThemes'])->name('backoffice.themes');
     Route::get('/configurations', [FrontendController::class, 'backofficeConfigurations'])->name('backoffice.configurations');
 
-    // API routes for backoffice (using web authentication)
-    Route::prefix('api')->group(function () {
+    // API routes for backoffice (using web authentication with CSRF protection)
+    Route::prefix('api')->middleware('csrf')->group(function () {
         Route::get('/users/statistics', [FrontendController::class, 'backofficeUsersStatistics']);
         Route::get('/orders/statistics', [FrontendController::class, 'backofficeOrdersStatistics']);
         Route::get('/feedbacks/statistics', [FrontendController::class, 'backofficeFeedbacksStatistics']);
@@ -84,6 +97,22 @@ Route::middleware(['auth', 'backoffice'])->prefix('backoffice')->group(function 
         Route::post('/themes/{theme}/toggle-active', [FrontendController::class, 'backofficeThemesToggleActive']);
         Route::post('/themes/{theme}/toggle-public', [FrontendController::class, 'backofficeThemesTogglePublic']);
         Route::delete('/themes/{theme}', [FrontendController::class, 'backofficeThemesDestroy']);
+
+        // Feedbacks API routes
+        Route::get('/feedbacks', [FrontendController::class, 'backofficeFeedbacksApi']);
+        Route::post('/feedbacks/{feedback}/toggle-recommendation', [FrontendController::class, 'backofficeFeedbacksToggleRecommendation']);
+        Route::post('/feedbacks/{feedback}/toggle-show-landing', [FrontendController::class, 'backofficeFeedbacksToggleShowLanding']);
+        Route::delete('/feedbacks/{feedback}', [FrontendController::class, 'backofficeFeedbacksDestroy']);
+
+        // Coupons API routes
+        Route::get('/coupons', [FrontendController::class, 'backofficeCouponsApi']);
+        Route::post('/coupons', [FrontendController::class, 'backofficeCouponsStore']);
+        Route::get('/coupons/{coupon}', [FrontendController::class, 'backofficeCouponsShow']);
+        Route::put('/coupons/{coupon}', [FrontendController::class, 'backofficeCouponsUpdate']);
+        Route::post('/coupons/{coupon}/toggle-active', [FrontendController::class, 'backofficeCouponsToggleActive']);
+        Route::delete('/coupons/{coupon}', [FrontendController::class, 'backofficeCouponsDestroy']);
+        Route::get('/coupons/{coupon}/usage-stats', [FrontendController::class, 'backofficeCouponsUsageStats']);
+        Route::get('/coupons/{coupon}/usages', [FrontendController::class, 'backofficeCouponsUsages']);
     });
 });
 
@@ -94,8 +123,8 @@ Route::get('/dashboard-simple', function () {
     ]);
 });
 
-// Protected routes (require authentication)
-Route::middleware('auth')->group(function () {
+// Protected routes (require authentication and customer role)
+Route::middleware(['auth', 'customer'])->group(function () {
     // Onboarding routes (no wedding required)
     Route::get('/onboarding', [FrontendController::class, 'onboarding'])->name('onboarding');
     Route::get('/onboarding/couple-info', [FrontendController::class, 'coupleInfo'])->name('onboarding.couple-info');
@@ -106,6 +135,9 @@ Route::middleware('auth')->group(function () {
 
     // Profile routes (no wedding required)
     Route::get('/profile', [FrontendController::class, 'profile'])->name('profile');
+    Route::get('/profile/edit', [App\Http\Controllers\Profile\EditProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile/preferences', [App\Http\Controllers\Profile\PreferencesController::class, 'edit'])->name('profile.preferences');
+    Route::patch('/profile/preferences', [App\Http\Controllers\Profile\PreferencesController::class, 'update'])->name('profile.preferences.update');
 
     // Routes that require wedding access
     Route::middleware('wedding.access')->group(function () {

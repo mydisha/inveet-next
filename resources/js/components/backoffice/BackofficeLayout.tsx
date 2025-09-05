@@ -13,10 +13,11 @@ interface BackofficeLayoutProps {
     }>;
   } | null;
   children: React.ReactNode;
-  currentPath?: string;
+  title?: string;
+  description?: string;
 }
 
-export default function BackofficeLayout({ user, children, currentPath = '/backoffice' }: BackofficeLayoutProps) {
+export default function BackofficeLayout({ user, children, title, description }: BackofficeLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -35,7 +36,6 @@ export default function BackofficeLayout({ user, children, currentPath = '/backo
         user={user}
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
-        currentPath={currentPath}
       />
 
       {/* Main content */}

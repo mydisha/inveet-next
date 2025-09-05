@@ -16,6 +16,10 @@ interface HeaderProps {
     name: string;
     email: string;
     hasWedding: boolean;
+    roles: Array<{
+      id: number;
+      name: string;
+    }>;
   } | null;
   setSidebarOpen: (open: boolean) => void;
 }

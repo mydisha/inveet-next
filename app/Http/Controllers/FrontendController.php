@@ -9,6 +9,29 @@ use Inertia\Inertia;
 class FrontendController extends Controller
 {
     use RefreshesCsrfToken;
+
+    /**
+     * Get standardized user data for views
+     */
+    private function getUserData($user)
+    {
+        if (!$user) {
+            return null;
+        }
+
+        return [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'hasWedding' => $user->hasWedding ?? false,
+            'roles' => $user->roles->map(function ($role) {
+                return [
+                    'id' => $role->id,
+                    'name' => $role->name,
+                ];
+            })->toArray(),
+        ];
+    }
     /**
      * Show the landing page
      */
@@ -60,21 +83,11 @@ class FrontendController extends Controller
         // Get user data if authenticated
         $user = $request->user();
 
-        // Check if user has admin or super-admin role and redirect to backoffice
-        if ($user && $user->hasAnyRole(['admin', 'super-admin'])) {
-            return redirect('/backoffice');
-        }
-
         // Ensure CSRF token is fresh for dashboard
         $this->refreshCsrfToken($request);
 
         return Inertia::render('Dashboard', [
-            'user' => $user ? [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'hasWedding' => $user->hasWedding ?? false,
-            ] : null,
+            'user' => $this->getUserData($user),
         ]);
     }
 
@@ -89,12 +102,7 @@ class FrontendController extends Controller
         $this->refreshCsrfToken($request);
 
         return Inertia::render('onboarding/index', [
-            'user' => $user ? [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'hasWedding' => $user->hasWedding ?? false,
-            ] : null,
+            'user' => $this->getUserData($user),
             'currentStep' => 1,
         ]);
     }
@@ -752,9 +760,24 @@ class FrontendController extends Controller
     /**
      * Show the checkout page
      */
-    public function checkout(Request $request)
+    public function checkout(Request $request, $package = null)
     {
         $user = $request->user();
+
+        if ($package) {
+            // Show specific package checkout
+            $packageModel = \App\Models\Package::findOrFail($package);
+            return Inertia::render('Checkout', [
+                'package' => $packageModel,
+                'user' => $user ? [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                ] : null,
+            ]);
+        }
+
+        // Show all packages (existing behavior)
         $packages = app(\App\Services\PackageService::class)->findActivePackages();
 
         // Calculate discounted prices for each package
@@ -1180,7 +1203,7 @@ class FrontendController extends Controller
                 }),
             ] : null,
             'users' => $users,
-            'filters' => $request->only(['search', 'role', 'status', 'sort_by', 'sort_order', 'per_page'])
+            'filters' => $request->only(['search', 'role', 'status', 'sort_by', 'sort_order', 'per_page']),
         ]);
     }
 
@@ -1212,6 +1235,12 @@ class FrontendController extends Controller
     public function backofficeOrderDetail(Request $request, $order)
     {
         $user = $request->user();
+
+        // SECURITY FIX: Validate order ID parameter
+        if (!is_numeric($order) || $order <= 0) {
+            abort(404, 'Order not found');
+        }
+
         $orderModel = \App\Models\Order::with(['user', 'package', 'wedding.theme'])
             ->findOrFail($order);
 
@@ -1227,7 +1256,7 @@ class FrontendController extends Controller
                     ];
                 }),
             ] : null,
-            'order' => $orderModel
+            'order' => $orderModel,
         ]);
     }
 
@@ -1303,6 +1332,12 @@ class FrontendController extends Controller
     public function backofficeUserDetail(Request $request, $user)
     {
         $currentUser = $request->user();
+
+        // SECURITY FIX: Validate user ID parameter
+        if (!is_numeric($user) || $user <= 0) {
+            abort(404, 'User not found');
+        }
+
         $userModel = \App\Models\User::with(['roles', 'weddings', 'orders', 'feedback'])
             ->withCount(['weddings', 'orders'])
             ->findOrFail($user);
@@ -1329,6 +1364,12 @@ class FrontendController extends Controller
     public function backofficeUserEdit(Request $request, $user)
     {
         $currentUser = $request->user();
+
+        // SECURITY FIX: Validate user ID parameter
+        if (!is_numeric($user) || $user <= 0) {
+            abort(404, 'User not found');
+        }
+
         $userModel = \App\Models\User::with(['roles'])
             ->findOrFail($user);
 
@@ -1423,6 +1464,140 @@ class FrontendController extends Controller
         return response()->json([
             'success' => true,
             'data' => $stats
+        ]);
+    }
+
+    /**
+     * Get feedbacks for backoffice API
+     */
+    public function backofficeFeedbacksApi(Request $request)
+    {
+        $query = \App\Models\Feedback::with('user');
+
+        // Apply filters with SECURITY FIX: Sanitize search input
+        if ($request->has('search') && $request->search) {
+            $search = trim($request->search);
+            // SECURITY FIX: Limit search length and escape special characters
+            if (strlen($search) > 255) {
+                $search = substr($search, 0, 255);
+            }
+            $query->where(function ($q) use ($search) {
+                $q->where('content', 'like', "%{$search}%")
+                  ->orWhere('critics', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($userQuery) use ($search) {
+                      $userQuery->where('name', 'like', "%{$search}%")
+                               ->orWhere('email', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        if ($request->has('score_min') && $request->score_min) {
+            $query->where('score', '>=', $request->score_min);
+        }
+
+        if ($request->has('score_max') && $request->score_max) {
+            $query->where('score', '<=', $request->score_max);
+        }
+
+        if ($request->has('recommended') && $request->recommended !== '') {
+            $query->where('is_recommended', $request->recommended === 'true');
+        }
+
+        if ($request->has('show_on_landing') && $request->show_on_landing !== '') {
+            $query->where('show_on_landing', $request->show_on_landing === 'true');
+        }
+
+        if ($request->has('date_from') && $request->date_from) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->has('date_to') && $request->date_to) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        // Pagination
+        $perPage = $request->get('per_page', 15);
+        $feedbacks = $query->orderBy('created_at', 'desc')->paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'data' => $feedbacks
+        ]);
+    }
+
+    /**
+     * Toggle feedback recommendation
+     */
+    public function backofficeFeedbacksToggleRecommendation(Request $request, $feedback)
+    {
+        // SECURITY FIX: Validate feedback ID parameter
+        if (!is_numeric($feedback) || $feedback <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid feedback ID'
+            ], 400);
+        }
+
+        $feedbackModel = \App\Models\Feedback::findOrFail($feedback);
+        $feedbackModel->is_recommended = !$feedbackModel->is_recommended;
+        $feedbackModel->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Recommendation status updated successfully',
+            'data' => [
+                'id' => $feedbackModel->id,
+                'is_recommended' => $feedbackModel->is_recommended
+            ]
+        ]);
+    }
+
+    /**
+     * Toggle feedback show on landing
+     */
+    public function backofficeFeedbacksToggleShowLanding(Request $request, $feedback)
+    {
+        // SECURITY FIX: Validate feedback ID parameter
+        if (!is_numeric($feedback) || $feedback <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid feedback ID'
+            ], 400);
+        }
+
+        $feedbackModel = \App\Models\Feedback::findOrFail($feedback);
+        $feedbackModel->show_on_landing = !$feedbackModel->show_on_landing;
+        $feedbackModel->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Show on landing status updated successfully',
+            'data' => [
+                'id' => $feedbackModel->id,
+                'show_on_landing' => $feedbackModel->show_on_landing
+            ]
+        ]);
+    }
+
+    /**
+     * Delete feedback
+     */
+    public function backofficeFeedbacksDestroy(Request $request, $feedback)
+    {
+        // SECURITY FIX: Validate feedback ID parameter
+        if (!is_numeric($feedback) || $feedback <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid feedback ID'
+            ], 400);
+        }
+
+        $feedbackModel = \App\Models\Feedback::findOrFail($feedback);
+        $feedbackModel->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Feedback deleted successfully'
         ]);
     }
 
@@ -1630,6 +1805,250 @@ class FrontendController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Theme deleted successfully'
+        ]);
+    }
+
+
+    /**
+     * Coupons API - List coupons
+     */
+    public function backofficeCouponsApi(Request $request)
+    {
+        $couponService = app(\App\Services\CouponService::class);
+        $filters = $request->only(['status', 'type', 'search', 'per_page']);
+        $coupons = $couponService->getAll($filters);
+
+        return response()->json([
+            'success' => true,
+            'data' => $coupons
+        ]);
+    }
+
+    /**
+     * Coupons API - Store coupon
+     */
+    public function backofficeCouponsStore(Request $request)
+    {
+        $couponService = app(\App\Services\CouponService::class);
+
+        try {
+            $coupon = $couponService->create($request->all());
+            return response()->json([
+                'success' => true,
+                'data' => $coupon,
+                'message' => 'Coupon created successfully'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        }
+    }
+
+    /**
+     * Coupons API - Show coupon
+     */
+    public function backofficeCouponsShow($coupon)
+    {
+        $couponService = app(\App\Services\CouponService::class);
+        $couponModel = $couponService->findById($coupon);
+
+        if (!$couponModel) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Coupon not found'
+            ], 404);
+        }
+
+        $usageStats = $couponService->getUsageStats($coupon);
+        $couponModel->usage_stats = $usageStats;
+
+        return response()->json([
+            'success' => true,
+            'data' => $couponModel
+        ]);
+    }
+
+    /**
+     * Coupons API - Update coupon
+     */
+    public function backofficeCouponsUpdate(Request $request, $coupon)
+    {
+        $couponService = app(\App\Services\CouponService::class);
+
+        try {
+            $couponModel = $couponService->update($coupon, $request->all());
+
+            if (!$couponModel) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Coupon not found'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $couponModel,
+                'message' => 'Coupon updated successfully'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        }
+    }
+
+    /**
+     * Coupons API - Toggle active status
+     */
+    public function backofficeCouponsToggleActive($coupon)
+    {
+        $couponService = app(\App\Services\CouponService::class);
+        $result = $couponService->toggleActive($coupon);
+
+        return response()->json($result);
+    }
+
+    /**
+     * Coupons API - Delete coupon
+     */
+    public function backofficeCouponsDestroy($coupon)
+    {
+        $couponService = app(\App\Services\CouponService::class);
+
+        try {
+            $deleted = $couponService->delete($coupon);
+
+            if (!$deleted) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Coupon not found'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Coupon deleted successfully'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'errors' => $e->errors()
+            ], 422);
+        }
+    }
+
+    /**
+     * Coupons API - Get usage statistics
+     */
+    public function backofficeCouponsUsageStats($coupon)
+    {
+        $couponService = app(\App\Services\CouponService::class);
+        $stats = $couponService->getUsageStats($coupon);
+
+        if (empty($stats)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Coupon not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $stats
+        ]);
+    }
+
+    /**
+     * Coupons API - Get usage history
+     */
+    public function backofficeCouponsUsages($coupon)
+    {
+        $couponModel = \App\Models\Coupon::findOrFail($coupon);
+        $usages = $couponModel->usages()
+            ->with(['user', 'order'])
+            ->orderBy('used_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $usages
+        ]);
+    }
+
+    /**
+     * Coupons API - Show coupons page
+     */
+    public function backofficeCoupons(Request $request)
+    {
+        $couponService = app(\App\Services\CouponService::class);
+        $filters = $request->only(['status', 'type', 'search', 'per_page']);
+        $coupons = $couponService->getAll($filters);
+
+        return Inertia::render('backoffice/Coupons', [
+            'coupons' => $coupons,
+            'filters' => $filters
+        ]);
+    }
+
+    /**
+     * Coupons API - Show create coupon page
+     */
+    public function backofficeCouponCreate()
+    {
+        $packages = \App\Models\Package::select('id', 'name', 'price')->get();
+        $users = \App\Models\User::select('id', 'name', 'email')->get();
+
+        return Inertia::render('backoffice/CouponForm', [
+            'packages' => $packages,
+            'users' => $users
+        ]);
+    }
+
+    /**
+     * Coupons API - Show coupon detail page
+     */
+    public function backofficeCouponDetail($coupon)
+    {
+        $couponService = app(\App\Services\CouponService::class);
+        $couponModel = $couponService->findById($coupon);
+
+        if (!$couponModel) {
+            abort(404);
+        }
+
+        $usageStats = $couponService->getUsageStats($coupon);
+
+        return Inertia::render('backoffice/CouponDetail', [
+            'coupon' => $couponModel,
+            'usage_stats' => $usageStats
+        ]);
+    }
+
+    /**
+     * Coupons API - Show edit coupon page
+     */
+    public function backofficeCouponEdit($coupon)
+    {
+        $couponService = app(\App\Services\CouponService::class);
+        $couponModel = $couponService->findById($coupon);
+
+        if (!$couponModel) {
+            abort(404);
+        }
+
+        $packages = \App\Models\Package::select('id', 'name', 'price')->get();
+        $users = \App\Models\User::select('id', 'name', 'email')->get();
+
+        return Inertia::render('backoffice/CouponForm', [
+            'coupon' => $couponModel,
+            'packages' => $packages,
+            'users' => $users
         ]);
     }
 }

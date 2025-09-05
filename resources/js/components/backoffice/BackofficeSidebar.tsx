@@ -5,11 +5,12 @@ import {
     Palette,
     Settings,
     ShoppingCart,
+    Tag,
     User,
-    UserCircle,
     Users,
     X
 } from 'lucide-react';
+import { useCurrentPath } from '../../hooks/useCurrentPath';
 import { Button } from '../ui/button';
 
 interface BackofficeSidebarProps {
@@ -24,10 +25,12 @@ interface BackofficeSidebarProps {
   } | null;
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
-  currentPath?: string;
 }
 
-export default function BackofficeSidebar({ user, sidebarOpen, setSidebarOpen, currentPath = '/backoffice' }: BackofficeSidebarProps) {
+export default function BackofficeSidebar({ user, sidebarOpen, setSidebarOpen }: BackofficeSidebarProps) {
+  // Automatically detect current path from browser URL
+  const currentPath = useCurrentPath();
+
   // Helper function to check if user has required role
   const hasRole = (requiredRoles: string[]): boolean => {
     if (!user?.roles) return false;
@@ -51,13 +54,6 @@ export default function BackofficeSidebar({ user, sidebarOpen, setSidebarOpen, c
       permissions: ['view-dashboard']
     },
     {
-      name: 'Profile',
-      href: '/profile',
-      icon: UserCircle,
-      roles: ['super-admin', 'admin', 'moderator'],
-      permissions: ['view-profile']
-    },
-    {
       name: 'Users',
       href: '/backoffice/users',
       icon: Users,
@@ -77,6 +73,13 @@ export default function BackofficeSidebar({ user, sidebarOpen, setSidebarOpen, c
       icon: MessageSquare,
       roles: ['super-admin', 'admin', 'moderator'],
       permissions: ['view-feedbacks']
+    },
+    {
+      name: 'Coupons',
+      href: '/backoffice/coupons',
+      icon: Tag,
+      roles: ['super-admin', 'admin'],
+      permissions: ['view-coupons']
     },
     {
       name: 'Themes',
@@ -137,13 +140,19 @@ export default function BackofficeSidebar({ user, sidebarOpen, setSidebarOpen, c
           <nav className="flex-1 px-4 py-6 space-y-2">
             {navigationItems.map((item) => {
               const Icon = item.icon;
-              // Improved path matching - check if current path starts with the item href
-              // Special handling for settings page mapping
-              let isCurrent = currentPath === item.href ||
-                (item.href !== '/backoffice' && currentPath.startsWith(item.href));
+              // Improved path matching logic
+              let isCurrent = false;
 
-              // Special case: if we're on /settings and the item is /settings (User Settings)
-              if (currentPath === '/settings' && item.href === '/settings') {
+              if (item.href === '/backoffice') {
+                // For dashboard, only match exact path
+                isCurrent = currentPath === '/backoffice';
+              } else {
+                // For other items, match if current path starts with the item href
+                isCurrent = currentPath?.startsWith(item.href) || false;
+              }
+
+              // Special case: if we're on /profile or /settings and the item is /settings (User Settings)
+              if ((currentPath === '/profile' || currentPath === '/settings') && item.href === '/settings') {
                 isCurrent = true;
               }
 

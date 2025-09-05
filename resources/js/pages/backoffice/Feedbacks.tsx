@@ -3,38 +3,38 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui/table';
 import { apiGet } from '@/lib/api';
 import { getCsrfToken } from '@/lib/auth';
 import { Head } from '@inertiajs/react';
 import {
-    Eye,
-    EyeOff,
-    MoreHorizontal,
-    Search,
-    Star,
-    ThumbsUp,
-    Trash2
+  Eye,
+  EyeOff,
+  MoreHorizontal,
+  Search,
+  Star,
+  ThumbsUp,
+  Trash2
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -133,7 +133,7 @@ export default function FeedbacksPage({ user }: FeedbacksPageProps) {
         return;
       }
 
-      const response = await fetch(`/api/backoffice/feedbacks/${feedbackId}/toggle-recommendation`, {
+      const response = await fetch(`/backoffice/api/feedbacks/${feedbackId}/toggle-recommendation`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -160,7 +160,7 @@ export default function FeedbacksPage({ user }: FeedbacksPageProps) {
         return;
       }
 
-      const response = await fetch(`/api/backoffice/feedbacks/${feedbackId}/toggle-show-landing`, {
+      const response = await fetch(`/backoffice/api/feedbacks/${feedbackId}/toggle-show-landing`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -188,7 +188,7 @@ export default function FeedbacksPage({ user }: FeedbacksPageProps) {
           return;
         }
 
-        const response = await fetch(`/api/backoffice/feedbacks/${feedbackId}`, {
+        const response = await fetch(`/backoffice/api/feedbacks/${feedbackId}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',

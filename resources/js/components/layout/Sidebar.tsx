@@ -15,6 +15,10 @@ interface SidebarProps {
     name: string;
     email: string;
     hasWedding: boolean;
+    roles: Array<{
+      id: number;
+      name: string;
+    }>;
   } | null;
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
@@ -22,6 +26,12 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ user, sidebarOpen, setSidebarOpen, currentPath = '/dashboard' }: SidebarProps) {
+  // Helper function to check if user has admin roles
+  const hasAdminRole = () => {
+    if (!user?.roles) return false;
+    return user.roles.some(role => ['super-admin', 'admin', 'moderator'].includes(role.name));
+  };
+
   // Base navigation items that are always visible
   const baseNavigationItems = [
     { name: 'Dashboard', href: '/dashboard', icon: Home, requiresWedding: false },
@@ -34,10 +44,16 @@ export default function Sidebar({ user, sidebarOpen, setSidebarOpen, currentPath
     { name: 'Orders', href: '/orders', icon: FileText, requiresWedding: true },
   ];
 
-  // Filter navigation items based on user's wedding status
+  // Admin navigation items (only show if user has admin role)
+  const adminNavigationItems = [
+    { name: 'Backoffice', href: '/backoffice', icon: User, requiresWedding: false },
+  ];
+
+  // Filter navigation items based on user's wedding status and role
   const navigationItems = [
     ...baseNavigationItems,
-    ...(user?.hasWedding ? weddingNavigationItems : [])
+    ...(user?.hasWedding ? weddingNavigationItems : []),
+    ...(hasAdminRole() ? adminNavigationItems : [])
   ];
 
   return (

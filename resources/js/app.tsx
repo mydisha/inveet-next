@@ -35,6 +35,6 @@ createInertiaApp({
         );
     },
     progress: {
-        color: '#8B5CF6', // Purple color to match Inveet branding
+        color: '#165d99', // Primary blue color to match system design
     },
 });

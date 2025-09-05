@@ -100,20 +100,20 @@ export default function StandardFormLayout({
 
             {/* Clean Form Container */}
       <div className={`mx-auto ${maxWidthClasses[maxWidth]}`}>
-        <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-gray-200 shadow-lg p-6">
+        <div className="bg-card/90 backdrop-blur-sm rounded-xl border border-border shadow-lg p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             {children}
 
             {/* Clean Form Actions */}
             {(onSubmit || onCancel) && (
-              <div className="flex items-center justify-end space-x-3 pt-6 border-t border-gray-200">
+              <div className="flex items-center justify-end space-x-3 pt-6 border-t border-border">
                 {onCancel && (
                   <Button
                     type="button"
                     variant="outline"
                     onClick={onCancel}
                     disabled={isSubmitting}
-                    className="min-w-[100px] bg-white border-gray-200 hover:bg-gray-50"
+                    className="min-w-[100px]"
                   >
                     {cancelLabel}
                   </Button>
@@ -180,7 +180,7 @@ export function StandardInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`bg-white border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm transition-all duration-200 ${className}`}
+        className={`bg-background border border-input focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm transition-all duration-200 ${className}`}
         {...props}
       />
       {error && (
@@ -227,7 +227,7 @@ export function StandardTextarea({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         rows={rows}
-        className={`bg-white border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm resize-none transition-all duration-200 ${className}`}
+        className={`bg-background border border-input focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-sm resize-none transition-all duration-200 ${className}`}
         {...props}
       />
       {error && (

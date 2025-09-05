@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useForm } from '@inertiajs/react';
-import { Building, Calendar, Camera, Clock, Heart, Instagram, Mail, MapPin as MapIcon, MapPin, Navigation, Phone, RotateCw, Search, User, Users, X } from 'lucide-react';
+import { Building, Calendar, Camera, Clock, Heart, Instagram, MapPin as MapIcon, MapPin, Navigation, RotateCw, Search, User, Users, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Cropper from 'react-easy-crop';
 
@@ -70,8 +70,6 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
     // Groom Information
     groom_name: '',
     groom_nickname: '',
-    groom_email: '',
-    groom_phone: '',
     groom_instagram: '',
     groom_father_name: '',
     groom_mother_name: '',
@@ -79,14 +77,11 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
     // Bride Information
     bride_name: '',
     bride_nickname: '',
-    bride_email: '',
-    bride_phone: '',
     bride_instagram: '',
     bride_father_name: '',
     bride_mother_name: '',
 
     // Wedding Information
-    couple_phone: '',
     wedding_date: '',
 
     // Venue Information
@@ -95,7 +90,6 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
     venue_city: '',
     venue_province: '',
     venue_postal_code: '',
-    venue_phone: '',
     ceremony_time: '',
     reception_time: '',
     venue_description: '',
@@ -225,7 +219,6 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
     setData('venue_city', city);
     setData('venue_province', province);
     setData('venue_postal_code', postalCode);
-    setData('venue_phone', place.formatted_phone_number || '');
     setData('venue_latitude', place.geometry?.location?.lat()?.toString() || '');
     setData('venue_longitude', place.geometry?.location?.lng()?.toString() || '');
 
@@ -410,59 +403,7 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
                               )}
                             </div>
 
-                            <div>
-                              <Label htmlFor="groom_email" className="flex items-center mb-2">
-                                <Mail className="w-4 h-4 mr-2" />
-                                Email Address *
-                              </Label>
-                              <Input
-                                id="groom_email"
-                                type="email"
-                                value={data.groom_email}
-                                onChange={(e) => setData('groom_email', e.target.value)}
-                                placeholder="groom@example.com"
-                                className="transition-all duration-300 focus:ring-2 focus:ring-primary/20"
-                              />
-                              {errors.groom_email && (
-                                <p className="text-sm text-destructive mt-1">{errors.groom_email}</p>
-                              )}
-                            </div>
 
-                            <div>
-                              <Label htmlFor="groom_phone" className="flex items-center mb-2">
-                                <Phone className="w-4 h-4 mr-2" />
-                                Phone Number
-                              </Label>
-                              <Input
-                                id="groom_phone"
-                                type="tel"
-                                value={data.groom_phone}
-                                onChange={(e) => setData('groom_phone', e.target.value)}
-                                placeholder="+1 (555) 123-4567"
-                                className="transition-all duration-300 focus:ring-2 focus:ring-primary/20"
-                              />
-                              {errors.groom_phone && (
-                                <p className="text-sm text-destructive mt-1">{errors.groom_phone}</p>
-                              )}
-                            </div>
-
-                            <div>
-                              <Label htmlFor="groom_instagram" className="flex items-center mb-2">
-                                <Instagram className="w-4 h-4 mr-2" />
-                                Instagram
-                              </Label>
-                              <Input
-                                id="groom_instagram"
-                                type="text"
-                                value={data.groom_instagram}
-                                onChange={(e) => setData('groom_instagram', e.target.value)}
-                                placeholder="@groom_username"
-                                className="transition-all duration-300 focus:ring-2 focus:ring-primary/20"
-                              />
-                              {errors.groom_instagram && (
-                                <p className="text-sm text-destructive mt-1">{errors.groom_instagram}</p>
-                              )}
-                            </div>
 
                             <div>
                               <Label htmlFor="groom_father_name" className="flex items-center mb-2">
@@ -497,6 +438,24 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
                               />
                               {errors.groom_mother_name && (
                                 <p className="text-sm text-destructive mt-1">{errors.groom_mother_name}</p>
+                              )}
+                            </div>
+
+                            <div>
+                              <Label htmlFor="groom_instagram" className="flex items-center mb-2">
+                                <Instagram className="w-4 h-4 mr-2" />
+                                Instagram
+                              </Label>
+                              <Input
+                                id="groom_instagram"
+                                type="text"
+                                value={data.groom_instagram}
+                                onChange={(e) => setData('groom_instagram', e.target.value)}
+                                placeholder="@groom_username"
+                                className="transition-all duration-300 focus:ring-2 focus:ring-primary/20"
+                              />
+                              {errors.groom_instagram && (
+                                <p className="text-sm text-destructive mt-1">{errors.groom_instagram}</p>
                               )}
                             </div>
                           </div>
@@ -583,59 +542,7 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
                               )}
                             </div>
 
-                            <div>
-                              <Label htmlFor="bride_email" className="flex items-center mb-2">
-                                <Mail className="w-4 h-4 mr-2" />
-                                Email Address *
-                              </Label>
-                              <Input
-                                id="bride_email"
-                                type="email"
-                                value={data.bride_email}
-                                onChange={(e) => setData('bride_email', e.target.value)}
-                                placeholder="bride@example.com"
-                                className="transition-all duration-300 focus:ring-2 focus:ring-primary/20"
-                              />
-                              {errors.bride_email && (
-                                <p className="text-sm text-destructive mt-1">{errors.bride_email}</p>
-                              )}
-                            </div>
 
-                            <div>
-                              <Label htmlFor="bride_phone" className="flex items-center mb-2">
-                                <Phone className="w-4 h-4 mr-2" />
-                                Phone Number
-                              </Label>
-                              <Input
-                                id="bride_phone"
-                                type="tel"
-                                value={data.bride_phone}
-                                onChange={(e) => setData('bride_phone', e.target.value)}
-                                placeholder="+1 (555) 123-4567"
-                                className="transition-all duration-300 focus:ring-2 focus:ring-primary/20"
-                              />
-                              {errors.bride_phone && (
-                                <p className="text-sm text-destructive mt-1">{errors.bride_phone}</p>
-                              )}
-                            </div>
-
-                            <div>
-                              <Label htmlFor="bride_instagram" className="flex items-center mb-2">
-                                <Instagram className="w-4 h-4 mr-2" />
-                                Instagram
-                              </Label>
-                              <Input
-                                id="bride_instagram"
-                                type="text"
-                                value={data.bride_instagram}
-                                onChange={(e) => setData('bride_instagram', e.target.value)}
-                                placeholder="@bride_username"
-                                className="transition-all duration-300 focus:ring-2 focus:ring-primary/20"
-                              />
-                              {errors.bride_instagram && (
-                                <p className="text-sm text-destructive mt-1">{errors.bride_instagram}</p>
-                              )}
-                            </div>
 
                             <div>
                               <Label htmlFor="bride_father_name" className="flex items-center mb-2">
@@ -672,6 +579,24 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
                                 <p className="text-sm text-destructive mt-1">{errors.bride_mother_name}</p>
                               )}
                             </div>
+
+                            <div>
+                              <Label htmlFor="bride_instagram" className="flex items-center mb-2">
+                                <Instagram className="w-4 h-4 mr-2" />
+                                Instagram
+                              </Label>
+                              <Input
+                                id="bride_instagram"
+                                type="text"
+                                value={data.bride_instagram}
+                                onChange={(e) => setData('bride_instagram', e.target.value)}
+                                placeholder="@bride_username"
+                                className="transition-all duration-300 focus:ring-2 focus:ring-primary/20"
+                              />
+                              {errors.bride_instagram && (
+                                <p className="text-sm text-destructive mt-1">{errors.bride_instagram}</p>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -699,23 +624,6 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
                         )}
                       </div>
 
-                      <div>
-                        <Label htmlFor="couple_phone" className="flex items-center mb-2">
-                          <Phone className="w-4 h-4 mr-2" />
-                          Couple Contact Phone
-                        </Label>
-                        <Input
-                          id="couple_phone"
-                          type="tel"
-                          value={data.couple_phone}
-                          onChange={(e) => setData('couple_phone', e.target.value)}
-                          placeholder="+1 (555) 123-4567"
-                          className="transition-all duration-300 focus:ring-2 focus:ring-primary/20"
-                        />
-                        {errors.couple_phone && (
-                          <p className="text-sm text-destructive mt-1">{errors.couple_phone}</p>
-                        )}
-                      </div>
                     </div>
                   </div>
                 )}
@@ -746,23 +654,6 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
                           )}
                         </div>
 
-                        <div>
-                          <Label htmlFor="couple_phone" className="flex items-center mb-2">
-                            <Phone className="w-4 h-4 mr-2" />
-                            Contact Phone Number
-                          </Label>
-                          <Input
-                            id="couple_phone"
-                            type="tel"
-                            value={data.couple_phone}
-                            onChange={(e) => setData('couple_phone', e.target.value)}
-                            placeholder="+1 (555) 123-4567"
-                            className="transition-all duration-300 focus:ring-2 focus:ring-primary/20"
-                          />
-                          {errors.couple_phone && (
-                            <p className="text-sm text-destructive mt-1">{errors.couple_phone}</p>
-                          )}
-                        </div>
                       </div>
                     </div>
 
@@ -916,20 +807,6 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
                             />
                           </div>
 
-                          <div>
-                            <Label htmlFor="venue_phone" className="flex items-center mb-2">
-                              <Phone className="w-4 h-4 mr-2" />
-                              Phone Number
-                            </Label>
-                            <Input
-                              id="venue_phone"
-                              type="tel"
-                              value={data.venue_phone}
-                              onChange={(e) => setData('venue_phone', e.target.value)}
-                              placeholder="+62 123 456 7890"
-                              className="transition-all duration-300 focus:ring-2 focus:ring-primary/20"
-                            />
-                          </div>
                         </div>
 
                         <div>

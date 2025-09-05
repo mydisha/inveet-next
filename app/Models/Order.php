@@ -20,9 +20,13 @@ class Order extends Model
         'user_id',
         'package_id',
         'wedding_id',
+        'coupon_id',
         'invoice_number',
         'total_price',
         'unique_price',
+        'discount_amount',
+        'subtotal',
+        'coupon_code',
         'payment_type',
         'is_paid',
         'paid_at',
@@ -44,6 +48,8 @@ class Order extends Model
     protected $casts = [
         'total_price' => 'integer',
         'unique_price' => 'integer',
+        'discount_amount' => 'integer',
+        'subtotal' => 'integer',
         'is_paid' => 'boolean',
         'paid_at' => 'datetime',
         'expired_at' => 'datetime',
@@ -104,6 +110,22 @@ class Order extends Model
     public function walletTransactions()
     {
         return $this->hasMany(WalletTransaction::class);
+    }
+
+    /**
+     * Get the coupon used for the order.
+     */
+    public function coupon()
+    {
+        return $this->belongsTo(Coupon::class);
+    }
+
+    /**
+     * Get the coupon usage record for this order.
+     */
+    public function couponUsage()
+    {
+        return $this->hasOne(CouponUsage::class);
     }
 
     /**
@@ -173,11 +195,40 @@ class Order extends Model
     }
 
     /**
-     * Get the final price (total + unique).
+     * Get the final price (total + unique - discount).
      */
     public function getFinalPriceAttribute(): int
     {
-        return $this->total_price + $this->unique_price;
+        $subtotal = $this->subtotal ?? ($this->total_price + $this->unique_price);
+        return $subtotal - $this->discount_amount;
+    }
+
+    /**
+     * Get the subtotal (total + unique before discount).
+     */
+    public function getSubtotalAttribute(): int
+    {
+        return $this->subtotal ?? ($this->total_price + $this->unique_price);
+    }
+
+    /**
+     * Check if the order has a discount applied.
+     */
+    public function hasDiscount(): bool
+    {
+        return $this->discount_amount > 0;
+    }
+
+    /**
+     * Get the discount percentage.
+     */
+    public function getDiscountPercentageAttribute(): float
+    {
+        if (!$this->hasDiscount() || !$this->subtotal) {
+            return 0;
+        }
+
+        return ($this->discount_amount / $this->subtotal) * 100;
     }
 
     /**

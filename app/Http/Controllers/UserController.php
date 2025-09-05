@@ -149,9 +149,17 @@ class UserController extends Controller
      */
     public function updateProfile(UpdateUserRequest $request): JsonResponse
     {
-        // For now, we'll require the user ID to be passed in the request
-        // In a real application, you'd get this from the authenticated user
-        $userId = $request->input('user_id', 1);
+        // Get the authenticated user's ID - SECURITY FIX: Use authenticated user instead of request input
+        $userId = $request->user()->id;
+
+        // SECURITY FIX: Verify user can only update their own profile
+        if ($request->has('user_id') && $request->input('user_id') != $userId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized: You can only update your own profile'
+            ], 403);
+        }
+
         $user = $this->userService->updateProfile($userId, $request->validated());
 
         return response()->json([

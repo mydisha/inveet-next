@@ -28,6 +28,22 @@ class User extends Authenticatable
         'phone_number',
         'is_active',
         'user_uuid',
+        'language',
+        'theme',
+        'email_notifications',
+        'marketing_emails',
+    ];
+
+    /**
+     * The attributes that should be guarded from mass assignment.
+     *
+     * @var array<int, string>
+     */
+    protected $guarded = [
+        'id',
+        'created_at',
+        'updated_at',
+        'email_verified_at',
     ];
 
     /**
@@ -49,6 +65,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'is_active' => 'boolean',
+        'email_notifications' => 'boolean',
+        'marketing_emails' => 'boolean',
     ];
 
     /**
