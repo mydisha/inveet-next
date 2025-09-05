@@ -1,6 +1,12 @@
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -21,6 +27,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import {
     CheckCircle,
     Eye,
+    MoreHorizontal,
     Search,
     XCircle,
 } from 'lucide-react';
@@ -34,6 +41,7 @@ interface Order {
   status: string;
   is_paid: boolean;
   is_void: boolean;
+  payment_type: string;
   created_at: string;
   paid_at: string | null;
   user: {
@@ -91,12 +99,10 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('id-ID', {
+    return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
-      month: 'short',
+      month: 'numeric',
       day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
     });
   };
 
@@ -104,7 +110,6 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
     if (order.is_void) {
       return (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-          <XCircle className="w-3 h-3 mr-1" />
           Void
         </span>
       );
@@ -113,7 +118,6 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
     if (order.is_paid) {
       return (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-          <CheckCircle className="w-3 h-3 mr-1" />
           Paid
         </span>
       );
@@ -122,6 +126,14 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
     return (
       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
         Pending
+      </span>
+    );
+  };
+
+  const getPaymentTypeBadge = (paymentType: string) => {
+    return (
+      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+        {paymentType}
       </span>
     );
   };
@@ -137,16 +149,6 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
       preserveState: true,
       preserveScroll: true,
     });
-  };
-
-  const handleFilterChange = (filterType: string, value: string) => {
-    if (filterType === 'status') {
-      setStatusFilter(value);
-    } else if (filterType === 'date_from') {
-      setDateFrom(value);
-    } else if (filterType === 'date_to') {
-      setDateTo(value);
-    }
   };
 
   const handleMarkAsPaid = (orderId: number) => {
@@ -192,22 +194,16 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Orders</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Orders ({orders.total})</h1>
             <p className="text-gray-600">Manage and track all orders</p>
           </div>
         </div>
 
-        {/* Filters */}
+        {/* Simple Search and Filters */}
         <Card>
-          <CardHeader>
-            <CardTitle>Filters</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Search
-                </label>
+          <CardContent className="p-6">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
@@ -219,16 +215,12 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
                   />
                 </div>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
-                </label>
+              <div className="flex gap-2">
                 <Select
                   value={statusFilter}
-                  onValueChange={(value) => handleFilterChange('status', value)}
+                  onValueChange={(value) => setStatusFilter(value)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-40">
                     <SelectValue placeholder="All statuses" />
                   </SelectTrigger>
                   <SelectContent>
@@ -238,46 +230,18 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
                     <SelectItem value="void">Void</SelectItem>
                   </SelectContent>
                 </Select>
+                <Button onClick={handleSearch} className="w-full sm:w-auto">
+                  <Search className="w-4 h-4 mr-2" />
+                  Search
+                </Button>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Date From
-                </label>
-                <Input
-                  type="date"
-                  value={dateFrom}
-                  onChange={(e) => handleFilterChange('date_from', e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Date To
-                </label>
-                <Input
-                  type="date"
-                  value={dateTo}
-                  onChange={(e) => handleFilterChange('date_to', e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="mt-4">
-              <Button onClick={handleSearch} className="w-full md:w-auto">
-                <Search className="w-4 h-4 mr-2" />
-                Search Orders
-              </Button>
             </div>
           </CardContent>
         </Card>
 
         {/* Orders Table */}
         <Card>
-          <CardHeader>
-            <CardTitle>Orders ({orders.total})</CardTitle>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="p-0">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -287,16 +251,19 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
                     <TableHead>Package</TableHead>
                     <TableHead>Wedding</TableHead>
                     <TableHead>Amount</TableHead>
+                    <TableHead>Payment Type</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Date</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead className="w-12"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {orders.data.map((order) => (
                     <TableRow key={order.id}>
                       <TableCell className="font-medium">
-                        {order.invoice_number}
+                        <div className="max-w-xs truncate">
+                          {order.invoice_number}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div>
@@ -320,6 +287,9 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
                       <TableCell className="font-medium">
                         {formatCurrency(order.total_price)}
                       </TableCell>
+                      <TableCell>
+                        {getPaymentTypeBadge(order.payment_type)}
+                      </TableCell>
                       <TableCell>{getStatusBadge(order)}</TableCell>
                       <TableCell>
                         <div>
@@ -334,36 +304,36 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <Link href={`/backoffice/orders/${order.id}`}>
-                            <Button variant="outline" size="sm">
-                              <Eye className="w-4 h-4 mr-1" />
-                              View
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <MoreHorizontal className="h-4 w-4" />
                             </Button>
-                          </Link>
-                          {!order.is_paid && !order.is_void && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleMarkAsPaid(order.id)}
-                              className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                            >
-                              <CheckCircle className="w-4 h-4 mr-1" />
-                              Mark Paid
-                            </Button>
-                          )}
-                          {!order.is_void && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleMarkAsVoid(order.id)}
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                            >
-                              <XCircle className="w-4 h-4 mr-1" />
-                              Mark Void
-                            </Button>
-                          )}
-                        </div>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                              <Link href={`/backoffice/orders/${order.id}`}>
+                                <Eye className="w-4 h-4 mr-2" />
+                                View Details
+                              </Link>
+                            </DropdownMenuItem>
+                            {!order.is_paid && !order.is_void && (
+                              <DropdownMenuItem onClick={() => handleMarkAsPaid(order.id)}>
+                                <CheckCircle className="w-4 h-4 mr-2" />
+                                Mark as Paid
+                              </DropdownMenuItem>
+                            )}
+                            {!order.is_void && (
+                              <DropdownMenuItem
+                                onClick={() => handleMarkAsVoid(order.id)}
+                                className="text-red-600"
+                              >
+                                <XCircle className="w-4 h-4 mr-2" />
+                                Mark as Void
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -373,7 +343,7 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
 
             {/* Pagination */}
             {orders.last_page > 1 && (
-              <div className="flex items-center justify-between mt-4">
+              <div className="flex items-center justify-between px-6 py-4 border-t">
                 <div className="text-sm text-gray-500">
                   Showing {orders.from} to {orders.to} of {orders.total} results
                 </div>

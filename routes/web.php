@@ -66,6 +66,7 @@ Route::middleware(['auth', 'customer'])->group(function () {
 // Backoffice routes (protected with admin access)
 Route::middleware(['auth', 'backoffice'])->prefix('backoffice')->group(function () {
     Route::get('/', [FrontendController::class, 'backofficeDashboard'])->name('backoffice.dashboard');
+    Route::get('/dashboard', [FrontendController::class, 'backofficeDashboard'])->name('backoffice.dashboard.alt');
     Route::get('/users', [FrontendController::class, 'backofficeUsers'])->name('backoffice.users');
     Route::get('/users/{user}', [FrontendController::class, 'backofficeUserDetail'])->name('backoffice.users.show');
     Route::get('/users/{user}/edit', [FrontendController::class, 'backofficeUserEdit'])->name('backoffice.users.edit');
@@ -126,6 +127,16 @@ Route::get('/dashboard-simple', function () {
         'user' => null
     ]);
 });
+
+// Debug route for backoffice
+Route::get('/backoffice-debug', function () {
+    return response()->json([
+        'auth' => auth()->check(),
+        'user' => auth()->user(),
+        'roles' => auth()->user() ? auth()->user()->roles->pluck('name') : null,
+        'middleware' => 'working'
+    ]);
+})->middleware(['auth', 'backoffice']);
 
 // Profile routes (accessible by all authenticated users)
 Route::middleware(['auth'])->group(function () {

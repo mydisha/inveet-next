@@ -1125,81 +1125,144 @@ class FrontendController extends Controller
     }
 
     /**
-     * Show the backoffice dashboard
+     * Show the backoffice dashboard with Wayfinder pattern
      */
     public function backofficeDashboard(Request $request)
     {
         $user = $request->user();
 
-        // Get all statistics data
-        $userStats = [
-            'total_users' => \App\Models\User::count(),
-            'active_users' => \App\Models\User::where('is_active', true)->count(),
-            'inactive_users' => \App\Models\User::where('is_active', false)->count(),
-            'users_with_weddings' => \App\Models\User::has('weddings')->count(),
-            'users_with_orders' => \App\Models\User::has('orders')->count(),
-            'new_users_this_month' => \App\Models\User::whereMonth('created_at', now()->month)->count(),
-            'new_users_this_week' => \App\Models\User::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
-        ];
+        // Check if this is a reload request (for background data loading)
+        if ($request->has('reload') && $request->get('reload') === 'true') {
+            // Get all statistics data for reload
+            $userStats = [
+                'total_users' => \App\Models\User::count(),
+                'active_users' => \App\Models\User::where('is_active', true)->count(),
+                'inactive_users' => \App\Models\User::where('is_active', false)->count(),
+                'users_with_weddings' => \App\Models\User::has('weddings')->count(),
+                'users_with_orders' => \App\Models\User::has('orders')->count(),
+                'new_users_this_month' => \App\Models\User::whereMonth('created_at', now()->month)->count(),
+                'new_users_this_week' => \App\Models\User::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
+            ];
 
-        $orderStats = [
-            'total_orders' => \App\Models\Order::count(),
-            'paid_orders' => \App\Models\Order::where('status', 'paid')->count(),
-            'pending_orders' => \App\Models\Order::where('status', 'pending')->count(),
-            'void_orders' => \App\Models\Order::where('status', 'void')->count(),
-            'total_revenue' => \App\Models\Order::where('status', 'paid')->sum('total_price'),
-            'unique_revenue' => \App\Models\Order::where('status', 'paid')->distinct('user_id')->sum('total_price'),
-            'orders_this_month' => \App\Models\Order::whereMonth('created_at', now()->month)->count(),
-            'revenue_this_month' => \App\Models\Order::where('status', 'paid')->whereMonth('created_at', now()->month)->sum('total_price'),
-        ];
+            $orderStats = [
+                'total_orders' => \App\Models\Order::where(function ($q) {
+                    $q->where('payment_type', '!=', 'promo')
+                      ->where('payment_type', '!=', 'free')
+                      ->where('total_price', '>', 0);
+                })->count(),
+                'paid_orders' => \App\Models\Order::where('is_paid', true)
+                    ->where(function ($q) {
+                        $q->where('payment_type', '!=', 'promo')
+                          ->where('payment_type', '!=', 'free')
+                          ->where('total_price', '>', 0);
+                    })->count(),
+                'pending_orders' => \App\Models\Order::where('is_paid', false)->where('is_void', false)
+                    ->where(function ($q) {
+                        $q->where('payment_type', '!=', 'promo')
+                          ->where('payment_type', '!=', 'free')
+                          ->where('total_price', '>', 0);
+                    })->count(),
+                'void_orders' => \App\Models\Order::where('is_void', true)
+                    ->where(function ($q) {
+                        $q->where('payment_type', '!=', 'promo')
+                          ->where('payment_type', '!=', 'free')
+                          ->where('total_price', '>', 0);
+                    })->count(),
+                'total_revenue' => \App\Models\Order::where('is_paid', true)
+                    ->where(function ($q) {
+                        $q->where('payment_type', '!=', 'promo')
+                          ->where('payment_type', '!=', 'free')
+                          ->where('total_price', '>', 0);
+                    })->sum('total_price'),
+                'unique_revenue' => \App\Models\Order::where('is_paid', true)
+                    ->where(function ($q) {
+                        $q->where('payment_type', '!=', 'promo')
+                          ->where('payment_type', '!=', 'free')
+                          ->where('total_price', '>', 0);
+                    })->distinct('user_id')->sum('total_price'),
+                'orders_this_month' => \App\Models\Order::whereMonth('created_at', now()->month)
+                    ->where(function ($q) {
+                        $q->where('payment_type', '!=', 'promo')
+                          ->where('payment_type', '!=', 'free')
+                          ->where('total_price', '>', 0);
+                    })->count(),
+                'revenue_this_month' => \App\Models\Order::where('is_paid', true)
+                    ->whereMonth('created_at', now()->month)
+                    ->where(function ($q) {
+                        $q->where('payment_type', '!=', 'promo')
+                          ->where('payment_type', '!=', 'free')
+                          ->where('total_price', '>', 0);
+                    })->sum('total_price'),
+            ];
 
-        $feedbackStats = [
-            'total_feedbacks' => \App\Models\Feedback::count(),
-            'average_score' => \App\Models\Feedback::avg('score') ?? 0,
-            'recommended_feedbacks' => \App\Models\Feedback::where('is_recommended', true)->count(),
-            'show_on_landing_feedbacks' => \App\Models\Feedback::where('show_on_landing', true)->count(),
-            'feedbacks_this_month' => \App\Models\Feedback::whereMonth('created_at', now()->month)->count(),
-        ];
+            $feedbackStats = [
+                'total_feedbacks' => \App\Models\Feedback::count(),
+                'average_score' => \App\Models\Feedback::avg('score') ?? 0,
+                'recommended_feedbacks' => \App\Models\Feedback::where('is_recommended', true)->count(),
+                'show_on_landing_feedbacks' => \App\Models\Feedback::where('show_on_landing', true)->count(),
+                'feedbacks_this_month' => \App\Models\Feedback::whereMonth('created_at', now()->month)->count(),
+            ];
 
-        $themeStats = [
-            'total_themes' => \App\Models\Theme::count(),
-            'active_themes' => \App\Models\Theme::where('is_active', true)->count(),
-            'public_themes' => \App\Models\Theme::where('is_public', true)->count(),
-            'themes_this_month' => \App\Models\Theme::whereMonth('created_at', now()->month)->count(),
-        ];
+            $themeStats = [
+                'total_themes' => \App\Models\Theme::count(),
+                'active_themes' => \App\Models\Theme::where('is_active', true)->count(),
+                'public_themes' => \App\Models\Theme::where('is_public', true)->count(),
+                'themes_this_month' => \App\Models\Theme::whereMonth('created_at', now()->month)->count(),
+            ];
 
-        // Get recent activity logs
-        $activities = \App\Models\ActivityLog::with(['causer', 'subject'])
-            ->orderBy('created_at', 'desc')
-            ->limit(10)
-            ->get()
-            ->map(function ($log) {
-                return [
-                    'id' => $log->id,
-                    'log_name' => $log->log_name,
-                    'event' => $log->event,
-                    'description' => $log->description,
-                    'event_label' => $log->event_label,
-                    'event_color' => $log->event_color,
-                    'log_name_label' => $log->log_name_label,
-                    'created_at' => $log->created_at->toISOString(),
-                    'created_at_human' => $log->created_at->diffForHumans(),
-                    'created_at_formatted' => $log->created_at->format('M d, Y H:i:s'),
-                    'causer' => $log->causer ? [
-                        'id' => $log->causer->id,
-                        'name' => $log->causer->name,
-                        'email' => $log->causer->email,
-                    ] : null,
-                    'subject' => $log->subject ? [
-                        'id' => $log->subject->id,
-                        'name' => $log->subject->name ?? $log->subject->title ?? 'Unknown',
-                    ] : null,
-                    'has_changes' => isset($log->properties['changes']),
-                    'changed_fields' => $log->properties['changed_fields'] ?? [],
-                    'change_summary' => $log->properties['change_summary'] ?? [],
-                ];
-            });
+            // Get recent activity logs
+            $activities = \App\Models\ActivityLog::with(['causer', 'subject'])
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
+                ->get()
+                ->map(function ($log) {
+                    return [
+                        'id' => $log->id,
+                        'log_name' => $log->log_name,
+                        'event' => $log->event,
+                        'description' => $log->description,
+                        'event_label' => $log->event_label,
+                        'event_color' => $log->event_color,
+                        'log_name_label' => $log->log_name_label,
+                        'created_at' => $log->created_at->toISOString(),
+                        'created_at_human' => $log->created_at->diffForHumans(),
+                        'created_at_formatted' => $log->created_at->format('M d, Y H:i:s'),
+                        'causer' => $log->causer ? [
+                            'id' => $log->causer->id,
+                            'name' => $log->causer->name,
+                            'email' => $log->causer->email,
+                        ] : null,
+                        'subject' => $log->subject ? [
+                            'id' => $log->subject->id,
+                            'name' => $log->subject->name ?? $log->subject->title ?? 'Unknown',
+                        ] : null,
+                        'has_changes' => isset($log->properties['changes']),
+                        'changed_fields' => $log->properties['changed_fields'] ?? [],
+                        'change_summary' => $log->properties['change_summary'] ?? [],
+                    ];
+                });
 
+            return Inertia::render('backoffice/Dashboard', [
+                'user' => $user ? [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'roles' => $user->roles->map(function ($role) {
+                        return [
+                            'id' => $role->id,
+                            'name' => $role->name,
+                        ];
+                    }),
+                ] : null,
+                'userStats' => $userStats,
+                'orderStats' => $orderStats,
+                'feedbackStats' => $feedbackStats,
+                'themeStats' => $themeStats,
+                'activities' => $activities,
+            ]);
+        }
+
+        // Initial page load - return minimal data for fast rendering
         return Inertia::render('backoffice/Dashboard', [
             'user' => $user ? [
                 'id' => $user->id,
@@ -1212,11 +1275,11 @@ class FrontendController extends Controller
                     ];
                 }),
             ] : null,
-            'userStats' => $userStats,
-            'orderStats' => $orderStats,
-            'feedbackStats' => $feedbackStats,
-            'themeStats' => $themeStats,
-            'activities' => $activities,
+            'userStats' => null,
+            'orderStats' => null,
+            'feedbackStats' => null,
+            'themeStats' => null,
+            'activities' => [],
         ]);
     }
 
