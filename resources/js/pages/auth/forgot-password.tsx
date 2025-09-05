@@ -1,27 +1,17 @@
+import FlashMessageHandler from '@/components/FlashMessageHandler';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Link, useForm, usePage } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, ArrowRight, CheckCircle, Heart, Mail, Sparkles, XCircle } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 export default function ForgotPassword() {
-  const [showFlashMessage, setShowFlashMessage] = useState(false);
-
-  const { flash } = usePage().props as any;
 
   const { data, setData, post, processing, errors, status } = useForm({
     email: '',
   });
 
-  useEffect(() => {
-    if (flash?.success || flash?.error || status) {
-      setShowFlashMessage(true);
-      const timer = setTimeout(() => setShowFlashMessage(false), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [flash, status]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +19,9 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary-light/10 flex items-center justify-center p-6 relative overflow-hidden">
+    <>
+      <FlashMessageHandler />
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary-light/10 flex items-center justify-center p-6 relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div className="shape-float-1 top-20 right-20 w-32 h-32" style={{ animationDelay: '0s' }}></div>
@@ -139,5 +131,6 @@ export default function ForgotPassword() {
         </div>
       </div>
     </div>
+    </>
   );
 }

@@ -39,7 +39,6 @@ import {
   Users
 } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
 interface Theme {
   id: number;
@@ -127,11 +126,10 @@ export default function ThemesPage({ user, themes, filters: initialFilters }: Th
   const handleToggleActive = (themeId: number) => {
     router.post(`/backoffice/api/themes/${themeId}/toggle-active`, {}, {
       onSuccess: () => {
-        toast.success('Theme status updated successfully');
         router.reload();
       },
       onError: () => {
-        toast.error('Failed to update theme status');
+        // Error will be handled by the global flash message system
       }
     });
   };
@@ -139,11 +137,10 @@ export default function ThemesPage({ user, themes, filters: initialFilters }: Th
   const handleTogglePublic = (themeId: number) => {
     router.post(`/backoffice/api/themes/${themeId}/toggle-public`, {}, {
       onSuccess: () => {
-        toast.success('Theme visibility updated successfully');
         router.reload();
       },
       onError: () => {
-        toast.error('Failed to update theme visibility');
+        // Error will be handled by the global flash message system
       }
     });
   };
@@ -152,11 +149,10 @@ export default function ThemesPage({ user, themes, filters: initialFilters }: Th
     if (confirm('Are you sure you want to delete this theme? This action cannot be undone.')) {
       router.delete(`/backoffice/api/themes/${themeId}`, {
         onSuccess: () => {
-          toast.success('Theme deleted successfully');
           router.reload();
         },
         onError: () => {
-          toast.error('Failed to delete theme');
+          // Error will be handled by the global flash message system
         }
       });
     }

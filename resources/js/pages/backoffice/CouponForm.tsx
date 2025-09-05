@@ -15,7 +15,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Save, Search, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
 
 interface Package {
   id: number;
@@ -109,31 +108,31 @@ export default function CouponForm({ user, coupon, packages, users }: CouponForm
     setSelectedUsers(data.applicable_users);
   }, [data.applicable_packages, data.applicable_users]);
 
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const formData = {
+    // Update the form data with the selected packages and users
+    setData({
       ...data,
       applicable_packages: selectedPackages,
       applicable_users: selectedUsers,
-    };
+    });
 
     if (isEdit) {
       put(`/backoffice/api/coupons/${coupon.id}`, {
-        onSuccess: () => {
-          toast.success('Coupon updated successfully');
-        },
-        onError: () => {
-          toast.error('Failed to update coupon');
+        onError: (errors) => {
+          // Inertia will automatically handle validation errors and display them
+          // The errors object will be populated with field-specific errors
+          console.log('Validation errors:', errors);
         },
       });
     } else {
       post('/backoffice/api/coupons', {
-        onSuccess: () => {
-          toast.success('Coupon created successfully');
-        },
-        onError: () => {
-          toast.error('Failed to create coupon');
+        onError: (errors) => {
+          // Inertia will automatically handle validation errors and display them
+          // The errors object will be populated with field-specific errors
+          console.log('Validation errors:', errors);
         },
       });
     }
@@ -329,7 +328,9 @@ export default function CouponForm({ user, coupon, packages, users }: CouponForm
                     onChange={(e) => setData('minimum_amount', parseInt(e.target.value) || 0)}
                     placeholder="0"
                     min="0"
+                    className={errors.minimum_amount ? 'border-destructive' : ''}
                   />
+                  {errors.minimum_amount && <p className="text-sm text-destructive">{errors.minimum_amount}</p>}
                 </div>
 
                 {data.type === 'percentage' && (
@@ -342,7 +343,9 @@ export default function CouponForm({ user, coupon, packages, users }: CouponForm
                       onChange={(e) => setData('maximum_discount', parseInt(e.target.value) || 0)}
                       placeholder="0"
                       min="0"
+                      className={errors.maximum_discount ? 'border-destructive' : ''}
                     />
+                    {errors.maximum_discount && <p className="text-sm text-destructive">{errors.maximum_discount}</p>}
                   </div>
                 )}
               </CardContent>
@@ -363,7 +366,9 @@ export default function CouponForm({ user, coupon, packages, users }: CouponForm
                     onChange={(e) => setData('usage_limit', parseInt(e.target.value) || 0)}
                     placeholder="0 = unlimited"
                     min="0"
+                    className={errors.usage_limit ? 'border-destructive' : ''}
                   />
+                  {errors.usage_limit && <p className="text-sm text-destructive">{errors.usage_limit}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -375,7 +380,9 @@ export default function CouponForm({ user, coupon, packages, users }: CouponForm
                     onChange={(e) => setData('user_limit', parseInt(e.target.value) || 0)}
                     placeholder="0 = unlimited"
                     min="0"
+                    className={errors.user_limit ? 'border-destructive' : ''}
                   />
+                  {errors.user_limit && <p className="text-sm text-destructive">{errors.user_limit}</p>}
                 </div>
               </CardContent>
             </Card>
@@ -393,7 +400,9 @@ export default function CouponForm({ user, coupon, packages, users }: CouponForm
                     type="date"
                     value={data.starts_at}
                     onChange={(e) => setData('starts_at', e.target.value)}
+                    className={errors.starts_at ? 'border-destructive' : ''}
                   />
+                  {errors.starts_at && <p className="text-sm text-destructive">{errors.starts_at}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -403,7 +412,9 @@ export default function CouponForm({ user, coupon, packages, users }: CouponForm
                     type="date"
                     value={data.expires_at}
                     onChange={(e) => setData('expires_at', e.target.value)}
+                    className={errors.expires_at ? 'border-destructive' : ''}
                   />
+                  {errors.expires_at && <p className="text-sm text-destructive">{errors.expires_at}</p>}
                 </div>
               </CardContent>
             </Card>

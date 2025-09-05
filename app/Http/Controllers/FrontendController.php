@@ -2204,6 +2204,8 @@ class FrontendController extends Controller
             return redirect()->route('backoffice.coupons')->with('success', 'Coupon created successfully');
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            return back()->with('error', 'An error occurred while creating the coupon: ' . $e->getMessage());
         }
     }
 
@@ -2248,6 +2250,8 @@ class FrontendController extends Controller
             return redirect()->route('backoffice.coupons')->with('success', 'Coupon updated successfully');
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            return back()->with('error', 'An error occurred while updating the coupon: ' . $e->getMessage());
         }
     }
 
@@ -2257,9 +2261,18 @@ class FrontendController extends Controller
     public function backofficeCouponsToggleActive($coupon)
     {
         $couponService = app(\App\Services\CouponService::class);
-        $result = $couponService->toggleActive($coupon);
 
-        return response()->json($result);
+        try {
+            $result = $couponService->toggleActive($coupon);
+
+            if ($result['success']) {
+                return back()->with('success', $result['message']);
+            } else {
+                return back()->with('error', $result['message']);
+            }
+        } catch (\Exception $e) {
+            return back()->with('error', 'An error occurred while toggling coupon status: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -2273,22 +2286,14 @@ class FrontendController extends Controller
             $deleted = $couponService->delete($coupon);
 
             if (!$deleted) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Coupon not found'
-                ], 404);
+                return back()->with('error', 'Coupon not found');
             }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Coupon deleted successfully'
-            ]);
+            return back()->with('success', 'Coupon deleted successfully');
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-                'errors' => $e->errors()
-            ], 422);
+            return back()->with('error', $e->getMessage());
+        } catch (\Exception $e) {
+            return back()->with('error', 'An error occurred while deleting the coupon: ' . $e->getMessage());
         }
     }
 

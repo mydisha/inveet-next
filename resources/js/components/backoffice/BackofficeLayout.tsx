@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import FlashMessageHandler from '../FlashMessageHandler';
 import BackofficeHeader from './BackofficeHeader';
 import BackofficeSidebar from './BackofficeSidebar';
 
@@ -21,7 +22,9 @@ export default function BackofficeLayout({ user, children, title, description }:
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="h-screen bg-gradient-to-br from-primary/5 via-background to-primary-light/10 font-inter overflow-hidden">
+    <>
+      <FlashMessageHandler />
+      <div className="h-screen bg-gradient-to-br from-primary/5 via-background to-primary-light/10 font-inter overflow-hidden">
       {/* Background decorative elements matching landing page */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div className="shape-float-1 top-20 right-20 w-32 h-32" style={{ animationDelay: '0s' }}></div>
@@ -49,5 +52,6 @@ export default function BackofficeLayout({ user, children, title, description }:
         </main>
       </div>
     </div>
+    </>
   );
 }

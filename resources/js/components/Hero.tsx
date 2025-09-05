@@ -1,5 +1,5 @@
 import { ArrowRight, Heart, Sparkles, Star } from 'lucide-react';
-import heroCouple from '../assets/hero-couple.jpg';
+import heroCouple from '../assets/hero-couplev2.jpg';
 import { Button } from './ui/button';
 
 const Hero = () => {

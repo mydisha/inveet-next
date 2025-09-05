@@ -7,11 +7,13 @@ import Pricing from '../components/Pricing';
 import About from '../components/About';
 import CTA from '../components/CTA';
 import Footer from '../components/Footer';
+import FlashMessageHandler from '../components/FlashMessageHandler';
 import PerformanceOptimizer from '../components/PerformanceOptimizer';
 
 export default function Landing() {
   return (
     <PerformanceOptimizer>
+      <FlashMessageHandler />
       <div className="min-h-screen w-full overflow-x-hidden">
         <Header />
         <main>

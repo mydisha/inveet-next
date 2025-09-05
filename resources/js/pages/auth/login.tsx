@@ -1,17 +1,15 @@
+import FlashMessageHandler from '@/components/FlashMessageHandler';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AuthUtils, isAuthenticated } from '@/lib/auth';
-import { Link, useForm, usePage } from '@inertiajs/react';
-import { ArrowRight, CheckCircle, Eye, EyeOff, Lock, Mail, XCircle } from 'lucide-react';
+import { Link, useForm } from '@inertiajs/react';
+import { ArrowRight, Eye, EyeOff, Lock, Mail } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [showFlashMessage, setShowFlashMessage] = useState(false);
-
-  const { flash } = usePage().props as any;
 
   const { data, setData, post, processing, errors } = useForm({
     email: '',
@@ -19,13 +17,6 @@ export default function Login() {
     remember: false,
   });
 
-  useEffect(() => {
-    if (flash?.success || flash?.error) {
-      setShowFlashMessage(true);
-      const timer = setTimeout(() => setShowFlashMessage(false), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [flash]);
 
   // Server-side authentication check
   useEffect(() => {
@@ -105,7 +96,9 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary-light/10 flex items-center justify-center p-6 relative overflow-hidden font-inter">
+    <>
+      <FlashMessageHandler />
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary-light/10 flex items-center justify-center p-6 relative overflow-hidden font-inter">
       {/* Background decorative elements matching landing page */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div className="shape-float-1 top-20 right-20 w-32 h-32" style={{ animationDelay: '0s' }}></div>
@@ -142,20 +135,6 @@ export default function Login() {
           </CardHeader>
 
           <CardContent className="space-y-6">
-            {/* Flash Messages */}
-            {showFlashMessage && flash?.success && (
-              <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg flex items-center">
-                <CheckCircle className="w-5 h-5 mr-2" />
-                {flash.success}
-              </div>
-            )}
-
-            {showFlashMessage && flash?.error && (
-              <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg flex items-center">
-                <XCircle className="w-5 h-5 mr-2" />
-                {flash.error}
-              </div>
-            )}
 
             {/* Google Sign In */}
             <Button
@@ -311,5 +290,6 @@ export default function Login() {
         </div>
       </div>
     </div>
+    </>
   );
 }

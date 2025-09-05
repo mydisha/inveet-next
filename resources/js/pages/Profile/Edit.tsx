@@ -54,7 +54,7 @@ export default function EditProfile({ user }: EditProfileProps) {
       },
       onError: (errors) => {
         console.error('Profile update errors:', errors);
-        toast.error('Failed to update profile. Please check the errors and try again.');
+        // FlashMessageHandler will show general error message
       },
     });
   };
@@ -68,7 +68,7 @@ export default function EditProfile({ user }: EditProfileProps) {
       },
       onError: (errors) => {
         console.error('Password update errors:', errors);
-        toast.error('Failed to update password. Please check the errors and try again.');
+        // FlashMessageHandler will show general error message
       },
     });
   };

@@ -38,7 +38,6 @@ import {
     Users,
 } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
 interface Coupon {
   id: number;
@@ -116,11 +115,10 @@ export default function Coupons({ user, coupons, filters: initialFilters }: Coup
   const handleToggleActive = (couponId: number) => {
     router.post(`/backoffice/api/coupons/${couponId}/toggle-active`, {}, {
       onSuccess: () => {
-        toast.success('Coupon status updated successfully');
         router.reload();
       },
       onError: () => {
-        toast.error('Failed to toggle coupon status');
+        // Error will be handled by the global flash message system
       }
     });
   };
@@ -130,11 +128,10 @@ export default function Coupons({ user, coupons, filters: initialFilters }: Coup
 
     router.delete(`/backoffice/api/coupons/${couponId}`, {
       onSuccess: () => {
-        toast.success('Coupon deleted successfully');
         router.reload();
       },
       onError: () => {
-        toast.error('Failed to delete coupon');
+        // Error will be handled by the global flash message system
       }
     });
   };

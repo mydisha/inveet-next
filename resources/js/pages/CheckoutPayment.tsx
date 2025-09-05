@@ -146,8 +146,7 @@ export default function CheckoutPayment({ package: selectedPackage, coupon, coup
       },
       onError: (errors) => {
         setIsProcessing(false);
-
-        alert('Failed to create order. Please try again.');
+        // FlashMessageHandler will show general error message
       }
     });
   };

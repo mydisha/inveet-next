@@ -4,6 +4,7 @@ import './bootstrap';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
+import { Toaster } from 'sonner';
 import StructuredData from './components/StructuredData';
 import { forceRefreshCsrfToken, initializeCsrfToken } from './lib/auth';
 
@@ -31,6 +32,12 @@ createInertiaApp({
             <>
                 <StructuredData type="website" />
                 <App {...props} />
+                <Toaster
+                    position="top-right"
+                    expand={true}
+                    richColors={true}
+                    closeButton={true}
+                />
             </>
         );
     },

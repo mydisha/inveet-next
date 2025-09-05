@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ApiResponseTrait;
 use App\Services\CouponService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -10,6 +12,8 @@ use Illuminate\Validation\ValidationException;
 
 class CouponController extends Controller
 {
+    use ApiResponseTrait, AuthorizesRequests;
+
     protected $couponService;
 
     public function __construct(CouponService $couponService)
@@ -27,11 +31,7 @@ class CouponController extends Controller
         $filters = $request->only(['status', 'type', 'search', 'per_page']);
         $coupons = $this->couponService->getAll($filters);
 
-        return response()->json([
-            'success' => true,
-            'data' => $coupons,
-            'message' => 'Coupons retrieved successfully'
-        ]);
+        return $this->successResponse($coupons, 'Coupons retrieved successfully');
     }
 
     /**
@@ -43,18 +43,9 @@ class CouponController extends Controller
 
         try {
             $coupon = $this->couponService->create($request->all());
-
-            return response()->json([
-                'success' => true,
-                'data' => $coupon,
-                'message' => 'Coupon created successfully'
-            ], Response::HTTP_CREATED);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->successResponse($coupon, 'Coupon created successfully', Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            return $this->handleException($e, 'creating the coupon');
         }
     }
 
@@ -68,21 +59,14 @@ class CouponController extends Controller
         $coupon = $this->couponService->findById($id);
 
         if (!$coupon) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Coupon not found'
-            ], Response::HTTP_NOT_FOUND);
+            return $this->notFoundResponse('Coupon not found');
         }
 
         // Get usage statistics
         $usageStats = $this->couponService->getUsageStats($id);
         $coupon->usage_stats = $usageStats;
 
-        return response()->json([
-            'success' => true,
-            'data' => $coupon,
-            'message' => 'Coupon retrieved successfully'
-        ]);
+        return $this->successResponse($coupon, 'Coupon retrieved successfully');
     }
 
     /**
@@ -96,23 +80,12 @@ class CouponController extends Controller
             $coupon = $this->couponService->update($id, $request->all());
 
             if (!$coupon) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Coupon not found'
-                ], Response::HTTP_NOT_FOUND);
+                return $this->notFoundResponse('Coupon not found');
             }
 
-            return response()->json([
-                'success' => true,
-                'data' => $coupon,
-                'message' => 'Coupon updated successfully'
-            ]);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->successResponse($coupon, 'Coupon updated successfully');
+        } catch (\Exception $e) {
+            return $this->handleException($e, 'updating the coupon');
         }
     }
 
@@ -127,22 +100,12 @@ class CouponController extends Controller
             $deleted = $this->couponService->delete($id);
 
             if (!$deleted) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Coupon not found'
-                ], Response::HTTP_NOT_FOUND);
+                return $this->notFoundResponse('Coupon not found');
             }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Coupon deleted successfully'
-            ]);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-                'errors' => $e->errors()
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->successResponse(null, 'Coupon deleted successfully');
+        } catch (\Exception $e) {
+            return $this->handleException($e, 'deleting the coupon');
         }
     }
 
@@ -156,17 +119,10 @@ class CouponController extends Controller
         $result = $this->couponService->toggleActive($id);
 
         if (!$result['success']) {
-            return response()->json([
-                'success' => false,
-                'message' => $result['message']
-            ], Response::HTTP_NOT_FOUND);
+            return $this->notFoundResponse($result['message']);
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => ['is_active' => $result['is_active']],
-            'message' => $result['message']
-        ]);
+        return $this->successResponse(['is_active' => $result['is_active']], $result['message']);
     }
 
     /**
@@ -179,17 +135,10 @@ class CouponController extends Controller
         $stats = $this->couponService->getUsageStats($id);
 
         if (empty($stats)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Coupon not found'
-            ], Response::HTTP_NOT_FOUND);
+            return $this->notFoundResponse('Coupon not found');
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => $stats,
-            'message' => 'Usage statistics retrieved successfully'
-        ]);
+        return $this->successResponse($stats, 'Usage statistics retrieved successfully');
     }
 
     /**
@@ -197,25 +146,25 @@ class CouponController extends Controller
      */
     public function validate(Request $request): JsonResponse
     {
-        $request->validate([
-            'code' => 'required|string',
-            'user_id' => 'required|integer|exists:users,id',
-            'package_id' => 'required|integer|exists:packages,id',
-            'order_amount' => 'required|integer|min:0'
-        ]);
+        try {
+            $request->validate([
+                'code' => 'required|string',
+                'user_id' => 'required|integer|exists:users,id',
+                'package_id' => 'required|integer|exists:packages,id',
+                'order_amount' => 'required|integer|min:0'
+            ]);
 
-        $result = $this->couponService->validateCoupon(
-            $request->code,
-            $request->user_id,
-            $request->package_id,
-            $request->order_amount
-        );
+            $result = $this->couponService->validateCoupon(
+                $request->code,
+                $request->user_id,
+                $request->package_id,
+                $request->order_amount
+            );
 
-        return response()->json([
-            'success' => $result['valid'],
-            'data' => $result,
-            'message' => $result['message']
-        ]);
+            return $this->successResponse($result, $result['message']);
+        } catch (\Exception $e) {
+            return $this->handleException($e, 'validating the coupon');
+        }
     }
 
     /**
@@ -223,22 +172,22 @@ class CouponController extends Controller
      */
     public function available(Request $request): JsonResponse
     {
-        $request->validate([
-            'user_id' => 'required|integer|exists:users,id',
-            'package_id' => 'required|integer|exists:packages,id',
-            'order_amount' => 'required|integer|min:0'
-        ]);
+        try {
+            $request->validate([
+                'user_id' => 'required|integer|exists:users,id',
+                'package_id' => 'required|integer|exists:packages,id',
+                'order_amount' => 'required|integer|min:0'
+            ]);
 
-        $coupons = $this->couponService->getAvailableCoupons(
-            $request->user_id,
-            $request->package_id,
-            $request->order_amount
-        );
+            $coupons = $this->couponService->getAvailableCoupons(
+                $request->user_id,
+                $request->package_id,
+                $request->order_amount
+            );
 
-        return response()->json([
-            'success' => true,
-            'data' => $coupons,
-            'message' => 'Available coupons retrieved successfully'
-        ]);
+            return $this->successResponse($coupons, 'Available coupons retrieved successfully');
+        } catch (\Exception $e) {
+            return $this->handleException($e, 'retrieving available coupons');
+        }
     }
 }
