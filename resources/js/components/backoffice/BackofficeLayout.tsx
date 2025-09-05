@@ -39,12 +39,12 @@ export default function BackofficeLayout({ user, children, title, description }:
       />
 
       {/* Main content */}
-      <div className="lg:pl-64 relative z-20">
+      <div className="lg:pl-64 relative z-20 h-screen flex flex-col">
         {/* Top Header */}
         <BackofficeHeader user={user} setSidebarOpen={setSidebarOpen} />
 
         {/* Main Content */}
-        <main className="px-4 sm:px-6 lg:px-8 py-8">
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-8 overflow-y-auto">
           {children}
         </main>
       </div>

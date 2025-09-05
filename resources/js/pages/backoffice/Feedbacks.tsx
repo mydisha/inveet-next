@@ -169,60 +169,85 @@ export default function FeedbacksPage({ user, feedbacks, filters: initialFilters
           {/* Filters */}
           <Card>
             <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
-                <div className="lg:col-span-2">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input
-                      placeholder="Search feedbacks..."
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                      className="pl-10"
-                    />
-                    <Button onClick={handleSearch} size="sm" className="ml-2">
-                      Search
-                    </Button>
+              <div className="space-y-4">
+                {/* Search Row */}
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex-1">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Input
+                        placeholder="Search feedbacks..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+                  <Button onClick={handleSearch} className="w-full sm:w-auto">
+                    <Search className="w-4 h-4 mr-2" />
+                    Search
+                  </Button>
+                </div>
+
+                {/* Filters Row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Score Range
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="number"
+                        placeholder="Min"
+                        min="1"
+                        max="5"
+                        value={scoreMin}
+                        onChange={(e) => setScoreMin(e.target.value)}
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Max"
+                        min="1"
+                        max="5"
+                        value={scoreMax}
+                        onChange={(e) => setScoreMax(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Recommendation
+                    </label>
+                    <Select value={recommendedFilter} onValueChange={setRecommendedFilter}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="All" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All</SelectItem>
+                        <SelectItem value="true">Recommended</SelectItem>
+                        <SelectItem value="false">Not Recommended</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Show on Landing
+                    </label>
+                    <Select value={showOnLandingFilter} onValueChange={setShowOnLandingFilter}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="All" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All</SelectItem>
+                        <SelectItem value="true">Show on Landing</SelectItem>
+                        <SelectItem value="false">Hide from Landing</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Input
-                    type="number"
-                    placeholder="Min Score"
-                    min="1"
-                    max="5"
-                    value={scoreMin}
-                    onChange={(e) => setScoreMin(e.target.value)}
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Max Score"
-                    min="1"
-                    max="5"
-                    value={scoreMax}
-                    onChange={(e) => setScoreMax(e.target.value)}
-                  />
-                </div>
-                <Select value={recommendedFilter} onValueChange={setRecommendedFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Recommended" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="true">Recommended</SelectItem>
-                    <SelectItem value="false">Not Recommended</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select value={showOnLandingFilter} onValueChange={setShowOnLandingFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Show on Landing" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="true">Show on Landing</SelectItem>
-                    <SelectItem value="false">Hide from Landing</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
             </CardContent>
           </Card>

@@ -183,12 +183,17 @@ export default function UsersPage({ user, users: initialUsers, filters: initialF
                     <Input
                       placeholder="Search users..."
                       value={search}
-                      onChange={(e) => handleSearch(e.target.value)}
+                      onChange={(e) => setSearch(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleSearch(search)}
                       className="pl-10"
                     />
                   </div>
                 </div>
                 <div className="flex gap-2">
+                  <Button onClick={() => handleSearch(search)} className="w-full sm:w-auto">
+                    <Search className="w-4 h-4 mr-2" />
+                    Search
+                  </Button>
                   <Select value={roleFilter} onValueChange={(value) => {
                     setRoleFilter(value);
                     setCurrentPage(1);

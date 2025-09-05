@@ -163,7 +163,7 @@ export default function CouponForm({ user, coupon, packages, users }: CouponForm
 
     setIsSearching(true);
     try {
-      const response = await fetch(`/backoffice/api/users/search?search=${encodeURIComponent(query)}&limit=20`, {
+      const response = await fetch(`/api/backoffice/users/search?search=${encodeURIComponent(query)}&limit=20`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -208,9 +208,9 @@ export default function CouponForm({ user, coupon, packages, users }: CouponForm
     <BackofficeLayout user={user}>
       <Head title={title} />
 
-      <div className="space-y-6">
+      <div className="h-full flex flex-col">
         {/* Header */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 mb-6 flex-shrink-0">
           <Link href="/backoffice/coupons">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -225,7 +225,9 @@ export default function CouponForm({ user, coupon, packages, users }: CouponForm
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto min-h-0">
+          <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Basic Information */}
             <Card>
@@ -538,19 +540,20 @@ export default function CouponForm({ user, coupon, packages, users }: CouponForm
             </CardContent>
           </Card>
 
-          {/* Actions */}
-          <div className="flex justify-end gap-4">
-            <Link href="/backoffice/coupons">
-              <Button type="button" variant="outline">
-                Cancel
+            {/* Actions */}
+            <div className="flex justify-end gap-4">
+              <Link href="/backoffice/coupons">
+                <Button type="button" variant="outline">
+                  Cancel
+                </Button>
+              </Link>
+              <Button type="submit" disabled={processing}>
+                <Save className="h-4 w-4 mr-2" />
+                {isEdit ? 'Update Coupon' : 'Create Coupon'}
               </Button>
-            </Link>
-            <Button type="submit" disabled={processing}>
-              <Save className="h-4 w-4 mr-2" />
-              {isEdit ? 'Update Coupon' : 'Create Coupon'}
-            </Button>
-          </div>
-        </form>
+            </div>
+          </form>
+        </div>
       </div>
     </BackofficeLayout>
   );

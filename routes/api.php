@@ -104,6 +104,9 @@ Route::middleware('guest')->group(function () {
             'session_started' => session()->isStarted()
         ]);
     });
+
+    // User search for backoffice
+    Route::get('/backoffice/users/search', [App\Http\Controllers\FrontendController::class, 'backofficeUsersSearch']);
 });
 
 // Public logout route (for expired sessions)

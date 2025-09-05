@@ -207,11 +207,12 @@ export default function Coupons({ user, coupons, filters: initialFilters }: Coup
                     onKeyPress={(e) => e.key === 'Enter' && handleSearchSubmit()}
                     className="pl-10"
                   />
-                  <Button onClick={handleSearchSubmit} size="sm" className="ml-2">
-                    Search
-                  </Button>
                 </div>
               </div>
+              <Button onClick={handleSearchSubmit} className="w-full sm:w-auto">
+                <Search className="w-4 h-4 mr-2" />
+                Search
+              </Button>
               <Select value={statusFilter || 'all'} onValueChange={(value) => handleFilterChange('status', value === 'all' ? '' : value)}>
                 <SelectTrigger className="w-full sm:w-48">
                   <SelectValue placeholder="Status" />

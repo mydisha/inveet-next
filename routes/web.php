@@ -89,6 +89,10 @@ Route::middleware(['auth', 'backoffice'])->prefix('backoffice')->group(function 
         Route::post('/users/{user}/deactivate', [FrontendController::class, 'backofficeUserDeactivate']);
         Route::post('/users/{user}/auto-login', [FrontendController::class, 'backofficeUserAutoLogin']);
 
+        // Orders API routes
+        Route::post('/orders/{order}/mark-paid', [FrontendController::class, 'backofficeOrdersMarkPaid']);
+        Route::post('/orders/{order}/mark-void', [FrontendController::class, 'backofficeOrdersMarkVoid']);
+
         // Themes API routes
         Route::get('/themes', [FrontendController::class, 'backofficeThemesApi']);
         Route::post('/themes', [FrontendController::class, 'backofficeThemesStore']);
@@ -113,7 +117,6 @@ Route::middleware(['auth', 'backoffice'])->prefix('backoffice')->group(function 
         Route::delete('/coupons/{coupon}', [FrontendController::class, 'backofficeCouponsDestroy']);
         Route::get('/coupons/{coupon}/usage-stats', [FrontendController::class, 'backofficeCouponsUsageStats']);
         Route::get('/coupons/{coupon}/usages', [FrontendController::class, 'backofficeCouponsUsages']);
-        Route::get('/users/search', [FrontendController::class, 'backofficeUsersSearch']);
     });
 });
 

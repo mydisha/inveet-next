@@ -195,11 +195,12 @@ export default function ThemesPage({ user, themes, filters: initialFilters }: Th
                       onKeyPress={(e) => e.key === 'Enter' && handleSearchSubmit()}
                       className="pl-10"
                     />
-                    <Button onClick={handleSearchSubmit} size="sm" className="ml-2">
-                      Search
-                    </Button>
                   </div>
                 </div>
+                <Button onClick={handleSearchSubmit} className="w-full sm:w-auto">
+                  <Search className="w-4 h-4 mr-2" />
+                  Search
+                </Button>
                 <div className="flex gap-2">
                   <Select value={statusFilter} onValueChange={(value) => handleFilterChange('status', value)}>
                     <SelectTrigger className="w-40">

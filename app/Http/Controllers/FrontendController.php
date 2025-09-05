@@ -1155,7 +1155,7 @@ class FrontendController extends Controller
 
         $feedbackStats = [
             'total_feedbacks' => \App\Models\Feedback::count(),
-            'average_score' => \App\Models\Feedback::avg('score'),
+            'average_score' => \App\Models\Feedback::avg('score') ?? 0,
             'recommended_feedbacks' => \App\Models\Feedback::where('is_recommended', true)->count(),
             'show_on_landing_feedbacks' => \App\Models\Feedback::where('show_on_landing', true)->count(),
             'feedbacks_this_month' => \App\Models\Feedback::whereMonth('created_at', now()->month)->count(),
@@ -1169,7 +1169,7 @@ class FrontendController extends Controller
         ];
 
         // Get recent activity logs
-        $activities = \App\Models\ActivityLog::with('user')
+        $activities = \App\Models\ActivityLog::with(['causer', 'subject'])
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get()
@@ -1183,11 +1183,20 @@ class FrontendController extends Controller
                     'event_color' => $log->event_color,
                     'log_name_label' => $log->log_name_label,
                     'created_at' => $log->created_at->toISOString(),
-                    'user' => $log->user ? [
-                        'id' => $log->user->id,
-                        'name' => $log->user->name,
-                        'email' => $log->user->email,
+                    'created_at_human' => $log->created_at->diffForHumans(),
+                    'created_at_formatted' => $log->created_at->format('M d, Y H:i:s'),
+                    'causer' => $log->causer ? [
+                        'id' => $log->causer->id,
+                        'name' => $log->causer->name,
+                        'email' => $log->causer->email,
                     ] : null,
+                    'subject' => $log->subject ? [
+                        'id' => $log->subject->id,
+                        'name' => $log->subject->name ?? $log->subject->title ?? 'Unknown',
+                    ] : null,
+                    'has_changes' => isset($log->properties['changes']),
+                    'changed_fields' => $log->properties['changed_fields'] ?? [],
+                    'change_summary' => $log->properties['change_summary'] ?? [],
                 ];
             });
 
@@ -1279,6 +1288,50 @@ class FrontendController extends Controller
     {
         $user = $request->user();
 
+        $query = \App\Models\Order::with(['user', 'package', 'wedding.theme'])
+            ->where(function ($q) {
+                $q->where('payment_type', '!=', 'promo')
+                  ->where('payment_type', '!=', 'free')
+                  ->where('total_price', '>', 0);
+            });
+
+        // Apply filters
+        if ($request->has('search')) {
+            $search = $request->get('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('invoice_number', 'like', "%{$search}%")
+                  ->orWhere('external_transaction_id', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($userQuery) use ($search) {
+                      $userQuery->where('name', 'like', "%{$search}%")
+                               ->orWhere('email', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        if ($request->has('status')) {
+            $status = $request->get('status');
+            switch ($status) {
+                case 'paid':
+                    $query->where('is_paid', true);
+                    break;
+                case 'pending':
+                    $query->where('is_paid', false)->where('is_void', false);
+                    break;
+                case 'void':
+                    $query->where('is_void', true);
+                    break;
+            }
+        }
+
+        if ($request->has('date_from')) {
+            $query->whereDate('created_at', '>=', $request->get('date_from'));
+        }
+        if ($request->has('date_to')) {
+            $query->whereDate('created_at', '<=', $request->get('date_to'));
+        }
+
+        $orders = $query->orderBy('created_at', 'desc')->paginate(15);
+
         return Inertia::render('backoffice/Orders', [
             'user' => $user ? [
                 'id' => $user->id,
@@ -1291,6 +1344,45 @@ class FrontendController extends Controller
                     ];
                 }),
             ] : null,
+            'orders' => $orders,
+            'filters' => $request->only(['search', 'status', 'date_from', 'date_to'])
+        ]);
+    }
+
+    /**
+     * Mark order as paid
+     */
+    public function backofficeOrdersMarkPaid(Request $request, $order)
+    {
+        $order = \App\Models\Order::findOrFail($order);
+
+        $order->update([
+            'is_paid' => true,
+            'paid_at' => now(),
+            'external_transaction_id' => $request->input('external_transaction_id', 'MANUAL_' . now()->timestamp),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Order marked as paid successfully'
+        ]);
+    }
+
+    /**
+     * Mark order as void
+     */
+    public function backofficeOrdersMarkVoid(Request $request, $order)
+    {
+        $order = \App\Models\Order::findOrFail($order);
+
+        $order->update([
+            'is_void' => true,
+            'void_at' => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Order marked as void successfully'
         ]);
     }
 
