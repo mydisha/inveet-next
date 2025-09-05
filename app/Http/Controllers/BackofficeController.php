@@ -128,7 +128,7 @@ class BackofficeController extends BaseController
      */
     public function orders(Request $request)
     {
-        $filters = $request->only(['search', 'status', 'date_from', 'date_to']);
+        $filters = $request->only(['search', 'status', 'payment_type', 'date_from', 'date_to']);
         $orders = $this->orderService->paginate(15, $filters);
 
         return Inertia::render('backoffice/Orders', [
@@ -585,6 +585,31 @@ class BackofficeController extends BaseController
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to delete user: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get available payment types for orders.
+     */
+    public function getOrderPaymentTypes()
+    {
+        try {
+            $paymentTypes = \App\Models\Order::distinct()
+                ->whereNotNull('payment_type')
+                ->where('payment_type', '!=', '')
+                ->pluck('payment_type')
+                ->sort()
+                ->values();
+
+            return response()->json([
+                'success' => true,
+                'data' => $paymentTypes
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch payment types: ' . $e->getMessage()
             ], 500);
         }
     }

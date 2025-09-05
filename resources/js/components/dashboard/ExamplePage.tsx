@@ -83,7 +83,7 @@ export default function ExamplePage({ user, loading = false }: ExamplePageProps)
         description="This page demonstrates how to use the dashboard template system for consistent, reusable layouts."
         actions={
           <div className="flex space-x-3">
-            <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+            <button className="px-4 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors">
               Export Data
             </button>
             <button className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors">

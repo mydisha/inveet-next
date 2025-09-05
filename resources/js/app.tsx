@@ -6,6 +6,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { Toaster } from 'sonner';
 import StructuredData from './components/StructuredData';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { forceRefreshCsrfToken, initializeCsrfToken } from './lib/auth';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Inveet';
@@ -29,7 +30,7 @@ createInertiaApp({
         }
 
         root.render(
-            <>
+            <ThemeProvider>
                 <StructuredData type="website" />
                 <App {...props} />
                 <Toaster
@@ -38,7 +39,7 @@ createInertiaApp({
                     richColors={true}
                     closeButton={true}
                 />
-            </>
+            </ThemeProvider>
         );
     },
     progress: {

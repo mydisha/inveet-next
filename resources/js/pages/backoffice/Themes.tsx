@@ -1,5 +1,6 @@
 import BackButton from '@/components/backoffice/BackButton';
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
+import PageHeader from '@/components/backoffice/PageHeader';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -165,25 +166,21 @@ export default function ThemesPage({ user, themes, filters: initialFilters }: Th
       <BackofficeLayout user={user} title="Theme Management" description="Manage wedding themes">
         <div className="space-y-6">
           {/* Header */}
-          <div className="flex items-center justify-between">
-            <BackButton href="/backoffice" label="Back to Dashboard" />
-            <div className="text-sm text-muted-foreground">
-              {themes.length} themes available
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <BackButton href="/backoffice" label="Back to Dashboard" />
             </div>
-          </div>
-
-          {/* Header Actions */}
-          <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">Themes</h2>
-              <p className="text-sm text-gray-500">Manage wedding invitation themes</p>
-            </div>
-            <Button asChild>
-              <Link href="/backoffice/themes/create">
-                <Plus className="mr-2 h-4 w-4" />
-                Add New Theme
-              </Link>
-            </Button>
+            <PageHeader
+              title="Theme Management"
+              subtitle="Manage wedding invitation themes"
+            >
+              <Button asChild>
+                <Link href="/backoffice/themes/create">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add New Theme
+                </Link>
+              </Button>
+            </PageHeader>
           </div>
 
           {/* Filters */}
@@ -235,7 +232,7 @@ export default function ThemesPage({ user, themes, filters: initialFilters }: Th
           {/* Themes Table */}
           <Card>
             <CardHeader>
-              <CardTitle>Themes ({themes.total})</CardTitle>
+              <CardTitle>Themes</CardTitle>
             </CardHeader>
             <CardContent>
               {themes.data.length === 0 ? (

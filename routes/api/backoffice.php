@@ -13,6 +13,7 @@ Route::middleware(['auth', 'backoffice'])->prefix('backoffice')->group(function 
     // Order management API
     Route::post('/orders/{id}/mark-paid', [BackofficeController::class, 'markOrderAsPaid'])->name('backoffice.api.orders.mark-paid');
     Route::post('/orders/{id}/mark-void', [BackofficeController::class, 'markOrderAsVoid'])->name('backoffice.api.orders.mark-void');
+    Route::get('/orders/payment-types', [BackofficeController::class, 'getOrderPaymentTypes'])->name('backoffice.api.orders.payment-types');
 
     // Configuration management API
     Route::get('/configurations', [BackofficeController::class, 'getConfigurations'])->name('backoffice.api.configurations.index');

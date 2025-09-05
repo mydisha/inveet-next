@@ -1,3 +1,4 @@
+import BackButton from '@/components/backoffice/BackButton';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import StandardFormLayout, { StandardInput, StandardFormSection } from '@/components/dashboard/StandardFormLayout';
 import { Badge } from '@/components/ui/badge';
@@ -220,6 +221,8 @@ export default function Profile({ mustVerifyEmail, status, user }: ProfileProps)
               <StandardFormLayout
                 title="Personal Information"
                 description="Update your personal details and profile information"
+                backHref="/profile"
+                backLabel="Back to Profile"
                 onSubmit={isEditing ? handleProfileUpdate : undefined}
                 onCancel={isEditing ? () => setIsEditing(false) : undefined}
                 submitLabel="Save Changes"
@@ -289,6 +292,16 @@ export default function Profile({ mustVerifyEmail, status, user }: ProfileProps)
 
             {activeTab === 'security' && (
               <div className="space-y-6">
+                <div className="flex items-center space-x-4">
+                  <BackButton href="/profile" label="Back to Profile" />
+                  <div className="h-4 w-px bg-border/50" />
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                      <Shield className="w-4 h-4 text-primary" />
+                    </div>
+                    <h2 className="text-xl font-semibold text-foreground">Security Settings</h2>
+                  </div>
+                </div>
                 <Card className="card-elegant">
                   <CardHeader>
                     <CardTitle className="flex items-center space-x-2">
@@ -430,7 +443,18 @@ export default function Profile({ mustVerifyEmail, status, user }: ProfileProps)
             )}
 
             {activeTab === 'preferences' && (
-              <Card className="card-elegant">
+              <div className="space-y-6">
+                <div className="flex items-center space-x-4">
+                  <BackButton href="/profile" label="Back to Profile" />
+                  <div className="h-4 w-px bg-border/50" />
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                      <Bell className="w-4 h-4 text-primary" />
+                    </div>
+                    <h2 className="text-xl font-semibold text-foreground">Notification Preferences</h2>
+                  </div>
+                </div>
+                <Card className="card-elegant">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <Bell className="w-5 h-5" />
@@ -527,6 +551,7 @@ export default function Profile({ mustVerifyEmail, status, user }: ProfileProps)
                   </form>
                 </CardContent>
               </Card>
+              </div>
             )}
           </div>
         </div>

@@ -80,10 +80,10 @@ export default function DashboardCard({
 
           {/* Content */}
           <div className="flex-1 min-w-0">
-            <CardTitle className="text-xl font-semibold text-gray-900 mb-1 group-hover:text-primary transition-colors duration-300">
+            <CardTitle className="text-xl font-semibold text-foreground mb-1 group-hover:text-primary transition-colors duration-300">
               {title}
             </CardTitle>
-            <CardDescription className="text-gray-600 text-sm leading-relaxed">
+            <CardDescription className="text-muted-foreground text-sm leading-relaxed">
               {description}
             </CardDescription>
           </div>
@@ -106,16 +106,16 @@ export default function DashboardCard({
                     "group-hover:from-primary-glow group-hover:to-primary"
                   ],
                   buttonVariant === 'outline' && [
-                    "border-2 border-gray-200 bg-transparent text-gray-700",
+                    "border-2 border-border bg-transparent text-foreground",
                     "hover:border-primary hover:bg-primary/5 hover:text-primary",
                     "hover:scale-105 hover:shadow-md"
                   ],
                   buttonVariant === 'secondary' && [
-                    "bg-gray-100 text-gray-700 hover:bg-gray-200",
+                    "bg-muted text-foreground hover:bg-muted/80",
                     "hover:scale-105 hover:shadow-md"
                   ],
                   buttonVariant === 'ghost' && [
-                    "text-gray-600 hover:text-primary hover:bg-primary/5",
+                    "text-muted-foreground hover:text-primary hover:bg-primary/5",
                     "hover:scale-105"
                   ]
                 )}
@@ -146,16 +146,16 @@ export default function DashboardCard({
                 "group-hover:from-primary-glow group-hover:to-primary"
               ],
               buttonVariant === 'outline' && [
-                "border-2 border-gray-200 bg-transparent text-gray-700",
+                "border-2 border-border bg-transparent text-foreground",
                 "hover:border-primary hover:bg-primary/5 hover:text-primary",
                 "hover:scale-105 hover:shadow-md"
               ],
               buttonVariant === 'secondary' && [
-                "bg-gray-100 text-gray-700 hover:bg-gray-200",
+                "bg-muted text-foreground hover:bg-muted/80",
                 "hover:scale-105 hover:shadow-md"
               ],
               buttonVariant === 'ghost' && [
-                "text-gray-600 hover:text-primary hover:bg-primary/5",
+                "text-muted-foreground hover:text-primary hover:bg-primary/5",
                 "hover:scale-105"
               ]
             )}

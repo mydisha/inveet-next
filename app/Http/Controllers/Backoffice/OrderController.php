@@ -229,4 +229,22 @@ class OrderController extends Controller
             'data' => $stats
         ]);
     }
+
+    /**
+     * Get available payment types.
+     */
+    public function getPaymentTypes(): JsonResponse
+    {
+        $paymentTypes = Order::distinct()
+            ->whereNotNull('payment_type')
+            ->where('payment_type', '!=', '')
+            ->pluck('payment_type')
+            ->sort()
+            ->values();
+
+        return response()->json([
+            'success' => true,
+            'data' => $paymentTypes
+        ]);
+    }
 }

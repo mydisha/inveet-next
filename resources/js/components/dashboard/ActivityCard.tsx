@@ -50,10 +50,10 @@ export default function ActivityCard({
       className
     )}>
       <CardHeader className="pb-4 pt-6 px-6">
-        <CardTitle className="text-xl font-semibold text-gray-900 mb-1">
+        <CardTitle className="text-xl font-semibold text-foreground mb-1">
           {title}
         </CardTitle>
-        <CardDescription className="text-gray-600 text-sm leading-relaxed">
+        <CardDescription className="text-muted-foreground text-sm leading-relaxed">
           {description}
         </CardDescription>
       </CardHeader>
@@ -75,14 +75,14 @@ export default function ActivityCard({
                   <div className="absolute inset-0 rounded-xl bg-white/20 opacity-0 group-hover/activity:opacity-100 transition-opacity duration-300" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-900 group-hover/activity:text-primary transition-colors duration-300">
+                  <p className="text-sm font-semibold text-foreground group-hover/activity:text-primary transition-colors duration-300">
                     {activity.title}
                   </p>
-                  <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">
+                  <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
                     {activity.description}
                   </p>
                 </div>
-                <div className="text-xs text-gray-500 font-medium">
+                <div className="text-xs text-muted-foreground font-medium">
                   {activity.timestamp}
                 </div>
               </div>
@@ -90,9 +90,9 @@ export default function ActivityCard({
           </div>
         ) : (
           <div className="text-center py-12">
-            <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm">
+            <div className="w-20 h-20 bg-gradient-to-br from-muted to-muted/80 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm">
               <svg
-                className="w-10 h-10 text-gray-400"
+                className="w-10 h-10 text-muted-foreground"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -105,8 +105,8 @@ export default function ActivityCard({
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">{emptyStateTitle}</h3>
-            <p className="text-gray-600 mb-6 max-w-sm mx-auto leading-relaxed">{emptyStateDescription}</p>
+            <h3 className="text-lg font-semibold text-foreground mb-2">{emptyStateTitle}</h3>
+            <p className="text-muted-foreground mb-6 max-w-sm mx-auto leading-relaxed">{emptyStateDescription}</p>
             {emptyStateActionText && emptyStateActionHref && (
               <Link href={emptyStateActionHref}>
                 <Button className="bg-gradient-to-r from-primary to-primary-glow text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">

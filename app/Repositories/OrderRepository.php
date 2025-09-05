@@ -119,6 +119,10 @@ class OrderRepository extends BaseRepository
             }
         }
 
+        if (isset($filters['payment_type']) && $filters['payment_type'] !== 'all') {
+            $query->where('payment_type', $filters['payment_type']);
+        }
+
         if (isset($filters['date_from']) && !empty($filters['date_from'])) {
             $query->whereDate('created_at', '>=', $filters['date_from']);
         }

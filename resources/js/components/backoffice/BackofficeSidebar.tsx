@@ -1,17 +1,17 @@
 import { Link } from '@inertiajs/react';
 import {
-    LayoutDashboard,
-    MessageSquare,
-    Palette,
-    Settings,
-    ShoppingCart,
-    Tag,
-    User,
-    Users,
-    X
+  LayoutDashboard,
+  MessageSquare,
+  Palette,
+  Settings,
+  ShoppingCart,
+  Tag,
+  Users,
+  X
 } from 'lucide-react';
 import { useCurrentPath } from '../../hooks/useCurrentPath';
 import { Button } from '../ui/button';
+import ThemeToggle from '../ui/ThemeToggle';
 
 interface BackofficeSidebarProps {
   user: {
@@ -89,13 +89,6 @@ export default function BackofficeSidebar({ user, sidebarOpen, setSidebarOpen }:
       permissions: ['view-themes']
     },
     {
-      name: 'User Settings',
-      href: '/settings',
-      icon: Settings,
-      roles: ['super-admin', 'admin', 'moderator'],
-      permissions: ['view-settings']
-    },
-    {
       name: 'System Settings',
       href: '/backoffice/configurations',
       icon: Settings,
@@ -118,13 +111,12 @@ export default function BackofficeSidebar({ user, sidebarOpen, setSidebarOpen }:
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center justify-between h-16 px-6 border-b border-border/50">
-            <Link href="/backoffice" className="flex flex-col items-center">
+            <Link href="/backoffice" className="flex items-center">
               <img
                 src="/inveet-logo.png"
                 alt="Inveet.Id Backoffice"
                 className="h-8 w-auto hover:opacity-80 transition-opacity duration-300 cursor-pointer"
               />
-              <span className="text-xs font-inter-bold text-secondary-foreground mt-1 bg-secondary px-2 py-1 rounded-md">Backoffice</span>
             </Link>
             <Button
               variant="ghost"
@@ -175,23 +167,13 @@ export default function BackofficeSidebar({ user, sidebarOpen, setSidebarOpen }:
             })}
           </nav>
 
-          {/* User Info */}
+          {/* Backoffice Flag & Theme Toggle */}
           <div className="p-4 border-t border-border/50">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-                <User className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-inter-medium text-foreground truncate">
-                  {user?.name}
-                </p>
-                <p className="text-xs text-muted-foreground truncate font-inter-normal">
-                  {user?.email}
-                </p>
-                <p className="text-xs text-primary truncate font-inter-normal">
-                  {user?.roles?.[0]?.name || 'Admin'}
-                </p>
-              </div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-inter-bold text-white bg-gradient-to-r from-primary to-primary/80 px-3 py-1.5 rounded-full shadow-lg border border-primary/20 animate-pulse">
+                Backoffice
+              </span>
+              <ThemeToggle size="sm" />
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import BackButton from '@/components/backoffice/BackButton';
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
+import PageHeader from '@/components/backoffice/PageHeader';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -175,20 +176,21 @@ export default function Coupons({ user, coupons, filters: initialFilters }: Coup
 
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
             <BackButton href="/backoffice" label="Back to Dashboard" />
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">Coupons</h1>
-              <p className="text-muted-foreground">Manage discount coupons and promotional codes</p>
-            </div>
           </div>
-          <Link href="/backoffice/coupons/create">
-            <Button className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Create Coupon
-            </Button>
-          </Link>
+          <PageHeader
+            title="Coupons"
+            subtitle="Manage discount coupons and promotional codes"
+          >
+            <Link href="/backoffice/coupons/create">
+              <Button className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Create Coupon
+              </Button>
+            </Link>
+          </PageHeader>
         </div>
 
         {/* Filters */}
@@ -242,7 +244,7 @@ export default function Coupons({ user, coupons, filters: initialFilters }: Coup
         {/* Coupons Table */}
         <Card>
           <CardHeader>
-            <CardTitle>Coupons ({coupons.total})</CardTitle>
+            <CardTitle>Coupons</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">

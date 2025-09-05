@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import PageHeader from '@/components/ui/page-header';
 import { Head, Link } from '@inertiajs/react';
-import { Bell, Settings, Shield } from 'lucide-react';
+import { Bell, Monitor, Settings, Shield } from 'lucide-react';
 
 interface SettingsProps {
   user: {
@@ -77,6 +77,27 @@ export default function Settings({ user }: SettingsProps) {
               <Button variant="outline" className="w-full group-hover:border-primary group-hover:text-primary transition-all duration-300">
                 Configure Notifications
               </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="card-elegant hover:shadow-2xl transition-all duration-300 cursor-pointer group">
+            <CardHeader className="pb-3">
+              <div className="flex items-center space-x-3">
+                <div className="icon-container icon-gradient-2 group-hover:scale-110 transition-transform">
+                  <Monitor className="w-5 h-5" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Appearance</CardTitle>
+                  <CardDescription>Customize theme and visual preferences</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Link href="/settings/appearance">
+                <Button variant="outline" className="w-full group-hover:border-primary group-hover:text-primary transition-all duration-300">
+                  Theme Settings
+                </Button>
+              </Link>
             </CardContent>
           </Card>
 

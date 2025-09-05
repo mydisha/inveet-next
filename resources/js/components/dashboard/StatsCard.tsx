@@ -67,7 +67,7 @@ export default function StatsCard({
     )}>
       <CardHeader className="pb-4 pt-6 px-6">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-medium text-gray-600">
+          <CardTitle className="text-sm font-medium text-muted-foreground">
             {title}
           </CardTitle>
           {Icon && (
@@ -92,11 +92,11 @@ export default function StatsCard({
         </div>
       </CardHeader>
       <CardContent className="px-6 pb-6">
-        <div className="text-2xl font-bold text-gray-900 mb-1">
+        <div className="text-2xl font-bold text-foreground mb-1">
           {value}
         </div>
         {description && (
-          <p className="text-sm text-gray-600 mb-2">
+          <p className="text-sm text-muted-foreground mb-2">
             {description}
           </p>
         )}
@@ -108,7 +108,7 @@ export default function StatsCard({
             )}>
               {trend.positive ? "+" : ""}{trend.value}%
             </span>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-muted-foreground">
               {trend.label}
             </span>
           </div>

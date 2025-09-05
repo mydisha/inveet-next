@@ -80,9 +80,9 @@ export function WeddingCard({
       case 'draft':
         return 'text-amber-600 bg-amber-50 border-amber-200';
       case 'inactive':
-        return 'text-gray-600 bg-gray-50 border-gray-200';
+        return 'text-muted-foreground bg-muted border-border';
       default:
-        return 'text-gray-600 bg-gray-50 border-gray-200';
+        return 'text-muted-foreground bg-muted border-border';
     }
   };
 
@@ -177,15 +177,15 @@ export function WeddingCard({
           <div className={cn(
             isListView ? "text-left" : "text-center"
           )}>
-            <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2">
+            <h3 className="font-semibold text-lg text-foreground mb-2 line-clamp-2">
               {wedding.couple_name_1 && wedding.couple_name_2
                 ? `${wedding.couple_name_1} & ${wedding.couple_name_2}`
                 : wedding.title || 'Untitled Wedding'
               }
             </h3>
             {(wedding.wedding_location || wedding.wedding_venue) && (
-              <p className="text-sm text-gray-500 flex items-center gap-1">
-                <span className="text-gray-400">📍</span>
+              <p className="text-sm text-muted-foreground flex items-center gap-1">
+                <span className="text-muted-foreground">📍</span>
                 <span className="truncate">{wedding.wedding_location || wedding.wedding_venue}</span>
               </p>
             )}
@@ -201,7 +201,7 @@ export function WeddingCard({
               isListView ? "justify-start" : "justify-center"
             )}>
               <div className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0"></div>
-              <span className="text-sm text-gray-500 font-medium truncate">
+              <span className="text-sm text-muted-foreground font-medium truncate">
                 {wedding.theme?.name || 'No theme selected'}
               </span>
             </div>
@@ -212,7 +212,7 @@ export function WeddingCard({
                 isListView ? "justify-start" : "justify-center"
               )}>
                 <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full flex-shrink-0"></div>
-                <span className="text-sm text-gray-500 font-medium truncate">
+                <span className="text-sm text-muted-foreground font-medium truncate">
                   {wedding.package.name}
                 </span>
               </div>
@@ -228,13 +228,13 @@ export function WeddingCard({
         <div className="space-y-4">
           {/* Wedding Date and Stats */}
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <Calendar className="w-4 h-4 text-gray-400" />
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Calendar className="w-4 h-4 text-muted-foreground" />
               <span className="font-medium">{formatDate(wedding.wedding_start)}</span>
             </div>
 
             {wedding.view_count !== undefined && (
-              <div className="flex items-center gap-2 text-sm text-gray-500">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Eye className="w-4 h-4" />
                 <span>{wedding.view_count} views</span>
               </div>

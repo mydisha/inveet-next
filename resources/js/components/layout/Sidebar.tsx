@@ -8,6 +8,7 @@ import {
     X
 } from 'lucide-react';
 import { Button } from '../ui/button';
+import ThemeToggle from '../ui/ThemeToggle';
 
 interface SidebarProps {
   user: {
@@ -120,6 +121,7 @@ export default function Sidebar({ user, sidebarOpen, setSidebarOpen, currentPath
                   {user?.email}
                 </p>
               </div>
+              <ThemeToggle size="sm" />
             </div>
           </div>
         </div>

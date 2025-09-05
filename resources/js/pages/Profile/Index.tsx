@@ -1,3 +1,4 @@
+import BackButton from '@/components/backoffice/BackButton';
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Badge } from '@/components/ui/badge';
@@ -60,7 +61,9 @@ export default function Profile({ user }: ProfileProps) {
             icon={User}
             title="Profile"
             description="Manage your account information and preferences"
-          />
+          >
+            <BackButton href="/dashboard" label="Back to Dashboard" />
+          </PageHeader>
 
           {/* Hero Section */}
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-primary-light/5 to-background p-8 border border-primary/20">

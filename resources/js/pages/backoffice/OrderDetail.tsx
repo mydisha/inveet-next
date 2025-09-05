@@ -1,5 +1,6 @@
 import BackButton from '@/components/backoffice/BackButton';
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
+import PageHeader from '@/components/backoffice/PageHeader';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -157,18 +158,18 @@ export default function OrderDetailPage({ user, order }: OrderDetailProps) {
       <BackofficeLayout user={user} title="Order Details" description="View order details and manage order status">
         <div className="space-y-6">
           {/* Header */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
               <BackButton href="/backoffice/orders" label="Back to Orders" />
-              <div>
-                <h1 className="text-2xl font-bold">Order {order.invoice_number}</h1>
-                <p className="text-gray-500">Order ID: {order.id}</p>
+              <div className="flex items-center space-x-2">
+                {getStatusBadge(order)}
+                {getPaymentTypeBadge(order.payment_type)}
               </div>
             </div>
-            <div className="flex items-center space-x-2">
-              {getStatusBadge(order)}
-              {getPaymentTypeBadge(order.payment_type)}
-            </div>
+            <PageHeader
+              title={`Order ${order.invoice_number}`}
+              subtitle={`Order ID: ${order.id}`}
+            />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

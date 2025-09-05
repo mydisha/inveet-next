@@ -1,5 +1,6 @@
 import BackButton from '@/components/backoffice/BackButton';
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
+import PageHeader from '@/components/backoffice/PageHeader';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -168,11 +169,14 @@ export default function FeedbacksPage({ user, feedbacks, filters: initialFilters
       <BackofficeLayout user={user} title="Feedback Management" description="Manage user feedbacks">
         <div className="space-y-6">
           {/* Header */}
-          <div className="flex items-center justify-between">
-            <BackButton href="/backoffice" label="Back to Dashboard" />
-            <div className="text-sm text-muted-foreground">
-              {feedbacks.total} total feedbacks
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <BackButton href="/backoffice" label="Back to Dashboard" />
             </div>
+            <PageHeader
+              title="Feedback Management"
+              subtitle="Manage user feedbacks"
+            />
           </div>
 
           {/* Filters */}

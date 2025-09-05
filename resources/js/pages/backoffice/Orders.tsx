@@ -1,38 +1,39 @@
 import BackButton from '@/components/backoffice/BackButton';
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
+import PageHeader from '@/components/backoffice/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui/table';
 import { Head, Link, router } from '@inertiajs/react';
 import {
-    CheckCircle,
-    Eye,
-    MoreHorizontal,
-    Search,
-    XCircle,
+  CheckCircle,
+  Eye,
+  MoreHorizontal,
+  Search,
+  XCircle,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface Order {
   id: number;
@@ -80,6 +81,7 @@ interface OrdersPageProps {
   filters: {
     search?: string;
     status?: string;
+    payment_type?: string;
     date_from?: string;
     date_to?: string;
   };
@@ -88,8 +90,41 @@ interface OrdersPageProps {
 export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
   const [search, setSearch] = useState(filters.search || '');
   const [statusFilter, setStatusFilter] = useState(filters.status || 'all');
+  const [paymentTypeFilter, setPaymentTypeFilter] = useState(filters.payment_type || 'all');
   const [dateFrom, setDateFrom] = useState(filters.date_from || '');
   const [dateTo, setDateTo] = useState(filters.date_to || '');
+  const [paymentTypes, setPaymentTypes] = useState<string[]>([]);
+  const [loadingPaymentTypes, setLoadingPaymentTypes] = useState(false);
+
+  // Fetch payment types on component mount
+  useEffect(() => {
+    const fetchPaymentTypes = async () => {
+      try {
+        setLoadingPaymentTypes(true);
+        const response = await fetch('/api/backoffice/orders/payment-types', {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+          },
+          credentials: 'same-origin',
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setPaymentTypes(data.data);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching payment types:', error);
+      } finally {
+        setLoadingPaymentTypes(false);
+      }
+    };
+
+    fetchPaymentTypes();
+  }, []);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -133,7 +168,7 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
 
   const getPaymentTypeBadge = (paymentType: string) => {
     return (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
         {paymentType}
       </span>
     );
@@ -143,6 +178,7 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
     const params = new URLSearchParams();
     if (search) params.append('search', search);
     if (statusFilter && statusFilter !== 'all') params.append('status', statusFilter);
+    if (paymentTypeFilter && paymentTypeFilter !== 'all') params.append('payment_type', paymentTypeFilter);
     if (dateFrom) params.append('date_from', dateFrom);
     if (dateTo) params.append('date_to', dateTo);
 
@@ -180,6 +216,7 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
     const params = new URLSearchParams();
     if (search) params.append('search', search);
     if (statusFilter && statusFilter !== 'all') params.append('status', statusFilter);
+    if (paymentTypeFilter && paymentTypeFilter !== 'all') params.append('payment_type', paymentTypeFilter);
     if (dateFrom) params.append('date_from', dateFrom);
     if (dateTo) params.append('date_to', dateTo);
     params.append('page', page.toString());
@@ -193,14 +230,14 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
 
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
             <BackButton href="/backoffice" label="Back to Dashboard" />
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Orders ({orders.total})</h1>
-              <p className="text-gray-600">Manage and track all orders</p>
-            </div>
           </div>
+          <PageHeader
+            title="Orders"
+            subtitle="Manage and track all orders"
+          />
         </div>
 
         {/* Simple Search and Filters */}
@@ -209,7 +246,7 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     placeholder="Search by invoice, transaction ID, or user..."
                     value={search}
@@ -232,6 +269,23 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
                     <SelectItem value="paid">Paid</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="void">Void</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={paymentTypeFilter}
+                  onValueChange={(value) => setPaymentTypeFilter(value)}
+                  disabled={loadingPaymentTypes}
+                >
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder={loadingPaymentTypes ? "Loading..." : "All payment types"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Payment Types</SelectItem>
+                    {paymentTypes.map((paymentType) => (
+                      <SelectItem key={paymentType} value={paymentType}>
+                        {paymentType}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <Button onClick={handleSearch} className="w-full sm:w-auto">

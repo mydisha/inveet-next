@@ -3,7 +3,7 @@ import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { Calendar, Mail, Phone, ShoppingCart, User, Users } from 'lucide-react';
 
 interface User {

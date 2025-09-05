@@ -1,5 +1,6 @@
 import BackButton from '@/components/backoffice/BackButton';
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
+import PageHeader from '@/components/backoffice/PageHeader';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -342,11 +343,14 @@ export default function ConfigurationsPage({ user }: ConfigurationsPageProps) {
       <BackofficeLayout user={user} title="Website Configuration" description="Manage website settings">
         <div className="space-y-6">
           {/* Header */}
-          <div className="flex items-center justify-between">
-            <BackButton href="/backoffice" label="Back to Dashboard" />
-            <div className="text-sm text-muted-foreground">
-              {configurations.length} configurations
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <BackButton href="/backoffice" label="Back to Dashboard" />
             </div>
+            <PageHeader
+              title="Website Configuration"
+              subtitle="Manage website settings and preferences"
+            />
           </div>
 
           {/* Header Actions */}
@@ -444,7 +448,7 @@ export default function ConfigurationsPage({ user }: ConfigurationsPageProps) {
           {/* Configurations Table */}
           <Card>
             <CardHeader>
-              <CardTitle>Configurations ({total})</CardTitle>
+              <CardTitle>Configurations</CardTitle>
             </CardHeader>
             <CardContent>
               {loading ? (

@@ -41,14 +41,14 @@ export default function PageHeader({
             </p>
           )}
           <h1 className={cn(
-            "text-3xl font-bold text-gray-900 mb-3 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent",
+            "text-3xl font-bold mb-3 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent",
             titleClassName
           )}>
             {title}
           </h1>
           {description && (
             <p className={cn(
-              "text-gray-600 text-lg leading-relaxed max-w-2xl",
+              "text-muted-foreground text-lg leading-relaxed max-w-2xl",
               descriptionClassName
             )}>
               {description}

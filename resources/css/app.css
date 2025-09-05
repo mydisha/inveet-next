@@ -147,6 +147,52 @@ All colors MUST be HSL for consistency and theming
     @apply border-border;
   }
 
+  /* Ensure all text elements use theme variables */
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-foreground;
+  }
+
+  p {
+    @apply text-foreground;
+  }
+
+  /* Override common hardcoded text colors with theme variables */
+  .text-gray-900 {
+    @apply text-foreground;
+  }
+
+  .text-gray-800 {
+    @apply text-foreground;
+  }
+
+  .text-gray-700 {
+    @apply text-foreground;
+  }
+
+  .text-gray-600 {
+    @apply text-muted-foreground;
+  }
+
+  .text-gray-500 {
+    @apply text-muted-foreground;
+  }
+
+  .text-gray-400 {
+    @apply text-muted-foreground;
+  }
+
+  .text-gray-300 {
+    @apply text-muted-foreground;
+  }
+
+  .text-gray-200 {
+    @apply text-muted-foreground;
+  }
+
+  .text-gray-100 {
+    @apply text-muted-foreground;
+  }
+
   body {
     @apply bg-background text-foreground font-sans;
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
