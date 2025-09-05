@@ -7,6 +7,26 @@ import { Input } from '@/components/ui/input';
 import { ArrowUpDown, Check, Eye, Filter, Heart, Palette, Search, SortAsc, SortDesc, Sparkles, Star, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
+interface Theme {
+  id: number;
+  name: string;
+  description: string;
+  slug: string;
+  is_active: boolean;
+  preview_image?: string;
+  preview_image_url?: string;
+  is_public?: boolean;
+  images?: Array<{
+    id: number;
+    image_path: string;
+    alt_text?: string;
+  }>;
+  packages?: Array<{
+    id: number;
+    name: string;
+  }>;
+}
+
 interface Design {
   id: string;
   name: string;
@@ -34,6 +54,9 @@ export default function DesignSelection({ user }: DesignSelectionProps) {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<'name' | 'category' | 'popularity'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [themes, setThemes] = useState<Theme[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const handleContinue = () => {
     if (!selectedDesign) return;
@@ -41,6 +64,71 @@ export default function DesignSelection({ user }: DesignSelectionProps) {
     window.location.href = '/onboarding/wedding-url';
   };
 
+  // Fetch themes from API
+  useEffect(() => {
+    const fetchThemes = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const apiUrl = import.meta.env.VITE_APP_URL || 'http://localhost:8000';
+        console.log('Fetching themes from:', `${apiUrl}/api/themes/active?limit=20`);
+
+        const response = await fetch(`${apiUrl}/api/themes/active?limit=20`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+          credentials: 'omit',
+        });
+
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        console.log('Response URL:', response.url);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Error response:', errorText);
+          throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+
+        if (data.success && data.data) {
+          setThemes(data.data);
+        } else {
+          setError(`Failed to load themes: ${data.message || 'Unknown error'}`);
+        }
+      } catch (err) {
+        console.error('Error fetching themes:', err);
+        setError(`Failed to load themes: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchThemes();
+  }, []);
+
+  // Convert themes to design templates format for compatibility
+  const designs: Design[] = themes.map(theme => {
+    return {
+      id: theme.id.toString(),
+      name: theme.name,
+      category: theme.name.split(' ')[0] || 'General',
+      description: theme.description,
+      preview: theme.preview_image_url || '/api/placeholder/400/300',
+      features: [
+        'Responsive design',
+        'Customizable colors',
+        'Modern layout',
+        'Mobile optimized'
+      ],
+      colors: ['#667eea', '#764ba2', '#ffd700', '#ff6b6b', '#ffffff'],
+      popular: theme.is_active,
+      trending: theme.is_active
+    };
+  });
 
   // Screen reader announcements for selection changes
   useEffect(() => {
@@ -64,76 +152,6 @@ export default function DesignSelection({ user }: DesignSelectionProps) {
     }
   }, [selectedDesign, designs]);
 
-  const designs: Design[] = [
-    {
-      id: 'elegant-classic',
-      name: 'Elegant Classic',
-      category: 'Traditional',
-      description: 'Timeless and sophisticated design with elegant typography',
-      preview: '/themes/overlay-shadow-01/assets/og-image.jpg',
-      features: ['Elegant typography', 'Classic layout', 'Gold accents', 'Formal style'],
-      colors: ['#8B4513', '#DAA520', '#F5F5DC'],
-      popular: true
-    },
-    {
-      id: 'modern-minimalist',
-      name: 'Modern Minimalist',
-      category: 'Contemporary',
-      description: 'Clean and modern design with minimalist aesthetics',
-      preview: '/api/placeholder/400/300',
-      features: ['Clean lines', 'Modern typography', 'Minimal design', 'Contemporary feel'],
-      colors: ['#2C3E50', '#E74C3C', '#ECF0F1'],
-      trending: true
-    },
-    {
-      id: 'romantic-floral',
-      name: 'Romantic Floral',
-      category: 'Romantic',
-      description: 'Beautiful floral design perfect for romantic weddings',
-      preview: '/api/placeholder/400/300',
-      features: ['Floral elements', 'Romantic colors', 'Soft typography', 'Elegant layout'],
-      colors: ['#E91E63', '#F8BBD9', '#FFF8E1'],
-      popular: true
-    },
-    {
-      id: 'rustic-chic',
-      name: 'Rustic Chic',
-      category: 'Rustic',
-      description: 'Rustic and charming design with natural elements',
-      preview: '/api/placeholder/400/300',
-      features: ['Natural textures', 'Rustic elements', 'Warm colors', 'Charming style'],
-      colors: ['#8D6E63', '#A1887F', '#EFEBE9']
-    },
-    {
-      id: 'vintage-elegance',
-      name: 'Vintage Elegance',
-      category: 'Vintage',
-      description: 'Classic vintage design with timeless appeal',
-      preview: '/api/placeholder/400/300',
-      features: ['Vintage typography', 'Classic elements', 'Elegant layout', 'Timeless style'],
-      colors: ['#5D4037', '#BCAAA4', '#F3E5F5']
-    },
-    {
-      id: 'tropical-paradise',
-      name: 'Tropical Paradise',
-      category: 'Tropical',
-      description: 'Vibrant tropical design perfect for destination weddings',
-      preview: '/api/placeholder/400/300',
-      features: ['Tropical elements', 'Vibrant colors', 'Exotic feel', 'Paradise vibes'],
-      colors: ['#4CAF50', '#FF9800', '#E1F5FE']
-    },
-    {
-      id: 'overlay-shadow-01',
-      name: 'Overlay Shadow 01',
-      category: 'Elegant',
-      description: 'Elegant wedding invitation with overlay shadow effects, inspired by Luxee design',
-      preview: '/themes/overlay-shadow-01/assets/og-image.jpg',
-      features: ['Responsive design', 'Countdown timer', 'RSVP form', 'Digital envelope', 'Gallery section', 'Smooth animations'],
-      colors: ['#667eea', '#764ba2', '#ffd700', '#ff6b6b', '#ffffff'],
-      popular: true,
-      trending: true
-    }
-  ];
 
   // Get unique categories
   const categories = useMemo(() => {
@@ -210,8 +228,32 @@ export default function DesignSelection({ user }: DesignSelectionProps) {
       maxWidth="7xl"
     >
       <div className="space-y-6">
-        {/* Search and Filter Controls */}
-        <div className="space-y-6">
+        {/* Loading State */}
+        {loading && (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Loading designs...</p>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="text-center py-12">
+            <p className="text-red-500 mb-4">{error}</p>
+            <Button
+              onClick={() => window.location.reload()}
+              variant="outline"
+            >
+              Try Again
+            </Button>
+          </div>
+        )}
+
+        {/* Main Content - Only show when not loading and no error */}
+        {!loading && !error && (
+          <>
+            {/* Search and Filter Controls */}
+            <div className="space-y-6">
           {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -560,6 +602,8 @@ export default function DesignSelection({ user }: DesignSelectionProps) {
               </div>
             </CardContent>
           </Card>
+        )}
+          </>
         )}
       </div>
     </OnboardingLayout>

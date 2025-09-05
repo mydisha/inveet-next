@@ -109,6 +109,9 @@ Route::middleware(['auth', 'backoffice'])->prefix('backoffice')->group(function 
         Route::post('/feedbacks/{feedback}/toggle-show-landing', [FrontendController::class, 'backofficeFeedbacksToggleShowLanding']);
         Route::delete('/feedbacks/{feedback}', [FrontendController::class, 'backofficeFeedbacksDestroy']);
 
+        // Users API routes
+        Route::put('/users/{user}', [FrontendController::class, 'backofficeUsersUpdate']);
+
         // Coupons API routes
         Route::get('/coupons', [FrontendController::class, 'backofficeCouponsApi']);
         Route::post('/coupons', [FrontendController::class, 'backofficeCouponsStore']);

@@ -1992,6 +1992,27 @@ class FrontendController extends Controller
     }
 
     /**
+     * Update user
+     */
+    public function backofficeUsersUpdate(Request $request, $user)
+    {
+        $userModel = \App\Models\User::findOrFail($user);
+
+        try {
+            $userModel->update($request->only(['name', 'email', 'phone_number', 'is_active']));
+
+            // Update roles if provided
+            if ($request->has('roles')) {
+                $userModel->roles()->sync($request->roles);
+            }
+
+            return redirect()->route('backoffice.users.show', $user)->with('success', 'User updated successfully');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
+        }
+    }
+
+    /**
      * Get themes for backoffice
      */
     public function backofficeThemesApi(Request $request)
@@ -2180,17 +2201,9 @@ class FrontendController extends Controller
 
         try {
             $coupon = $couponService->create($request->all());
-            return response()->json([
-                'success' => true,
-                'data' => $coupon,
-                'message' => 'Coupon created successfully'
-            ]);
+            return redirect()->route('backoffice.coupons')->with('success', 'Coupon created successfully');
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
+            return back()->withErrors($e->errors())->withInput();
         }
     }
 
@@ -2229,23 +2242,12 @@ class FrontendController extends Controller
             $couponModel = $couponService->update($coupon, $request->all());
 
             if (!$couponModel) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Coupon not found'
-                ], 404);
+                return back()->with('error', 'Coupon not found');
             }
 
-            return response()->json([
-                'success' => true,
-                'data' => $couponModel,
-                'message' => 'Coupon updated successfully'
-            ]);
+            return redirect()->route('backoffice.coupons')->with('success', 'Coupon updated successfully');
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
+            return back()->withErrors($e->errors())->withInput();
         }
     }
 

@@ -225,7 +225,7 @@ export default function CouponForm({ user, coupon, packages, users }: CouponForm
           </div>
         </div>
 
-        {/* Scrollable Content */}
+        {/* Scrollable Form Content */}
         <div className="flex-1 overflow-y-auto min-h-0">
           <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

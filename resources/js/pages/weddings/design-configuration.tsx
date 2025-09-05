@@ -99,17 +99,35 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
         setLoading(true);
         setError(null);
 
-        // Try direct fetch first to debug
-        const directResponse = await fetch('/api/themes/active?limit=12');
-        const directData = await directResponse.json();
+        const apiUrl = import.meta.env.VITE_APP_URL || 'http://localhost:8000';
+        console.log('Fetching themes from:', `${apiUrl}/api/themes/active?limit=12`);
 
-        if (directData.success && directData.data) {
-          setThemes(directData.data);
+        const response = await fetch(`${apiUrl}/api/themes/active?limit=12`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+          credentials: 'omit',
+        });
+
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        console.log('Response URL:', response.url);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.success && data.data) {
+          setThemes(data.data);
         } else {
-          setError('Failed to load themes');
+          setError(`Failed to load themes: ${data.message || 'Unknown error'}`);
         }
       } catch (err) {
-        setError(`Failed to load themes: ${err.message}`);
+        console.error('Error fetching themes:', err);
+        setError(`Failed to load themes: ${err instanceof Error ? err.message : 'Unknown error'}`);
       } finally {
         setLoading(false);
       }
@@ -139,66 +157,6 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
   });
 
 
-  // Fallback design templates if no themes are loaded
-  const fallbackDesignTemplates: DesignTemplate[] = [
-    {
-      id: 'elegant-classic',
-      name: 'Elegant Classic',
-      category: 'Traditional',
-      description: 'Timeless and sophisticated design with elegant typography',
-      preview: '/api/placeholder/400/300',
-      features: ['Elegant typography', 'Classic layout', 'Gold accents', 'Formal style'],
-      colors: ['#8B4513', '#DAA520', '#F5F5DC'],
-      popular: true
-    },
-    {
-      id: 'modern-minimalist',
-      name: 'Modern Minimalist',
-      category: 'Contemporary',
-      description: 'Clean and modern design with minimalist aesthetics',
-      preview: '/api/placeholder/400/300',
-      features: ['Clean lines', 'Modern typography', 'Minimal design', 'Contemporary feel'],
-      colors: ['#2C3E50', '#E74C3C', '#ECF0F1'],
-      trending: true
-    },
-    {
-      id: 'romantic-floral',
-      name: 'Romantic Floral',
-      category: 'Romantic',
-      description: 'Beautiful floral design perfect for romantic weddings',
-      preview: '/api/placeholder/400/300',
-      features: ['Floral elements', 'Romantic colors', 'Soft typography', 'Elegant layout'],
-      colors: ['#E91E63', '#F8BBD9', '#FFF8E1'],
-      popular: true
-    },
-    {
-      id: 'rustic-chic',
-      name: 'Rustic Chic',
-      category: 'Rustic',
-      description: 'Rustic and charming design with natural elements',
-      preview: '/api/placeholder/400/300',
-      features: ['Natural textures', 'Rustic elements', 'Warm colors', 'Charming style'],
-      colors: ['#8D6E63', '#A1887F', '#EFEBE9']
-    },
-    {
-      id: 'vintage-elegance',
-      name: 'Vintage Elegance',
-      category: 'Vintage',
-      description: 'Classic vintage design with timeless appeal',
-      preview: '/api/placeholder/400/300',
-      features: ['Vintage typography', 'Classic elements', 'Elegant layout', 'Timeless style'],
-      colors: ['#5D4037', '#BCAAA4', '#F3E5F5']
-    },
-    {
-      id: 'tropical-paradise',
-      name: 'Tropical Paradise',
-      category: 'Tropical',
-      description: 'Vibrant tropical design perfect for destination weddings',
-      preview: '/api/placeholder/400/300',
-      features: ['Tropical elements', 'Vibrant colors', 'Exotic feel', 'Paradise vibes'],
-      colors: ['#4CAF50', '#FF9800', '#E1F5FE']
-    }
-  ];
 
   const colorPalettes: ColorPalette[] = [
     {
@@ -239,9 +197,8 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
     }
   ];
 
-  // Use themes if available, otherwise fallback to hardcoded templates
-  // Only use fallback if we're still loading or if there's an error AND no themes
-  const templatesToUse = themes.length > 0 ? designTemplates : fallbackDesignTemplates;
+  // Use only database themes
+  const templatesToUse = designTemplates;
 
   // Debug logging
 
@@ -329,7 +286,7 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
           backHref={`/wedding/${wedding?.id}`}
           backLabel="Kembali ke Detail Pernikahan"
           icon={Palette}
-          maxWidth="7xl"
+          maxWidth="6xl"
         >
 
         <Tabs defaultValue="cover" className="space-y-6">

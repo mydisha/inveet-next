@@ -61,7 +61,7 @@ export default function UserEditPage({ user, currentUser }: UserEditProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    put(`/api/backoffice/users/${user.id}`, {
+    put(`/backoffice/api/users/${user.id}`, {
       onSuccess: () => {
         // Redirect to user detail page after successful update
         window.location.href = `/backoffice/users/${user.id}`;

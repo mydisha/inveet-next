@@ -21,7 +21,7 @@ export default function BackofficeLayout({ user, children, title, description }:
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary-light/10 font-inter">
+    <div className="h-screen bg-gradient-to-br from-primary/5 via-background to-primary-light/10 font-inter overflow-hidden">
       {/* Background decorative elements matching landing page */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div className="shape-float-1 top-20 right-20 w-32 h-32" style={{ animationDelay: '0s' }}></div>
@@ -39,7 +39,7 @@ export default function BackofficeLayout({ user, children, title, description }:
       />
 
       {/* Main content */}
-      <div className="lg:pl-64 relative z-20 h-screen flex flex-col">
+      <div className="lg:pl-64 relative z-20 h-full flex flex-col">
         {/* Top Header */}
         <BackofficeHeader user={user} setSidebarOpen={setSidebarOpen} />
 

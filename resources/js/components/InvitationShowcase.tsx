@@ -35,7 +35,20 @@ const InvitationShowcase = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch('/api/themes/active?limit=12');
+        const apiUrl = import.meta.env.VITE_APP_URL || 'http://localhost:8000';
+        console.log('Fetching themes from:', `${apiUrl}/api/themes/active?limit=12`);
+
+        const response = await fetch(`${apiUrl}/api/themes/active?limit=12`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+          credentials: 'omit',
+        });
+
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        console.log('Response URL:', response.url);
         const data = await response.json();
 
         if (data.success && data.data) {
