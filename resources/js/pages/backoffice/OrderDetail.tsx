@@ -68,32 +68,28 @@ export default function OrderDetailPage({ user, order }: OrderDetailProps) {
 
   const getStatusBadge = (order: Order) => {
     if (order.is_void) {
-      return <Badge className="bg-red-100 text-red-800">Void</Badge>;
+      return <Badge variant="error">Void</Badge>;
     }
     if (order.is_paid) {
-      return <Badge className="bg-green-100 text-green-800">Paid</Badge>;
+      return <Badge variant="success">Paid</Badge>;
     }
-    return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>;
+    return <Badge variant="warning">Pending</Badge>;
   };
 
   const getPaymentTypeBadge = (paymentType: string | null | undefined) => {
-    const colors = {
-      'bank_transfer': 'bg-blue-100 text-blue-800',
-      'credit_card': 'bg-purple-100 text-purple-800',
-      'e_wallet': 'bg-green-100 text-green-800',
-      'manual': 'bg-gray-100 text-gray-800',
-    };
+    const variants = {
+      'bank_transfer': 'info',
+      'credit_card': 'purple',
+      'e_wallet': 'success',
+      'manual': 'gray',
+    } as const;
 
     if (!paymentType) {
-      return (
-        <Badge className="bg-gray-100 text-gray-800">
-          UNKNOWN
-        </Badge>
-      );
+      return <Badge variant="gray">UNKNOWN</Badge>;
     }
 
     return (
-      <Badge className={colors[paymentType as keyof typeof colors] || 'bg-gray-100 text-gray-800'}>
+      <Badge variant={variants[paymentType as keyof typeof variants] || 'gray'}>
         {paymentType.replace('_', ' ').toUpperCase()}
       </Badge>
     );

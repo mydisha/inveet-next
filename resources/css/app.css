@@ -139,6 +139,17 @@ All colors MUST be HSL for consistency and theming
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Landing page optimized dark mode colors */
+    --landing-hero-text: 0 0% 98%;
+    --landing-hero-subtext: 0 0% 85%;
+    --landing-hero-bg-overlay: 220 30% 5% / 0.85;
+    --landing-card-bg: 220 30% 12% / 0.9;
+    --landing-card-border: 220 15% 25%;
+    --landing-section-bg: 220 30% 6%;
+    --landing-text-primary: 0 0% 95%;
+    --landing-text-secondary: 0 0% 75%;
+    --landing-text-muted: 0 0% 60%;
   }
 }
 
@@ -1392,6 +1403,255 @@ All colors MUST be HSL for consistency and theming
   .profile-entrance-3,
   .profile-entrance-4 {
     animation-delay: 0s; /* Remove delays on mobile */
+  }
+}
+
+/* Optimized Dark Mode for Landing, Login, and Register Pages */
+@layer components {
+  /* ===== LANDING PAGE DARK MODE ===== */
+
+  /* Hero Section */
+  .dark #home {
+    background: linear-gradient(135deg, hsl(220 30% 5%) 0%, hsl(220 30% 8%) 100%);
+  }
+
+  .dark .hero-badge {
+    background: hsl(var(--landing-card-bg));
+    border-color: hsl(var(--landing-card-border));
+    color: hsl(var(--landing-hero-text));
+  }
+
+  .dark .hero-badge span {
+    color: hsl(var(--landing-hero-text));
+  }
+
+  .dark .hero-description {
+    color: hsl(var(--landing-hero-subtext));
+  }
+
+  .dark .hero-stats div {
+    color: hsl(var(--landing-hero-text));
+  }
+
+  .dark .hero-stats .text-primary-foreground {
+    color: hsl(var(--landing-hero-text));
+  }
+
+  .dark .hero-stats .text-primary-foreground\/70 {
+    color: hsl(var(--landing-hero-subtext));
+  }
+
+  /* Header */
+  .dark header {
+    background: hsl(var(--landing-card-bg));
+    border-color: hsl(var(--landing-card-border));
+  }
+
+  .dark header .text-foreground\/80 {
+    color: hsl(var(--landing-text-secondary));
+  }
+
+  .dark header .text-foreground\/80:hover {
+    color: hsl(var(--primary));
+  }
+
+  /* Services Section */
+  .dark #services {
+    background: linear-gradient(to bottom, hsl(var(--landing-section-bg)), hsl(var(--primary-light) / 0.05));
+  }
+
+  .dark #services h2 {
+    color: hsl(var(--landing-text-primary));
+  }
+
+  .dark #services .text-primary {
+    color: hsl(var(--primary));
+  }
+
+  /* Cards - Consolidated selectors */
+  .dark .card-elegant,
+  .dark [class*="card-gradient-"] {
+    background: hsl(var(--landing-card-bg));
+    border-color: hsl(var(--landing-card-border));
+  }
+
+  .dark .card-elegant h3,
+  .dark [class*="card-gradient-"] h3 {
+    color: hsl(var(--landing-text-primary));
+  }
+
+  .dark .card-elegant p,
+  .dark [class*="card-gradient-"] p {
+    color: hsl(var(--landing-text-secondary));
+  }
+
+  /* Icons - Consolidated selectors */
+  .dark [class*="icon-gradient-"] {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+
+  /* Buttons */
+  .dark .btn-hero {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    color: hsl(var(--primary-foreground));
+  }
+
+  .dark .btn-hero:hover {
+    background: linear-gradient(135deg, hsl(var(--primary-glow)), hsl(var(--primary)));
+  }
+
+  /* Text */
+  .dark .text-foreground {
+    color: hsl(var(--landing-text-primary));
+  }
+
+  /* Backgrounds */
+  .dark .bg-gradient-to-b {
+    background: linear-gradient(to bottom, hsl(var(--landing-section-bg)), hsl(var(--primary-light) / 0.05));
+  }
+
+  /* Footer */
+  .dark footer {
+    background: hsl(var(--landing-section-bg));
+    border-color: hsl(var(--landing-card-border));
+  }
+
+  .dark footer h3,
+  .dark footer h4 {
+    color: hsl(var(--landing-text-primary));
+  }
+
+  .dark footer p,
+  .dark footer a {
+    color: hsl(var(--landing-text-secondary));
+  }
+
+  .dark footer a:hover {
+    color: hsl(var(--primary));
+  }
+
+  /* ===== AUTH PAGES DARK MODE ===== */
+
+  /* Login and Register page optimizations */
+  .dark .auth-page {
+    background: linear-gradient(135deg, hsl(220 30% 6%) 0%, hsl(220 30% 9%) 100%);
+  }
+
+  .dark .auth-card {
+    background: hsl(var(--landing-card-bg));
+    border-color: hsl(var(--landing-card-border));
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+  }
+
+  .dark .auth-card h1,
+  .dark .auth-card h2 {
+    color: hsl(var(--landing-text-primary));
+  }
+
+  .dark .auth-card p {
+    color: hsl(var(--landing-text-secondary));
+  }
+
+
+  /* Form inputs */
+  .dark .auth-card input {
+    background: hsl(var(--landing-section-bg));
+    border-color: hsl(var(--landing-card-border));
+    color: hsl(var(--landing-text-primary));
+  }
+
+  .dark .auth-card input:focus {
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2);
+  }
+
+  .dark .auth-card input::placeholder {
+    color: hsl(var(--landing-text-muted));
+  }
+
+  /* Links */
+  .dark .auth-card a {
+    color: hsl(var(--primary));
+  }
+
+  .dark .auth-card a:hover {
+    color: hsl(var(--primary-glow));
+  }
+
+  /* Error states */
+  .dark .auth-card .text-destructive {
+    color: hsl(var(--destructive));
+  }
+
+  /* Success states */
+  .dark .auth-card .text-green-600 {
+    color: hsl(142 76% 36%);
+  }
+
+  /* ===== UTILITY OPTIMIZATIONS ===== */
+
+  /* Badge hover effects */
+  .dark [data-badge] {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .dark [data-badge]:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Badge color optimizations for dark mode */
+  .dark .bg-green-900\/20 {
+    background-color: hsl(142 76% 36% / 0.2);
+  }
+
+  .dark .bg-yellow-900\/20 {
+    background-color: hsl(45 93% 47% / 0.2);
+  }
+
+  .dark .bg-blue-900\/20 {
+    background-color: hsl(213 94% 68% / 0.2);
+  }
+
+  .dark .bg-red-900\/20 {
+    background-color: hsl(0 84% 60% / 0.2);
+  }
+
+  /* ===== PERFORMANCE OPTIMIZATIONS ===== */
+
+  /* Reduce repaints and reflows */
+  .dark .auth-card,
+  .dark .card-elegant,
+  .dark [class*="card-gradient-"] {
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  /* Optimize animations for dark mode */
+  .dark .shape-float-1,
+  .dark .shape-float-2,
+  .dark .shape-float-3,
+  .dark .glow-orb {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+  }
+
+  /* Additional badge colors for dark mode */
+  .dark .bg-orange-900\/20 {
+    background-color: hsl(25 95% 53% / 0.2);
+  }
+
+  .dark .bg-purple-900\/20 {
+    background-color: hsl(262 83% 58% / 0.2);
+  }
+
+  .dark .bg-pink-900\/20 {
+    background-color: hsl(330 81% 60% / 0.2);
+  }
+
+  .dark .bg-gray-800 {
+    background-color: hsl(220 13% 18%);
   }
 }
 

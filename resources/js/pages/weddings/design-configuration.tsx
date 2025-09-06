@@ -3,10 +3,14 @@ import StandardFormLayout from '@/components/dashboard/StandardFormLayout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import ColorPicker from '@/components/ui/color-picker';
+import FontLoader from '@/components/ui/font-loader';
+import FontPicker from '@/components/ui/font-picker';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DesignCustomization } from '@/invitation-themes/types';
 import { Head } from '@inertiajs/react';
 import {
     Check,
@@ -16,8 +20,10 @@ import {
     Image as ImageIcon,
     Palette,
     Save,
+    Settings,
     Sparkles,
     Star,
+    Type,
     Upload,
     X
 } from 'lucide-react';
@@ -91,6 +97,20 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
   const [themes, setThemes] = useState<Theme[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Design customization state
+  const [designCustomization, setDesignCustomization] = useState<DesignCustomization>({
+    buttonFont: 'Source Sans Pro',
+    sectionHeadingFont: 'Playfair Display',
+    sectionBodyFont: 'Source Sans Pro',
+    primaryTextColor: '#2C3E50',
+    secondaryTextColor: '#7F8C8D',
+    tertiaryTextColor: '#95A5A6',
+    buttonPrimaryColor: '#2C3E50',
+    buttonSecondaryColor: '#E8F4FD',
+    buttonTextColor: '#FFFFFF',
+    customCSS: ''
+  });
 
   // Fetch themes from API
   useEffect(() => {
@@ -258,6 +278,13 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
     setSelectedPalette('');
   };
 
+  const handleDesignCustomizationChange = (field: keyof DesignCustomization, value: string) => {
+    setDesignCustomization(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
@@ -276,6 +303,13 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
     <>
       <Head title="Design Configuration" />
 
+      {/* Load fonts dynamically */}
+      <FontLoader fonts={[
+        designCustomization.buttonFont,
+        designCustomization.sectionHeadingFont,
+        designCustomization.sectionBodyFont
+      ]} />
+
       <DashboardPage
         title={`${wedding?.title || 'Wedding'} - Design Configuration`}
         user={user || null}
@@ -290,7 +324,7 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
         >
 
         <Tabs defaultValue="cover" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="cover" className="flex items-center">
                 <ImageIcon className="w-4 h-4 mr-2" />
                 Cover Image
@@ -302,6 +336,10 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
               <TabsTrigger value="colors" className="flex items-center">
                 <Sparkles className="w-4 h-4 mr-2" />
                 Color Palette
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="flex items-center">
+                <Settings className="w-4 h-4 mr-2" />
+                Design Settings
               </TabsTrigger>
             </TabsList>
 
@@ -748,6 +786,207 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
                 </CardContent>
               </Card>
             </TabsContent>
+
+            {/* Design Settings Tab */}
+            <TabsContent value="settings" className="space-y-6">
+              {/* Font Settings */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Type className="w-5 h-5 mr-2" />
+                    Font Settings
+                  </CardTitle>
+                  <CardDescription>
+                    Customize fonts for different sections of your wedding invitation
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <FontPicker
+                      label="Button Font"
+                      value={designCustomization.buttonFont}
+                      onChange={(value) => handleDesignCustomizationChange('buttonFont', value)}
+                    />
+                    <FontPicker
+                      label="Section Heading Font"
+                      value={designCustomization.sectionHeadingFont}
+                      onChange={(value) => handleDesignCustomizationChange('sectionHeadingFont', value)}
+                    />
+                    <FontPicker
+                      label="Section Body Font"
+                      value={designCustomization.sectionBodyFont}
+                      onChange={(value) => handleDesignCustomizationChange('sectionBodyFont', value)}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Text Color Settings */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Palette className="w-5 h-5 mr-2" />
+                    Text Colors
+                  </CardTitle>
+                  <CardDescription>
+                    Choose colors for different text elements in your invitation
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <ColorPicker
+                      label="Primary Text Color"
+                      value={designCustomization.primaryTextColor}
+                      onChange={(value) => handleDesignCustomizationChange('primaryTextColor', value)}
+                    />
+                    <ColorPicker
+                      label="Secondary Text Color"
+                      value={designCustomization.secondaryTextColor}
+                      onChange={(value) => handleDesignCustomizationChange('secondaryTextColor', value)}
+                    />
+                    <ColorPicker
+                      label="Tertiary Text Color"
+                      value={designCustomization.tertiaryTextColor}
+                      onChange={(value) => handleDesignCustomizationChange('tertiaryTextColor', value)}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Button Color Settings */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Settings className="w-5 h-5 mr-2" />
+                    Button Colors
+                  </CardTitle>
+                  <CardDescription>
+                    Customize button appearance to match your wedding theme
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <ColorPicker
+                      label="Primary Button Color"
+                      value={designCustomization.buttonPrimaryColor}
+                      onChange={(value) => handleDesignCustomizationChange('buttonPrimaryColor', value)}
+                    />
+                    <ColorPicker
+                      label="Secondary Button Color"
+                      value={designCustomization.buttonSecondaryColor}
+                      onChange={(value) => handleDesignCustomizationChange('buttonSecondaryColor', value)}
+                    />
+                    <ColorPicker
+                      label="Button Text Color"
+                      value={designCustomization.buttonTextColor}
+                      onChange={(value) => handleDesignCustomizationChange('buttonTextColor', value)}
+                    />
+                  </div>
+
+                  {/* Button Preview */}
+                  <div className="space-y-4">
+                    <Label className="text-sm font-medium">Button Preview</Label>
+                    <div className="flex flex-wrap gap-4">
+                      <button
+                        className="px-6 py-3 rounded-lg font-medium transition-all hover:opacity-90 active:scale-95"
+                        style={{
+                          backgroundColor: designCustomization.buttonPrimaryColor,
+                          color: designCustomization.buttonTextColor,
+                          fontFamily: designCustomization.buttonFont
+                        }}
+                      >
+                        Primary Button
+                      </button>
+                      <button
+                        className="px-6 py-3 rounded-lg font-medium border-2 transition-all hover:opacity-90 active:scale-95"
+                        style={{
+                          backgroundColor: designCustomization.buttonSecondaryColor,
+                          color: designCustomization.buttonPrimaryColor,
+                          borderColor: designCustomization.buttonPrimaryColor,
+                          fontFamily: designCustomization.buttonFont
+                        }}
+                      >
+                        Secondary Button
+                      </button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Text Preview */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Eye className="w-5 h-5 mr-2" />
+                    Text Preview
+                  </CardTitle>
+                  <CardDescription>
+                    See how your text colors and fonts will look in your invitation
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-4">
+                    <div
+                      className="text-2xl font-bold"
+                      style={{
+                        color: designCustomization.primaryTextColor,
+                        fontFamily: designCustomization.sectionHeadingFont
+                      }}
+                    >
+                      Wedding Invitation Title
+                    </div>
+                    <div
+                      className="text-lg"
+                      style={{
+                        color: designCustomization.secondaryTextColor,
+                        fontFamily: designCustomization.sectionBodyFont
+                      }}
+                    >
+                      Join us for a celebration of love and commitment
+                    </div>
+                    <div
+                      className="text-sm"
+                      style={{
+                        color: designCustomization.tertiaryTextColor,
+                        fontFamily: designCustomization.sectionBodyFont
+                      }}
+                    >
+                      Additional details and information about the event
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Custom CSS */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Settings className="w-5 h-5 mr-2" />
+                    Custom CSS
+                  </CardTitle>
+                  <CardDescription>
+                    Add custom CSS for advanced styling (optional)
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <Label htmlFor="custom-css" className="text-sm font-medium">
+                      Custom CSS Code
+                    </Label>
+                    <textarea
+                      id="custom-css"
+                      value={designCustomization.customCSS}
+                      onChange={(e) => handleDesignCustomizationChange('customCSS', e.target.value)}
+                      placeholder="/* Add your custom CSS here */&#10;.custom-class {&#10;  /* your styles */&#10;}"
+                      className="w-full h-32 p-3 border border-border rounded-md font-mono text-sm resize-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Use this for advanced customizations. CSS will be applied to your invitation theme.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
           </Tabs>
 
           {/* Custom Color Palette Modal */}
@@ -857,7 +1096,7 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
           </div>
 
           {/* Preview Section */}
-          {(selectedTemplate || selectedPalette || coverPreview) && (
+          {(selectedTemplate || selectedPalette || coverPreview || designCustomization.buttonFont !== 'Source Sans Pro') && (
             <Card className="mt-6 bg-primary/5 border-primary/20">
               <CardContent className="p-4">
                 <div className="flex items-center space-x-3">
@@ -869,6 +1108,13 @@ export default function DesignConfiguration({ user, wedding }: DesignConfigurati
                     <p className="text-xs text-muted-foreground">
                       Your design configuration is ready. Click "Save" to apply changes to your wedding invitation.
                     </p>
+                    {(designCustomization.buttonFont !== 'Source Sans Pro' ||
+                      designCustomization.primaryTextColor !== '#2C3E50' ||
+                      designCustomization.buttonPrimaryColor !== '#2C3E50') && (
+                      <div className="mt-2 text-xs text-primary">
+                        ✨ Custom design settings applied
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>

@@ -175,10 +175,12 @@ class AuthController extends BaseController
      */
     public function logout(Request $request)
     {
+        $userId = Auth::id();
+
         try {
             // Log the logout attempt
             Log::info('User logout attempt', [
-                'user_id' => Auth::id(),
+                'user_id' => $userId,
                 'ip' => $request->ip(),
                 'user_agent' => $request->userAgent()
             ]);
@@ -192,7 +194,7 @@ class AuthController extends BaseController
             $request->session()->regenerateToken();
 
             Log::info('User logout successful', [
-                'user_id' => Auth::id(),
+                'user_id' => $userId,
                 'ip' => $request->ip()
             ]);
 
@@ -200,15 +202,27 @@ class AuthController extends BaseController
         } catch (\Exception $e) {
             Log::error('Logout error', [
                 'error' => $e->getMessage(),
-                'user_id' => Auth::id(),
-                'ip' => $request->ip()
+                'user_id' => $userId,
+                'ip' => $request->ip(),
+                'trace' => $e->getTraceAsString()
             ]);
 
             // Even if there's an error, try to clear the session
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+            try {
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
 
-            return Redirect::route('login')->with('error', 'There was an error during logout, but you have been logged out.');
+                // If we can clear the session, consider it a successful logout
+                return Redirect::route('login')->with('success', 'You have been logged out successfully.');
+            } catch (\Exception $sessionError) {
+                Log::error('Session cleanup failed during logout', [
+                    'error' => $sessionError->getMessage(),
+                    'user_id' => $userId,
+                    'ip' => $request->ip()
+                ]);
+
+                return Redirect::route('login')->with('error', 'There was an error during logout, but you have been logged out.');
+            }
         }
     }
 }

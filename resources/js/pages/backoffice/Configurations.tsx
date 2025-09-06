@@ -262,16 +262,16 @@ export default function ConfigurationsPage({ user }: ConfigurationsPageProps) {
     }
   };
 
-  const getTypeBadgeColor = (type: string) => {
-    const colors = {
-      'string': 'bg-blue-100 text-blue-800',
-      'integer': 'bg-green-100 text-green-800',
-      'boolean': 'bg-purple-100 text-purple-800',
-      'array': 'bg-orange-100 text-orange-800',
-      'json': 'bg-pink-100 text-pink-800',
-    };
+  const getTypeBadgeVariant = (type: string) => {
+    const variants = {
+      'string': 'info',
+      'integer': 'success',
+      'boolean': 'purple',
+      'array': 'orange',
+      'json': 'pink',
+    } as const;
 
-    return colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return variants[type as keyof typeof variants] || 'gray';
   };
 
   const renderValue = (config: Configuration) => {
@@ -313,7 +313,7 @@ export default function ConfigurationsPage({ user }: ConfigurationsPageProps) {
 
     if (config.type === 'boolean') {
       return (
-        <Badge className={config.value === 'true' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+        <Badge variant={config.value === 'true' ? 'success' : 'error'}>
           {config.value === 'true' ? 'True' : 'False'}
         </Badge>
       );
@@ -479,7 +479,7 @@ export default function ConfigurationsPage({ user }: ConfigurationsPageProps) {
                             {renderValue(config)}
                           </TableCell>
                           <TableCell>
-                            <Badge className={getTypeBadgeColor(config.type)}>
+                            <Badge variant={getTypeBadgeVariant(config.type)}>
                               {config.type}
                             </Badge>
                           </TableCell>
@@ -499,8 +499,7 @@ export default function ConfigurationsPage({ user }: ConfigurationsPageProps) {
                           </TableCell>
                           <TableCell>
                             <Badge
-                              variant={config.is_public ? 'default' : 'secondary'}
-                              className={config.is_public ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}
+                              variant={config.is_public ? 'success' : 'gray'}
                             >
                               {config.is_public ? (
                                 <>

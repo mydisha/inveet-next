@@ -5,36 +5,36 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '@/components/ui/select';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from '@/components/ui/table';
 import { Head, Link, router } from '@inertiajs/react';
 import {
-  Edit,
-  Eye,
-  LogIn,
-  MoreHorizontal,
-  Search,
-  UserCheck,
-  UserX
+    Edit,
+    Eye,
+    LogIn,
+    MoreHorizontal,
+    Search,
+    UserCheck,
+    UserX
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -155,18 +155,18 @@ export default function UsersPage({ user, users: initialUsers, filters: initialF
     });
   };
 
-  const getRoleBadgeColor = (role: string) => {
+  const getRoleBadgeVariant = (role: string) => {
     switch (role) {
       case 'super-admin':
-        return 'bg-red-100 text-red-800';
+        return 'error';
       case 'admin':
-        return 'bg-orange-100 text-orange-800';
+        return 'orange';
       case 'moderator':
-        return 'bg-blue-100 text-blue-800';
+        return 'info';
       case 'customer':
-        return 'bg-green-100 text-green-800';
+        return 'success';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'gray';
     }
   };
 
@@ -284,7 +284,7 @@ export default function UsersPage({ user, users: initialUsers, filters: initialF
                               {user.roles.map((role) => (
                                 <Badge
                                   key={role.name}
-                                  className={getRoleBadgeColor(role.name)}
+                                  variant={getRoleBadgeVariant(role.name)}
                                 >
                                   {role.name}
                                 </Badge>
@@ -293,8 +293,7 @@ export default function UsersPage({ user, users: initialUsers, filters: initialF
                           </TableCell>
                           <TableCell>
                             <Badge
-                              variant={user.is_active ? 'default' : 'secondary'}
-                              className={user.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}
+                              variant={user.is_active ? 'success' : 'gray'}
                             >
                               {user.is_active ? 'Active' : 'Inactive'}
                             </Badge>

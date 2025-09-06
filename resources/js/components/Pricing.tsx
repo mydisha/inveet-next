@@ -94,9 +94,11 @@ const Pricing = () => {
             >
               {/* Popular Badge */}
               {plan.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground px-6 py-2 rounded-full text-sm font-medium flex items-center justify-center space-x-2 shadow-lg z-10 animate-bounce-gentle">
-                  <Star className="w-4 h-4 fill-current" />
-                  <span>Diminati</span>
+                <div className="absolute -top-4 left-0 right-0 flex justify-center">
+                  <div className="bg-accent text-accent-foreground px-6 py-2 rounded-full text-sm font-medium flex items-center justify-center space-x-2 shadow-lg z-10 animate-bounce-gentle">
+                    <Star className="w-4 h-4 fill-current" />
+                    <span>Diminati</span>
+                  </div>
                 </div>
               )}
 

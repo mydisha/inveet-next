@@ -5,40 +5,40 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '@/components/ui/select';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from '@/components/ui/table';
 import { Head, Link, router } from '@inertiajs/react';
 import {
-  Edit,
-  Eye,
-  Lock,
-  MoreHorizontal,
-  Palette,
-  Plus,
-  Search,
-  ToggleLeft,
-  ToggleRight,
-  Trash2,
-  Users
+    Edit,
+    Eye,
+    Lock,
+    MoreHorizontal,
+    Palette,
+    Plus,
+    Search,
+    ToggleLeft,
+    ToggleRight,
+    Trash2,
+    Users
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -309,16 +309,14 @@ export default function ThemesPage({ user, themes, filters: initialFilters }: Th
                           </TableCell>
                           <TableCell>
                             <Badge
-                              variant={theme.is_active ? 'default' : 'secondary'}
-                              className={theme.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}
+                              variant={theme.is_active ? 'success' : 'gray'}
                             >
                               {theme.is_active ? 'Active' : 'Inactive'}
                             </Badge>
                           </TableCell>
                           <TableCell>
                             <Badge
-                              variant={theme.is_public ? 'default' : 'secondary'}
-                              className={theme.is_public ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}
+                              variant={theme.is_public ? 'info' : 'gray'}
                             >
                               <div className="flex items-center gap-1">
                                 {theme.is_public ? (

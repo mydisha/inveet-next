@@ -23,9 +23,11 @@ interface CoupleInfoProps {
     email: string;
     hasWedding: boolean;
   } | null;
+  weddingDetails?: Record<string, string>;
+  hasWedding?: boolean;
 }
 
-export default function CoupleInfo({ user }: CoupleInfoProps) {
+export default function CoupleInfo({ user, weddingDetails = {}, hasWedding = false }: CoupleInfoProps) {
   const [step, setStep] = useState(1);
   const [groomPhoto, setGroomPhoto] = useState<File | null>(null);
   const [bridePhoto, setBridePhoto] = useState<File | null>(null);
@@ -66,36 +68,46 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
     loadGoogleMaps();
   }, []);
 
+  // Load existing photos if they exist
+  useEffect(() => {
+    if (weddingDetails.male_profile_photo) {
+      setGroomPhotoPreview(weddingDetails.male_profile_photo);
+    }
+    if (weddingDetails.female_profile_photo) {
+      setBridePhotoPreview(weddingDetails.female_profile_photo);
+    }
+  }, [weddingDetails]);
+
   const { data, setData, post, processing, errors } = useForm({
     // Groom Information
-    groom_name: '',
-    groom_nickname: '',
-    groom_instagram: '',
-    groom_father_name: '',
-    groom_mother_name: '',
+    groom_name: weddingDetails.male_name || '',
+    groom_nickname: weddingDetails.male_nickname || '',
+    groom_instagram: weddingDetails.male_instagram || '',
+    groom_father_name: weddingDetails.male_father_name || '',
+    groom_mother_name: weddingDetails.male_mother_name || '',
 
     // Bride Information
-    bride_name: '',
-    bride_nickname: '',
-    bride_instagram: '',
-    bride_father_name: '',
-    bride_mother_name: '',
+    bride_name: weddingDetails.female_name || '',
+    bride_nickname: weddingDetails.female_nickname || '',
+    bride_instagram: weddingDetails.female_instagram || '',
+    bride_father_name: weddingDetails.female_father_name || '',
+    bride_mother_name: weddingDetails.female_mother_name || '',
 
     // Wedding Information
-    wedding_date: '',
+    wedding_date: weddingDetails.wedding_date || '',
 
     // Venue Information
-    venue_name: '',
-    venue_address: '',
-    venue_city: '',
-    venue_province: '',
-    venue_postal_code: '',
-    ceremony_time: '',
-    reception_time: '',
-    venue_description: '',
-    venue_notes: '',
-    venue_latitude: '',
-    venue_longitude: '',
+    venue_name: weddingDetails.venue_name || '',
+    venue_address: weddingDetails.venue_address || '',
+    venue_city: weddingDetails.venue_city || '',
+    venue_province: weddingDetails.venue_province || '',
+    venue_postal_code: weddingDetails.venue_postal_code || '',
+    ceremony_time: weddingDetails.ceremony_time || '',
+    reception_time: weddingDetails.reception_time || '',
+    venue_description: weddingDetails.venue_description || '',
+    venue_notes: weddingDetails.venue_notes || '',
+    venue_latitude: weddingDetails.venue_latitude || '',
+    venue_longitude: weddingDetails.venue_longitude || '',
   });
 
   const handlePhotoUpload = (file: File, type: 'groom' | 'bride') => {
@@ -265,11 +277,36 @@ export default function CoupleInfo({ user }: CoupleInfoProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Client-side only - no backend submission
 
-    alert('Form completed! (This is a demo - no data was saved)');
-    // Navigate to next step
-    window.location.href = '/onboarding/design-selection';
+    // Create FormData for file uploads
+    const formData = new FormData();
+
+    // Add form data
+    Object.keys(data).forEach(key => {
+      if (data[key as keyof typeof data]) {
+        formData.append(key, data[key as keyof typeof data] as string);
+      }
+    });
+
+    // Add photo files if they exist
+    if (groomPhoto) {
+      formData.append('groom_photo', groomPhoto);
+    }
+    if (bridePhoto) {
+      formData.append('bride_photo', bridePhoto);
+    }
+
+    // Submit to backend
+    post(route('onboarding.couple-info.store'), {
+      data: formData,
+      forceFormData: true,
+      onSuccess: () => {
+        // Success handled by redirect in controller
+      },
+      onError: (errors) => {
+        console.error('Form submission errors:', errors);
+      }
+    });
   };
 
   const nextStep = () => {

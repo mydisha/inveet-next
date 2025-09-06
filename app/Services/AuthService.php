@@ -17,17 +17,28 @@ class AuthService
             return null;
         }
 
+        // Safely get roles with fallback
+        $roles = [];
+        try {
+            if (method_exists($user, 'roles') && $user->roles) {
+                $roles = $user->roles->map(function ($role) {
+                    return [
+                        'id' => $role->id,
+                        'name' => $role->name,
+                    ];
+                })->toArray();
+            }
+        } catch (\Exception $e) {
+            // If roles relationship fails, return empty array
+            $roles = [];
+        }
+
         return [
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
             'hasWedding' => $user->hasWedding ?? false,
-            'roles' => $user->roles->map(function ($role) {
-                return [
-                    'id' => $role->id,
-                    'name' => $role->name,
-                ];
-            })->toArray(),
+            'roles' => $roles,
         ];
     }
 

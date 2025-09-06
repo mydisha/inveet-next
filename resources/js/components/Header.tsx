@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from './ui/button';
+import ThemeToggle from './ui/ThemeToggle';
 
 const appName = (import.meta as any).env.VITE_APP_NAME || 'Inveet';
 
@@ -45,6 +46,7 @@ const Header = () => {
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
+            <ThemeToggle size="sm" />
             <Button variant="ghost" className="text-foreground/80 hover:text-primary" asChild>
               <Link href="/login">Masuk</Link>
             </Button>
@@ -86,6 +88,10 @@ const Header = () => {
               </a>
             ))}
             <div className="px-3 py-2 space-y-2">
+              <div className="flex items-center justify-between px-3 py-2">
+                <span className="text-foreground/80">Theme:</span>
+                <ThemeToggle size="sm" />
+              </div>
               <a
                 href="/login"
                 className="block px-3 py-2 text-foreground/80 hover:text-primary transition-colors duration-300"

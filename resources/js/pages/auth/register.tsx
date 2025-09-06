@@ -63,7 +63,7 @@ export default function Register() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary-light/10 flex items-center justify-center p-6 relative overflow-hidden font-inter">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-primary-light/10 flex items-center justify-center p-6 relative overflow-hidden font-inter auth-page">
       {/* Background decorative elements matching landing page */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div className="shape-float-1 top-20 right-20 w-32 h-32" style={{ animationDelay: '0s' }}></div>
@@ -89,7 +89,7 @@ export default function Register() {
         </div>
 
         {/* Auth Card */}
-        <Card className="shadow-2xl border border-border/50 bg-card/95 backdrop-blur-sm">
+        <Card className="shadow-2xl border border-border/50 bg-card/95 backdrop-blur-sm auth-card">
           <CardHeader className="text-center pb-6">
             <CardTitle className="text-2xl font-inter-semibold text-foreground">
               Create Your Account

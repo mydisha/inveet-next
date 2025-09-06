@@ -53,23 +53,23 @@ interface UserDetailProps {
 }
 
 export default function UserDetailPage({ user, currentUser }: UserDetailProps) {
-  const getRoleBadgeColor = (role: string) => {
+  const getRoleBadgeVariant = (role: string) => {
     switch (role) {
       case 'super-admin':
-        return 'bg-red-100 text-red-800';
+        return 'error';
       case 'admin':
-        return 'bg-orange-100 text-orange-800';
+        return 'orange';
       case 'moderator':
-        return 'bg-blue-100 text-blue-800';
+        return 'info';
       case 'customer':
-        return 'bg-green-100 text-green-800';
+        return 'success';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'gray';
     }
   };
 
-  const getStatusBadgeColor = (isActive: boolean) => {
-    return isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
+  const getStatusBadgeVariant = (isActive: boolean) => {
+    return isActive ? 'success' : 'gray';
   };
 
   return (
@@ -103,7 +103,7 @@ export default function UserDetailPage({ user, currentUser }: UserDetailProps) {
                   </div>
                 </div>
                 <div className="flex space-x-2">
-                  <Badge className={getStatusBadgeColor(user.is_active)}>
+                  <Badge variant={getStatusBadgeVariant(user.is_active)}>
                     {user.is_active ? 'Active' : 'Inactive'}
                   </Badge>
                 </div>
@@ -145,7 +145,7 @@ export default function UserDetailPage({ user, currentUser }: UserDetailProps) {
                       {user.roles.map((role) => (
                         <Badge
                           key={role.name}
-                          className={getRoleBadgeColor(role.name)}
+                          variant={getRoleBadgeVariant(role.name)}
                         >
                           {role.name}
                         </Badge>

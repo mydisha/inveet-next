@@ -86,7 +86,7 @@ class FrontendController extends Controller
         // Ensure CSRF token is fresh for dashboard
         $this->refreshCsrfToken($request);
 
-        return Inertia::render('Dashboard', [
+        return Inertia::render('dashboard', [
             'user' => $this->getUserData($user),
         ]);
     }

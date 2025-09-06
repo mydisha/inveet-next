@@ -71,6 +71,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, [theme]);
 
+
   // Save theme to localStorage
   const handleSetTheme = (newTheme: Theme) => {
     setTheme(newTheme);

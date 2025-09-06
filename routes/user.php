@@ -25,6 +25,7 @@ Route::middleware(['auth', 'customer'])->group(function () {
     // Onboarding routes (no wedding required)
     Route::get('/onboarding', [OnboardingController::class, 'index'])->name('onboarding');
     Route::get('/onboarding/couple-info', [OnboardingController::class, 'coupleInfo'])->name('onboarding.couple-info');
+    Route::post('/onboarding/couple-info', [OnboardingController::class, 'storeCoupleInfo'])->name('onboarding.couple-info.store');
     Route::get('/onboarding/wedding-location', [OnboardingController::class, 'weddingLocation'])->name('onboarding.wedding-location');
     Route::get('/onboarding/design-selection', [OnboardingController::class, 'designSelection'])->name('onboarding.design-selection');
     Route::get('/onboarding/wedding-url', [OnboardingController::class, 'weddingUrl'])->name('onboarding.wedding-url');

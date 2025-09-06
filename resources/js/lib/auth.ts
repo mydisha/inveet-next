@@ -15,32 +15,32 @@ export class AuthUtils {
     const { redirectTo = '/login', showFeedback = true } = options;
 
     try {
-
-      // Clear local data first
-      this.clearAuthData();
-
       // Use Inertia.js to perform logout
-
       router.post('/logout', {}, {
         onSuccess: () => {
+          // Clear local data on successful logout
+          this.clearAuthData();
           if (showFeedback) {
+            console.log('Logout successful');
           }
         },
         onError: (errors) => {
+          console.error('Logout error:', errors);
+          // Clear local data even on error
+          this.clearAuthData();
           // Fallback to form-based logout
           this.logoutViaForm();
         },
         onFinish: () => {
-          // Clear any remaining auth state
-          this.clearAuthData();
+          // Additional cleanup if needed
+          console.log('Logout process finished');
         }
       });
 
     } catch (error) {
-
+      console.error('Logout exception:', error);
       // Clear local data even if everything fails
       this.clearAuthData();
-
       // Fallback to form-based logout
       this.logoutViaForm();
     }
@@ -50,6 +50,7 @@ export class AuthUtils {
    * Logout using traditional form submission (fallback method)
    */
   private static logoutViaForm(): void {
+    console.log('Using form-based logout fallback');
 
     const form = document.createElement('form');
     form.method = 'POST';
@@ -63,15 +64,15 @@ export class AuthUtils {
       tokenInput.name = '_token';
       tokenInput.value = csrfToken;
       form.appendChild(tokenInput);
-    } else {
-      // Fallback: redirect to home page
-      window.location.href = '/';
-      return;
-    }
 
-    // Submit form
-    document.body.appendChild(form);
-    form.submit();
+      // Submit form
+      document.body.appendChild(form);
+      form.submit();
+    } else {
+      console.error('CSRF token not found. Cannot perform form-based logout.');
+      // Final fallback: redirect to home page
+      window.location.href = '/';
+    }
   }
 
   /**

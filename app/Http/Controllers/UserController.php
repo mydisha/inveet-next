@@ -36,7 +36,7 @@ class UserController extends BaseController
     {
         $this->ensureFreshCsrfToken($request);
 
-        return $this->renderWithUser('Dashboard', [], $request);
+        return $this->renderWithUser('dashboard', [], $request);
     }
 
     /**

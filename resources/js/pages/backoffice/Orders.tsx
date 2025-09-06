@@ -1,6 +1,7 @@
 import BackButton from '@/components/backoffice/BackButton';
 import BackofficeLayout from '@/components/backoffice/BackofficeLayout';
 import PageHeader from '@/components/backoffice/PageHeader';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -144,34 +145,18 @@ export default function OrdersPage({ user, orders, filters }: OrdersPageProps) {
 
   const getStatusBadge = (order: Order) => {
     if (order.is_void) {
-      return (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-          Void
-        </span>
-      );
+      return <Badge variant="error">Void</Badge>;
     }
 
     if (order.is_paid) {
-      return (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-          Paid
-        </span>
-      );
+      return <Badge variant="success">Paid</Badge>;
     }
 
-    return (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-        Pending
-      </span>
-    );
+    return <Badge variant="warning">Pending</Badge>;
   };
 
   const getPaymentTypeBadge = (paymentType: string) => {
-    return (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
-        {paymentType}
-      </span>
-    );
+    return <Badge variant="gray">{paymentType}</Badge>;
   };
 
   const handleSearch = () => {

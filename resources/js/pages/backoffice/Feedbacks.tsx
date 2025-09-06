@@ -5,36 +5,36 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '@/components/ui/select';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from '@/components/ui/table';
 import { Head, router } from '@inertiajs/react';
 import {
-  Eye,
-  EyeOff,
-  MoreHorizontal,
-  Search,
-  Star,
-  ThumbsUp,
-  Trash2
+    Eye,
+    EyeOff,
+    MoreHorizontal,
+    Search,
+    Star,
+    ThumbsUp,
+    Trash2
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -157,10 +157,10 @@ export default function FeedbacksPage({ user, feedbacks, filters: initialFilters
     ));
   };
 
-  const getScoreBadgeColor = (score: number) => {
-    if (score >= 4) return 'bg-green-100 text-green-800';
-    if (score >= 3) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-red-100 text-red-800';
+  const getScoreBadgeVariant = (score: number) => {
+    if (score >= 4) return 'success';
+    if (score >= 3) return 'warning';
+    return 'error';
   };
 
   return (
@@ -301,7 +301,7 @@ export default function FeedbacksPage({ user, feedbacks, filters: initialFilters
                           <TableCell>
                             <div className="flex items-center space-x-1">
                               {renderStars(feedback.score)}
-                              <Badge className={`ml-2 ${getScoreBadgeColor(feedback.score)}`}>
+                              <Badge variant={getScoreBadgeVariant(feedback.score)} className="ml-2">
                                 {feedback.score}/5
                               </Badge>
                             </div>
@@ -327,13 +327,13 @@ export default function FeedbacksPage({ user, feedbacks, filters: initialFilters
                           <TableCell>
                             <div className="flex flex-wrap gap-1">
                               {feedback.is_recommended && (
-                                <Badge className="bg-green-100 text-green-800">
+                                <Badge variant="success">
                                   <ThumbsUp className="h-3 w-3 mr-1" />
                                   Recommended
                                 </Badge>
                               )}
                               {feedback.show_on_landing && (
-                                <Badge className="bg-blue-100 text-blue-800">
+                                <Badge variant="info">
                                   <Eye className="h-3 w-3 mr-1" />
                                   Show on Landing
                                 </Badge>

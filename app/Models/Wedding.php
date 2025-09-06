@@ -255,4 +255,48 @@ class Wedding extends Model
     {
         return static::where('wedding_uuid', $uuid)->first();
     }
+
+    /**
+     * Upsert wedding for user - create if doesn't exist, update if exists.
+     */
+    public static function upsertForUser(int $userId, array $data = []): self
+    {
+        $wedding = static::where('user_id', $userId)->first();
+
+        if ($wedding) {
+            // Update existing wedding
+            $wedding->update($data);
+            return $wedding;
+        }
+
+        // Create new wedding
+        return static::create(array_merge([
+            'user_id' => $userId,
+            'is_draft' => true,
+            'is_active' => false,
+            'is_published' => false,
+        ], $data));
+    }
+
+    /**
+     * Upsert wedding by UUID - create if doesn't exist, update if exists.
+     */
+    public static function upsertByUuid(string $uuid, array $data = []): self
+    {
+        $wedding = static::findByUuid($uuid);
+
+        if ($wedding) {
+            // Update existing wedding
+            $wedding->update($data);
+            return $wedding;
+        }
+
+        // Create new wedding with provided UUID
+        return static::create(array_merge([
+            'wedding_uuid' => $uuid,
+            'is_draft' => true,
+            'is_active' => false,
+            'is_published' => false,
+        ], $data));
+    }
 }

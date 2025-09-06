@@ -1,4 +1,4 @@
-import { FileText, Edit3, Share2 } from 'lucide-react';
+import { Edit3, FileText, Share2 } from 'lucide-react';
 
 const StepByStep = () => {
   const steps = [
@@ -23,14 +23,14 @@ const StepByStep = () => {
   ];
 
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center space-y-4 mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-800">
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground">
             Langkah Pembuatan Undangan
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Hanya butuh beberapa langkah dan menit saja hingga undangan Kamu siap digunakan
           </p>
         </div>
@@ -38,25 +38,25 @@ const StepByStep = () => {
         {/* Steps Cards */}
         <div className="grid md:grid-cols-3 gap-8">
           {steps.map((step, index) => (
-            <div key={index} className="relative bg-white rounded-lg shadow-lg p-8 border border-gray-100">
+            <div key={index} className="relative bg-card rounded-lg shadow-lg p-8 border border-border">
               {/* Step Title */}
-              <h3 className="text-xl font-bold text-gray-800 mb-4">
+              <h3 className="text-xl font-bold text-card-foreground mb-4">
                 {step.title}
               </h3>
-              
+
               {/* Step Description */}
-              <p className="text-gray-600 text-sm leading-relaxed mb-6">
+              <p className="text-muted-foreground text-sm leading-relaxed mb-6">
                 {step.description}
               </p>
-              
+
               {/* Step Number Background */}
-              <div className="absolute bottom-4 right-4 text-8xl font-bold text-gray-200 opacity-50">
+              <div className="absolute bottom-4 right-4 text-8xl font-bold text-muted-foreground/20 opacity-50">
                 {step.stepNumber.split(' ')[1]}
               </div>
-              
+
               {/* Step Icon */}
               <div className="absolute bottom-6 right-6">
-                <step.icon className="w-6 h-6 text-gray-400" />
+                <step.icon className="w-6 h-6 text-muted-foreground" />
               </div>
             </div>
           ))}

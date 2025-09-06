@@ -145,13 +145,25 @@ export interface ThemeConfig {
     background: string;
     text: string;
     textLight: string;
-    [key: string]: string; // Allow additional color properties
+    // New text color options
+    primaryText?: string;
+    secondaryText?: string;
+    tertiaryText?: string;
+    // Button colors
+    buttonPrimary?: string;
+    buttonSecondary?: string;
+    buttonText?: string;
+    [key: string]: string | undefined; // Allow additional color properties
   };
   fonts: {
     heading: string;
     body: string;
     script: string;
-    [key: string]: string; // Allow additional font properties
+    // New font options for buttons and sections
+    button?: string;
+    sectionHeading?: string;
+    sectionBody?: string;
+    [key: string]: string | undefined; // Allow additional font properties
   };
   assets: {
     coverBackground?: string;
@@ -164,6 +176,26 @@ export interface ThemeConfig {
     locationLayout: 'cards' | 'list' | 'timeline';
     galleryLayout: 'grid' | 'masonry' | 'carousel';
   };
+}
+
+export interface DesignCustomization {
+  // Font customizations
+  buttonFont: string;
+  sectionHeadingFont: string;
+  sectionBodyFont: string;
+
+  // Text color customizations
+  primaryTextColor: string;
+  secondaryTextColor: string;
+  tertiaryTextColor: string;
+
+  // Button color customizations
+  buttonPrimaryColor: string;
+  buttonSecondaryColor: string;
+  buttonTextColor: string;
+
+  // Additional customization options
+  customCSS?: string;
 }
 
 export interface InvitationThemeProps {
